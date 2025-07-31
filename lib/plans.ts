@@ -3,6 +3,7 @@ interface Plan {
   popular: boolean;
   type: string;
   price: number;
+  pricePrevious: number;
   features: string[];
 }
 
@@ -18,7 +19,8 @@ export const plans: Plan[] = [
     id: 1,
     popular: false,
     type: "Mensal",
-    price: 150,
+    price: 58.19,
+    pricePrevious: 116.58,
     features: [
       "Suporte técnico incluso",
       "Interface intuitiva e fácil de usar",
@@ -33,7 +35,8 @@ export const plans: Plan[] = [
     id: 2,
     popular: true,
     type: "Anual",
-    price: 128.51,
+    price: 48.19,
+    pricePrevious: 96.58,
     features: [
       "Suporte técnico incluso",
       "Interface intuitiva e fácil de usar",

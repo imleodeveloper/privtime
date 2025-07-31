@@ -6,7 +6,7 @@ import { formatPrice } from "../../lib/plans";
 
 export function PlansHome() {
   return (
-    <article className="w-full py-32">
+    <article className="w-full py-32" id="planos">
       <section className="w-full container mx-auto grid grid-cols-1 gap-10 items-start justify-center px-4 md:px-0">
         <div className="mx-auto text-center flex justify-center items-center flex-col space-y-4 ">
           <h2 className="text-3xl md:text-4xl font-bold">
@@ -16,10 +16,6 @@ export function PlansHome() {
             Todos os planos incluem acesso completo ao sistema, suporte técnico
             e atualizações gratuitas
           </h3>
-          <span className="text-base text-black/80">
-            Nossos planos possuem 07 dias para a solicitação de reembolso, zero
-            risco!
-          </span>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-4 container">
           {plans.map((plan) => (
@@ -38,6 +34,11 @@ export function PlansHome() {
               <div className="w-full flex justify-center items-center flex-col space-y-2">
                 <span className="text-2xl font-bold">{plan.type}</span>
                 <div className="flex items-end justify-center gap-1">
+                  <span className="line-through text-red-600">
+                    De {formatPrice(plan.pricePrevious)} por
+                  </span>
+                </div>
+                <div className="flex items-end justify-center gap-1">
                   <span className="text-3xl font-bold">
                     {formatPrice(plan.price)}
                   </span>
@@ -48,6 +49,13 @@ export function PlansHome() {
                     <span className="text-gray-700">x 12 meses</span>
                   )}
                 </div>
+                {plan.type === "Anual" && (
+                  <div className="flex items-end justify-center">
+                    <span className="text-gray-700">
+                      ou {formatPrice(plan.price * 12)} à vista
+                    </span>
+                  </div>
+                )}
                 <div>
                   {plan.type === "Mensal" && (
                     <span className="text-gray-700">Perfeito para começar</span>
@@ -55,10 +63,10 @@ export function PlansHome() {
                   {plan.type === "Anual" && (
                     <div>
                       <span className="line-through text-gray-600 text-base">
-                        R$ 150,00
+                        R$ 58,19
                       </span>{" "}
                       <span className="text-base font-bold text-green-600">
-                        Economize R$ 257,88/ano
+                        Economize R$ 119,99/ano
                       </span>
                     </div>
                   )}
@@ -91,7 +99,7 @@ export function PlansHome() {
                 </Link>
                 <div className="w-full text-center mt-4">
                   <span className="text-gray-600 text-md">
-                    Sem taxa de instalação • 07 dias de garantia
+                    Sem taxa de instalação
                   </span>
                 </div>
               </div>

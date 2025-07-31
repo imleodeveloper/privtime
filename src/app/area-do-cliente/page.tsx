@@ -17,16 +17,35 @@ import {
   ShoppingBag,
   Youtube,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { plans } from "../../../lib/plans";
 import { formatPrice } from "../../../lib/plans";
-import { config } from "process";
+import { supabase } from "../../../lib/supabase";
+
+interface Profile {
+  email: string;
+  full_name: string;
+  identity: string;
+  phone: number;
+  created_at: string;
+  updated_at: string;
+  whats_plan: string | null;
+}
 
 export default function AreaCliente() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [planDetail, setPlanDetail] = useState(false);
   const [configAccount, setConfigAccount] = useState(false);
+  const [fetchProfile, setFetchProfile] = useState<Profile>({
+    email: "",
+    full_name: "",
+    identity: "",
+    phone: 0,
+    created_at: "",
+    updated_at: "",
+    whats_plan: "",
+  });
 
   const changeStateDetail = () => {
     if (planDetail === false) {
@@ -35,6 +54,33 @@ export default function AreaCliente() {
       setPlanDetail(false);
     }
   };
+
+  useEffect(() => {
+    const handleSession = async () => {
+      try {
+        const { data: sessionUser } = await supabase.auth.getSession();
+        console.log(sessionUser);
+        const userId = sessionUser.session?.user.id;
+        const sessionToken = sessionUser.session?.access_token;
+        console.log("userId: ", userId);
+        const response = await fetch("/api/auth/area-do-cliente", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        });
+
+        const data = await response.json();
+        console.log("Data Sessão API: ", data);
+      } catch (err) {
+        // FAZER LÓGICA DE ERRO
+        console.log("Erro");
+      }
+    };
+
+    handleSession();
+  }, []);
 
   return (
     <div className="w-full">
@@ -248,7 +294,7 @@ export default function AreaCliente() {
                   </div>
                   <div className="w-full pt-18 px-8 flex flex-col justify-start items-start gap-1 relative">
                     <span className="text-2xl font-semibold">
-                      Fulano Ciclano
+                      Fulano Ciclan
                     </span>
                     <span className="text-lg font-medium">
                       email@dominio.com
