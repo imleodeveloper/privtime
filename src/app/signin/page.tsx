@@ -6,7 +6,7 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, LockKeyholeOpen, TriangleAlert } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
 interface FormData {
@@ -16,8 +16,8 @@ interface FormData {
 
 export default function SignIn() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/area-do-cliente";
+  //const searchParams = useSearchParams();
+  const redirectTo = "/area-do-cliente";
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
