@@ -1,8 +1,11 @@
-import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { NextResponse, NextRequest } from "next/server";
+import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
 export async function POST(request: NextRequest) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
+
+  const whats_plan = request.json();
 
   const supabaseServer = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
   );
 
-  const { data: user } = await supabaseServer.auth.getUser();
+  const { data: user } = await supabaseAdmin.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
@@ -22,22 +25,12 @@ export async function POST(request: NextRequest) {
     .from("profiles")
     .select("*")
     .eq("id", user.user?.id)
-    .single();
+    .eq("whats_plan", whats_plan);
 
   console.log("UserProfile: ", userProfile);
 
-  return NextResponse.json({
-    user: {
-      id: userProfile.id,
-      full_name: userProfile.full_name,
-      phone: userProfile.phone,
-      email: userProfile.email,
-      identity: userProfile.identity,
-      whats_plan: userProfile.whats_plan,
-      created_at: userProfile.created_at,
-      updated_at: userProfile.updated_at,
-      link_app: userProfile.link_app,
-      link_share_app: userProfile.link_share_app,
-    },
-  });
+  const { data: dataPlan } = await supabaseServer
+    .from("plans")
+    .select("*")
+    .eq("slug", whats_plan);
 }

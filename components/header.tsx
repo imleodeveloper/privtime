@@ -19,13 +19,15 @@ export function Header() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) {
-        setUser(user);
-      } else {
-        setUser(!user);
-      }
+      setUser(!!data.session);
     });
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(false);
+    window.location.href = "/signin";
+  };
 
   return (
     <header className="w-full bg-sub-background ">
@@ -91,11 +93,12 @@ export function Header() {
                 <Link href="/area-do-cliente" className="text-white">
                   <Button className="shadow-xl">Área do Cliente</Button>
                 </Link>
-                <Link href="">
-                  <Button className="shadow-xl bg-sub-purple text-black hover:text-white">
-                    Sair
-                  </Button>
-                </Link>
+                <Button
+                  className="shadow-xl bg-sub-purple text-black hover:text-white"
+                  onClick={handleLogout}
+                >
+                  Sair
+                </Button>
               </div>
             )}
           </div>
@@ -211,11 +214,12 @@ export function Header() {
                     <Link href="/area-do-cliente" className="text-white">
                       <Button className="shadow-xl">Área do Cliente</Button>
                     </Link>
-                    <Link href="">
-                      <Button className="shadow-xl bg-sub-purple text-black hover:text-white">
-                        Sair
-                      </Button>
-                    </Link>
+                    <Button
+                      className="shadow-xl bg-sub-purple text-black hover:text-white"
+                      onClick={handleLogout}
+                    >
+                      Sair
+                    </Button>
                   </div>
                 )}
               </div>

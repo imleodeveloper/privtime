@@ -6,13 +6,18 @@ import Link from "next/link";
 import {
   BadgeInfo,
   Check,
+  CircleUserRound,
   Copy,
+  CopyCheck,
   Crown,
   ExternalLink,
   Facebook,
+  IdCard,
   Instagram,
+  Mail,
   Minimize2,
   Pencil,
+  Phone,
   Receipt,
   ShoppingBag,
   Youtube,
@@ -22,6 +27,7 @@ import { Button } from "../../../components/ui/button";
 import { plans } from "../../../lib/plans";
 import { formatPrice } from "../../../lib/plans";
 import { supabase } from "../../../lib/supabase";
+import { Input } from "../../../components/ui/input";
 
 interface Profile {
   email: string;
@@ -31,10 +37,14 @@ interface Profile {
   created_at: string;
   updated_at: string;
   whats_plan: string | null;
+  link_app: string | null;
+  link_share_app: string | null;
 }
 
 export default function AreaCliente() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [copyLink, setCopyLink] = useState(false);
   const [planDetail, setPlanDetail] = useState(false);
   const [configAccount, setConfigAccount] = useState(false);
   const [fetchProfile, setFetchProfile] = useState<Profile>({
@@ -45,6 +55,8 @@ export default function AreaCliente() {
     created_at: "",
     updated_at: "",
     whats_plan: "",
+    link_app: "",
+    link_share_app: "",
   });
 
   const changeStateDetail = () => {
@@ -57,12 +69,10 @@ export default function AreaCliente() {
 
   useEffect(() => {
     const handleSession = async () => {
+      setIsLoading(true);
       try {
         const { data: sessionUser } = await supabase.auth.getSession();
-        console.log(sessionUser);
-        const userId = sessionUser.session?.user.id;
         const sessionToken = sessionUser.session?.access_token;
-        console.log("userId: ", userId);
         const response = await fetch("/api/auth/area-do-cliente", {
           method: "POST",
           headers: {
@@ -72,7 +82,34 @@ export default function AreaCliente() {
         });
 
         const data = await response.json();
-        console.log("Data Sessão API: ", data);
+        console.log("Data Sessão API: ", data.user);
+
+        setFetchProfile({
+          email: data.user.email,
+          full_name: data.user.full_name,
+          identity: data.user.identity,
+          phone: data.user.phone,
+          created_at: data.user.created_at,
+          updated_at: data.user.updated_at,
+          whats_plan: data.user.whats_plan,
+          link_app: data.user.link_app,
+          link_share_app: data.user.link_share_app,
+        });
+
+        const responsePlan = await fetch("/api/auth/whats-plan", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify(data.user.whats_plan),
+        });
+
+        console.log("ResponsePlan: ", responsePlan);
+        const dataPlan = await responsePlan.json();
+        console.log("dataPlan: ", dataPlan);
+
+        setIsLoading(false);
       } catch (err) {
         // FAZER LÓGICA DE ERRO
         console.log("Erro");
@@ -82,13 +119,74 @@ export default function AreaCliente() {
     handleSession();
   }, []);
 
+  useEffect(() => {
+    if (fetchProfile.whats_plan !== null) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [fetchProfile.whats_plan]);
+
+  const link = "https://www.privtime.com/user34345/link3234";
+
+  const copyToLink = () => {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopyLink(!copyLink);
+    });
+  };
+
+  console.log("FetchProfile: ", fetchProfile);
+
+  let isMonthly: string = "";
+  if (fetchProfile.whats_plan === "monthly_plan") {
+    isMonthly = "Mensal";
+  }
+
+  if (fetchProfile.whats_plan === "annual_plan") {
+    isMonthly = "Anual";
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="container mx-auto px-4 py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-main-pink mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando seus dados...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  /* if (error) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="container mx-auto px-4 py-20">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-red-600 mb-2">Erro</h1>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Tentar novamente
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  } */
+
   return (
     <div className="w-full">
       <Header />
       <main className="w-full py-14 relative">
         <article className="w-full container mx-auto">
           {isAuthenticated && (
-            <section className="min-h-screen grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-2 md:gap-8 px-4 lg:px-0">
+            <section className="min-h-screen grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 lg:gap-8 px-4 lg:px-0">
               <div className="rounded-xl flex flex-col justify-start items-center gap-2 overflow-hidden">
                 <div className="bg-sub-background flex flex-col justify-start items-center overflow-hidden rounded-xl w-full pb-4">
                   <div className="w-full h-52 relative">
@@ -108,13 +206,22 @@ export default function AreaCliente() {
                     </div>
                   </div>
                   <div className="w-full pt-18 px-8 flex flex-col justify-start items-start gap-1 relative">
-                    <span className="text-2xl font-semibold">
-                      Fulano Ciclano
+                    <span className="text-2xl font-semibold flex justify-start items-center gap-2">
+                      <CircleUserRound className="w-7 h-7"></CircleUserRound>{" "}
+                      {fetchProfile.full_name || "Nome não encontrado"}
                     </span>
-                    <span className="text-lg font-medium">
-                      email@dominio.com
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <Mail className="w-5 h-5"></Mail>
+                      {fetchProfile.email || "Email não encontrado"}
                     </span>
-                    <span className="text-lg font-medium">000.000.000-00</span>
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <IdCard className="w-5 h-5"></IdCard>
+                      {fetchProfile.identity || "CPF não encontrado"}
+                    </span>
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <Phone className="w-5 h-5"></Phone>
+                      {fetchProfile.phone || "Telefone não encontrado"}
+                    </span>
                     <Link
                       href=""
                       className="text-base font-semibold text-blue-600 hover:text-blue-800 underline flex justify-start items-center gap-1"
@@ -128,7 +235,7 @@ export default function AreaCliente() {
                   <span className="text-2xl font-semibold">
                     Detalhes do Plano -{" "}
                     <span className="text-xl font-bold text-main-pink">
-                      App Mensal
+                      App {isMonthly || "- (Plano Não Encontrado)"}
                     </span>
                   </span>
                   <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0 pt-6">
@@ -174,7 +281,9 @@ export default function AreaCliente() {
                   <div className="bg-sub-background w-full rounded-xl overflow-hidden flex flex-col justify-start items-start gap-2 px-8 py-4">
                     <span className="text-xl font-semibold">
                       Tipo do plano:{" "}
-                      <span className="text-main-pink text-base">Mensal</span>
+                      <span className="text-main-pink text-base">
+                        {isMonthly}
+                      </span>
                     </span>
                     <span className="text-xl font-semibold">
                       Status do plano:{" "}
@@ -210,7 +319,7 @@ export default function AreaCliente() {
               <div className="rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2">
                 <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-start px-4 py-4">
                   <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400">
-                    <span className="font-semibold text-base">
+                    <span className="font-semibold text-base pr-4">
                       Configurações da Conta
                     </span>
                     <span className="text-sm text-gray-700">
@@ -224,13 +333,16 @@ export default function AreaCliente() {
                     </div>
                   </div>
                   <div className="w-full relative flex justify-start items-start flex-col py-4">
-                    <span className="font-semibold text-base">
-                      Link de Clientes App
+                    <span className="font-semibold text-base pr-4">
+                      Link de Compartilhamento App
                     </span>
                     <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer hover:underline">
-                      https://www.privtime.com/user34345/link3234
+                      {link}
                     </span>
-                    <div className="absolute top-1 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white">
+                    <div
+                      className="absolute top-1 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white"
+                      onClick={copyToLink}
+                    >
                       <Copy className="w-4 h-4"></Copy>
                     </div>
                   </div>
@@ -273,7 +385,7 @@ export default function AreaCliente() {
             </section>
           )}
           {!isAuthenticated && (
-            <section className="min-h-screen grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-2 md:gap-8 px-4 lg:px-0">
+            <section className="min-h-screen grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 lg:gap-8 px-4 lg:px-0">
               <div className="rounded-xl flex flex-col justify-start items-center gap-2 overflow-hidden">
                 <div className="bg-sub-background flex flex-col justify-start items-center overflow-hidden rounded-xl w-full pb-4">
                   <div className="w-full h-52 relative">
@@ -293,15 +405,24 @@ export default function AreaCliente() {
                     </div>
                   </div>
                   <div className="w-full pt-18 px-8 flex flex-col justify-start items-start gap-1 relative">
-                    <span className="text-2xl font-semibold">
-                      Fulano Ciclan
+                    <span className="text-2xl font-semibold flex justify-start items-center gap-2">
+                      <CircleUserRound className="w-7 h-7"></CircleUserRound>{" "}
+                      {fetchProfile.full_name || "Nome não encontrado"}
                     </span>
-                    <span className="text-lg font-medium">
-                      email@dominio.com
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <Mail className="w-5 h-5"></Mail>
+                      {fetchProfile.email || "Email não encontrado"}
                     </span>
-                    <span className="text-lg font-medium">000.000.000-00</span>
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <IdCard className="w-5 h-5"></IdCard>
+                      {fetchProfile.identity || "CPF não encontrado"}
+                    </span>
+                    <span className="text-lg font-medium flex justify-start items-center gap-2">
+                      <Phone className="w-5 h-5"></Phone>
+                      {fetchProfile.phone || "Telefone não encontrado"}
+                    </span>
                     <Link
-                      href="/"
+                      href="/#planos"
                       className="text-base font-semibold text-blue-600 hover:text-blue-800 underline flex justify-start items-center gap-1"
                     >
                       Adquirir App
@@ -317,21 +438,23 @@ export default function AreaCliente() {
                       <span className="font-bold text-gray-700 text-xl">
                         Nenhum plano ativo
                       </span>
-                      <span className="text-gray-600 text-base">
+                      <span className="text-gray-600 text-base text-center">
                         Você ainda não possui um plano ativo. Escolha um plano
                         para começar!
                       </span>
-                      <Button className="text-white">
-                        Ver planos disponíveis
-                      </Button>
+                      <Link href="/#planos">
+                        <Button className="text-white">
+                          Ver planos disponíveis
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="rounded-xl overflow-hidden">
+              <div className="rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2">
                 <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-start px-4 py-4">
                   <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400">
-                    <span className="font-semibold text-base">
+                    <span className="font-semibold text-base pr-4">
                       Configurações da Conta
                     </span>
                     <span className="text-sm text-gray-700">
@@ -345,7 +468,7 @@ export default function AreaCliente() {
                     </div>
                   </div>
                   <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400 py-4">
-                    <span className="font-semibold text-base">
+                    <span className="font-semibold text-base pr-4">
                       Como Funciona o App?
                     </span>
                     <Link
@@ -358,10 +481,44 @@ export default function AreaCliente() {
                   <div className="w-full relative flex justify-start items-start flex-col py-4">
                     <span className="font-semibold text-base">Ver planos</span>
                     <Link
-                      href="/"
+                      href="/#planos"
                       className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
                     >
                       Planos
+                    </Link>
+                  </div>
+                </div>
+                <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2 px-4 py-4">
+                  <div className="rounded-full overflow-hidden relative w-24 h-24">
+                    <Image src="/privtime-black.png" fill alt="" />
+                  </div>
+                  <span className="text-gray-700 font-medium text-center">
+                    Nos siga em nossas redes sociais
+                  </span>
+                  <div className="flex justify-center items-center gap-2">
+                    <Link
+                      href=""
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-full overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple"
+                    >
+                      <Instagram className="w-6 h-6"></Instagram>
+                    </Link>
+                    <Link
+                      href=""
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-full overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple"
+                    >
+                      <Facebook className="w-6 h-6"></Facebook>
+                    </Link>
+                    <Link
+                      href=""
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-full overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple"
+                    >
+                      <Youtube className="w-6 h-6"></Youtube>
                     </Link>
                   </div>
                 </div>
@@ -369,46 +526,63 @@ export default function AreaCliente() {
             </section>
           )}
         </article>
+        {copyLink && (
+          <div className="fixed top-0 left-0 w-full h-full backdrop-blur flex justify-center items-center">
+            <div className="bg-sub-background w-72 p-8 h-72 shadow-xl rounded-xl relative flex flex-col justify-center items-center">
+              <div className="flex flex-col justify-center items-center gap-4">
+                <CopyCheck className="w-12 h-12 text-main-pink"></CopyCheck>
+                <span className="font-bold text-lg">Link Copiado!</span>
+              </div>
+              <div
+                onClick={() => setCopyLink(false)}
+                className="absolute top-4 right-4 p-2 overflow-hidden rounded-full cursor-pointer flex justify-center items-center hover:bg-main-pink hover:text-white"
+              >
+                <Minimize2 className="w-6 h-6"></Minimize2>
+              </div>
+            </div>
+          </div>
+        )}
         {configAccount === true && (
           <div className="fixed top-0 left-0 w-full h-full backdrop-blur flex justify-center items-center">
             <div className="bg-sub-background w-auto p-8 h-1/2 shadow-xl rounded-xl relative flex flex-col justify-center items-center">
-              <span className="text-center font-bold text-gray-700 mb-6">
-                Olá <span className="text-main-pink">Fulano Ciclano</span>!{" "}
-                <br />
+              <span className="text-center font-bold text-gray-700 my-6">
+                Olá{" "}
+                <span className="text-main-pink">{fetchProfile.full_name}</span>
+                ! <br />
                 Altere o email ou senha aqui
               </span>
               <div className="flex flex-col justify-center items-start gap-1">
                 <label htmlFor="email" className="text-sm text-gray-600">
                   E-mail
                 </label>
-                <input
+                <Input
                   className="w-full bg-white px-2 py-1 rounded-lg"
                   type="text"
                   id="email"
                   defaultValue="email@dominio.com"
-                ></input>
+                />
               </div>
               <div className="flex flex-col justify-center items-start gap-1">
                 <label htmlFor="phone" className="text-sm text-gray-600">
                   Telefone
                 </label>
-                <input
+                <Input
                   className="w-full bg-white px-2 py-1 rounded-lg"
                   type="text"
                   id="phone"
                   defaultValue="(11) 99999-9999"
-                ></input>
+                />
               </div>
               <div className="flex flex-col justify-center items-start gap-1">
                 <label htmlFor="password" className="text-sm text-gray-600">
                   Senha
                 </label>
-                <input
+                <Input
                   className="w-full bg-white px-2 py-1 rounded-lg"
                   type="text"
                   id="password"
                   defaultValue="••••••••"
-                ></input>
+                />
               </div>
               <Button className="w-full mt-2 text-white">Alterar</Button>
               <div

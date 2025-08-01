@@ -101,7 +101,7 @@ export default function SignIn() {
   return (
     <div className="w-full">
       <main className="w-full mx-auto">
-        <article className="w-full container mx-auto">
+        <article className="w-full container mx-auto relative">
           <section className="flex justify-center items-center py-24">
             <form
               onSubmit={handleSubmit}
@@ -167,17 +167,7 @@ export default function SignIn() {
                   </button>
                 </div>
               </div>
-              {error && (
-                <div className="mx-auto border-red-200 flex flex-col justify-center items-center bg-red-50 text-red-800 p-2 text-center font-bold rounded-lg">
-                  <TriangleAlert className="w-6 h-6"></TriangleAlert> {error}
-                </div>
-              )}
-              {success && (
-                <div className="mx-auto border-green-200 flex flex-col justify-center items-center bg-green-50 text-green-800 p-2 text-center font-bold rounded-lg">
-                  <LockKeyholeOpen className="w-6 h-6"></LockKeyholeOpen>{" "}
-                  {success}
-                </div>
-              )}
+
               <div>
                 <Link
                   href="#"
@@ -187,11 +177,17 @@ export default function SignIn() {
                 </Link>
               </div>
               <div>
-                <Button className="w-full text-white">Entrar</Button>
+                <Button
+                  className="w-full text-white"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Entrando..." : "Entrar"}
+                </Button>
               </div>
               <div className="text-center">
                 <Link href="/signup">
-                  <Button className="w-full bg-sub-purple">
+                  <Button className="w-full bg-sub-purple hover:text-white">
                     Criar uma conta
                   </Button>
                 </Link>
@@ -219,6 +215,28 @@ export default function SignIn() {
               </div>
             </form>
           </section>
+          {error && (
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center backdrop-blur">
+              <div className="mx-auto border-red-200 flex flex-col justify-center items-center gap-4 bg-red-50 text-red-800 p-8 text-center font-bold rounded-lg">
+                <TriangleAlert className="w-6 h-6"></TriangleAlert> {error}
+                <Button className="text-white" onClick={() => setError("")}>
+                  Ok
+                </Button>
+              </div>
+            </div>
+          )}
+          {success && (
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center backdrop-blur">
+              <div className="mx-auto border-green-200 flex flex-col justify-center items-center gap-4 bg-green-50 text-green-800 p-8 text-center font-bold rounded-lg">
+                <LockKeyholeOpen className="w-6 h-6"></LockKeyholeOpen>{" "}
+                {success}
+                <span>Você será redirecionado em 5 segundos para o login.</span>
+                <Button className="text-white" onClick={() => setSuccess("")}>
+                  Ok
+                </Button>
+              </div>
+            </div>
+          )}
         </article>
       </main>
     </div>

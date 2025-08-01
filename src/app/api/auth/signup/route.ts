@@ -32,6 +32,44 @@ export async function POST(request: Request) {
     );
   }
 
+  const cpfTrim = cpf.trim();
+  const hasLettersInCPF = /^[0-9]+$/.test(cpfTrim);
+  // CHECK CPF
+  if (cpf.trim().length !== 11) {
+    return NextResponse.json(
+      {
+        message: "O CPF deve ter exatamente 11 dígitos",
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!hasLettersInCPF) {
+    return NextResponse.json(
+      {
+        message: "O CPF deve conter apenas números",
+      },
+      { status: 400 }
+    );
+  }
+
+  // Api de admin para checar se o CPF já existe na profiles
+  const { data: identityExists, error: identityError } = await supabaseAdmin
+    .from("profiles")
+    .select("*")
+    .eq("identity", cpf)
+    .single();
+
+  console.log(identityError, " / ", identityExists);
+
+  if (identityExists) {
+    return NextResponse.json(
+      { message: "O CPF informado já está cadastrado" },
+      { status: 400 }
+    );
+  }
+
+  // Check Email
   const emailExists = usersExists.users.some((user) => user.email === email);
   if (emailExists) {
     return NextResponse.json(
@@ -40,6 +78,25 @@ export async function POST(request: Request) {
     );
   }
 
+  // Check password
+  if (password.length < 8) {
+    return NextResponse.json(
+      { message: "A senha deve conter no mínimo 8 caracteres." },
+      { status: 400 }
+    );
+  }
+
+  /*const strongPassword =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!strongPassword.test(password)) {
+    return NextResponse.json(
+      {
+        message:
+          "A senha deve ser forte com pelo menos um caractere especial, uma letra maiúscula e um número",
+      },
+      { status: 400 }
+    );
+  } */
   try {
     // Tenta cadastrar no auth
     const { data: dataSignUp, error: signUpError } = await supabase.auth.signUp(
