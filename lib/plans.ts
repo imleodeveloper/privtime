@@ -5,6 +5,7 @@ interface Plan {
   price: number;
   pricePrevious: number;
   features: string[];
+  link: string;
 }
 
 export const formatPrice = (price: number) => {
@@ -30,6 +31,7 @@ export const plans: Plan[] = [
       "App web responsivo para clientes",
       "Notificações por WhatsApp (opcional)",
     ],
+    link: "/checkout?plan=monthly_plan",
   },
   {
     id: 2,
@@ -46,5 +48,6 @@ export const plans: Plan[] = [
       "App web responsivo para clientes",
       "Notificações por WhatsApp (opcional)",
     ],
+    link: "/checkout?plan=annual_plan",
   },
 ];

@@ -41,6 +41,18 @@ interface Profile {
   link_share_app: string | null;
 }
 
+interface Plan {
+  id: string;
+  popular: boolean;
+  slug: string;
+  type: string;
+  price: number;
+  pricePrevious: number;
+  features: [];
+  created_at: string;
+  updated_at: string;
+}
+
 export default function AreaCliente() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +69,17 @@ export default function AreaCliente() {
     whats_plan: "",
     link_app: "",
     link_share_app: "",
+  });
+  const [fetchPlan, setFetchPlan] = useState<Plan>({
+    id: "",
+    popular: false,
+    slug: "",
+    type: "",
+    price: 0,
+    pricePrevious: 0,
+    features: [],
+    created_at: "",
+    updated_at: "",
   });
 
   const changeStateDetail = () => {
@@ -82,7 +105,6 @@ export default function AreaCliente() {
         });
 
         const data = await response.json();
-        console.log("Data Sessão API: ", data.user);
 
         setFetchProfile({
           email: data.user.email,
@@ -96,20 +118,32 @@ export default function AreaCliente() {
           link_share_app: data.user.link_share_app,
         });
 
-        const responsePlan = await fetch("/api/auth/whats-plan", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionToken}`,
-          },
-          body: JSON.stringify(data.user.whats_plan),
-        });
+        if (fetchProfile.whats_plan !== null) {
+          const responsePlan = await fetch("/api/auth/whats-plan", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionToken}`,
+            },
+            body: JSON.stringify(data.user.whats_plan),
+          });
 
-        console.log("ResponsePlan: ", responsePlan);
-        const dataPlan = await responsePlan.json();
-        console.log("dataPlan: ", dataPlan);
-
-        setIsLoading(false);
+          console.log("ResponsePlan: ", responsePlan);
+          const dataPlan = await responsePlan.json();
+          console.log("dataPlan: ", dataPlan);
+          setFetchPlan({
+            id: dataPlan.plan.id,
+            popular: dataPlan.plan.popular,
+            slug: dataPlan.plan.slug,
+            type: dataPlan.plan.type,
+            price: dataPlan.plan.price,
+            pricePrevious: dataPlan.plan.pricePrevious,
+            features: dataPlan.plan.features,
+            created_at: dataPlan.plan.created_at,
+            updated_at: dataPlan.plan.updated_at,
+          });
+          setIsLoading(false);
+        }
       } catch (err) {
         // FAZER LÓGICA DE ERRO
         console.log("Erro");
@@ -134,8 +168,6 @@ export default function AreaCliente() {
       setCopyLink(!copyLink);
     });
   };
-
-  console.log("FetchProfile: ", fetchProfile);
 
   let isMonthly: string = "";
   if (fetchProfile.whats_plan === "monthly_plan") {
@@ -293,7 +325,7 @@ export default function AreaCliente() {
                     </span>
                     <span>
                       <span className="font-bold text-xl text-main-pink">
-                        {formatPrice(150)}
+                        {formatPrice(fetchPlan.price)}
                       </span>{" "}
                       <span className="text-base text-gray-700">/mês</span>
                     </span>

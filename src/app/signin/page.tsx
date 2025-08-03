@@ -230,7 +230,9 @@ export default function SignIn() {
               <div className="mx-auto border-green-200 flex flex-col justify-center items-center gap-4 bg-green-50 text-green-800 p-8 text-center font-bold rounded-lg">
                 <LockKeyholeOpen className="w-6 h-6"></LockKeyholeOpen>{" "}
                 {success}
-                <span>Você será redirecionado em 5 segundos para o login.</span>
+                <span>
+                  Você será redirecionado em 5 segundos para a área do cliente.
+                </span>
                 <Button className="text-white" onClick={() => setSuccess("")}>
                   Ok
                 </Button>
