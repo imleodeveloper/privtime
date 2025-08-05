@@ -39,6 +39,7 @@ interface Profile {
   whats_plan: string | null;
   link_app: string | null;
   link_share_app: string | null;
+  slug_link: string;
 }
 
 interface Plan {
@@ -69,8 +70,9 @@ export default function AreaCliente() {
     whats_plan: "",
     link_app: "",
     link_share_app: "",
+    slug_link: "",
   });
-  const [fetchPlan, setFetchPlan] = useState<Plan>({
+  const [fetchPlan, setFetchPlan] = useState<Plan | null>({
     id: "",
     popular: false,
     slug: "",
@@ -105,6 +107,7 @@ export default function AreaCliente() {
         });
 
         const data = await response.json();
+        console.log("Data: ", data);
 
         setFetchProfile({
           email: data.user.email,
@@ -116,8 +119,14 @@ export default function AreaCliente() {
           whats_plan: data.user.whats_plan,
           link_app: data.user.link_app,
           link_share_app: data.user.link_share_app,
+          slug_link: data.user.slug_link,
         });
 
+        /*console.log(
+          "FetchProfile + ",
+          fetchProfile.whats_plan,
+          fetchProfile.email
+        ); */
         if (fetchProfile.whats_plan !== null) {
           const responsePlan = await fetch("/api/auth/whats-plan", {
             method: "POST",
@@ -128,9 +137,16 @@ export default function AreaCliente() {
             body: JSON.stringify(data.user.whats_plan),
           });
 
-          console.log("ResponsePlan: ", responsePlan);
           const dataPlan = await responsePlan.json();
           console.log("dataPlan: ", dataPlan);
+
+          if (dataPlan.hasPlan === false) {
+            console.log("Usuário não possui plano associado.");
+            setFetchPlan(null);
+            setIsLoading(false);
+            return;
+          }
+
           setFetchPlan({
             id: dataPlan.plan.id,
             popular: dataPlan.plan.popular,
@@ -146,7 +162,7 @@ export default function AreaCliente() {
         }
       } catch (err) {
         // FAZER LÓGICA DE ERRO
-        console.log("Erro");
+        console.log("Erro ao lidar com a sessão do usuário: ", err);
       }
     };
 
@@ -161,7 +177,7 @@ export default function AreaCliente() {
     }
   }, [fetchProfile.whats_plan]);
 
-  const link = "https://www.privtime.com/user34345/link3234";
+  const link = `https://www.privtime.com/${fetchProfile.slug_link}/`;
 
   const copyToLink = () => {
     navigator.clipboard.writeText(link).then(() => {

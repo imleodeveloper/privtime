@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     .eq("id", user.user?.id)
     .single();
 
-  console.log("UserProfile: ", userProfile);
+  //console.log("UserProfile: ", userProfile);
 
   return NextResponse.json({
     user: {
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       updated_at: userProfile.updated_at,
       link_app: userProfile.link_app,
       link_share_app: userProfile.link_share_app,
+      slug_link: userProfile.slug_link,
     },
   });
 }

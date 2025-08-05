@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 import { supabase } from "../../../../../lib/supabase";
 import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
+function generateSlug(name: string) {
+  const base = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  const random = Math.floor(1000 + Math.random() * 900000); // entre 1000 e 999999
+
+  return `${base}${random}`; // Ex: leonardo-vieira8237
+}
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { fullName, phone, email, cpf, password } = body;
@@ -130,8 +142,31 @@ export async function POST(request: Request) {
       .eq("id", dataSignUp.user?.id)
       .single();
 
+    async function generateUniqueSlug(name: string): Promise<string> {
+      let slug = generateSlug(name);
+      let exists = true;
+      while (exists) {
+        const { data } = await supabaseAdmin
+          .from("profiles")
+          .select("slug_link")
+          .eq("slug_link", slug)
+          .single();
+
+        if (!data) {
+          exists = false;
+        } else {
+          slug = generateSlug(name);
+        }
+      }
+      return slug;
+    }
+
     // Se não existir cria o perfil na tabela profiles
     if (!existingProfile) {
+      //Gerar slug_link único
+
+      const slug_link = await generateUniqueSlug(fullName);
+
       const { error: profileError } = await supabaseAdmin
         .from("profiles")
         .insert([
@@ -141,6 +176,7 @@ export async function POST(request: Request) {
             phone: phone,
             email: email,
             identity: cpf,
+            slug_link: slug_link,
           },
         ]);
 

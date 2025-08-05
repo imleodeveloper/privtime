@@ -33,40 +33,55 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
   }
 
-  console.log("user: ", user);
+  //console.log("Datauser: ", user);
 
   const { data: userProfile } = await supabaseServer
     .from("profiles")
     .select("*")
     .eq("id", user.user?.id);
 
-  console.log("UserProfile: ", userProfile);
+  //console.log("UserProfile: ", userProfile);
 
-  const { data: dataPlan } = await supabaseServer
-    .from("plans")
-    .select("*")
-    .eq("slug", body)
-    .single();
+  if (body !== null) {
+    const { data: dataPlan } = await supabaseServer
+      .from("plans")
+      .select("*")
+      .eq("slug", body)
+      .single();
 
-  console.log("dataPlan: ", dataPlan);
+    console.log("dataPlan: ", dataPlan);
 
-  if (!dataPlan) {
-    NextResponse.json({ message: "Plano não encontrado." }, { status: 404 });
+    if (!dataPlan) {
+      return NextResponse.json(
+        { message: "Plano não encontrado." },
+        { status: 404 }
+      );
+    }
+
+    console.log("DataPlan.ID = ", dataPlan.id);
+
+    const formattedPlan: DataPlan = {
+      id: dataPlan.id,
+      popular: dataPlan.popular,
+      slug: dataPlan.slug,
+      type: dataPlan.type,
+      price: dataPlan.price,
+      pricePrevious: dataPlan.priceprevious,
+      features: dataPlan.features,
+      created_at: dataPlan.created_at,
+      updated_at: dataPlan.updated_at,
+    };
+
+    return NextResponse.json({
+      plan: formattedPlan,
+    });
+  } else {
+    return NextResponse.json(
+      {
+        hasPlan: false,
+        message: "Não foi possível encontrar um plano do usuário.",
+      },
+      { status: 200 }
+    );
   }
-
-  const formattedPlan: DataPlan = {
-    id: dataPlan.id,
-    popular: dataPlan.popular,
-    slug: dataPlan.slug,
-    type: dataPlan.type,
-    price: dataPlan.price,
-    pricePrevious: dataPlan.priceprevious,
-    features: dataPlan.features,
-    created_at: dataPlan.created_at,
-    updated_at: dataPlan.updated_at,
-  };
-
-  return NextResponse.json({
-    plan: formattedPlan,
-  });
 }
