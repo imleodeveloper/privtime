@@ -107,7 +107,6 @@ export default function AreaCliente() {
         });
 
         const data = await response.json();
-        console.log("Data: ", data);
 
         setFetchProfile({
           email: data.user.email,
@@ -177,7 +176,10 @@ export default function AreaCliente() {
     }
   }, [fetchProfile.whats_plan]);
 
-  const link = `https://www.privtime.com/${fetchProfile.slug_link}/`;
+  let link = "";
+  if (fetchProfile.link_share_app) {
+    link = fetchProfile.link_share_app;
+  }
 
   const copyToLink = () => {
     navigator.clipboard.writeText(link).then(() => {
@@ -192,6 +194,10 @@ export default function AreaCliente() {
 
   if (fetchProfile.whats_plan === "annual_plan") {
     isMonthly = "Anual";
+  }
+
+  if (fetchProfile.whats_plan === "trial_plan") {
+    isMonthly = "Teste";
   }
 
   if (isLoading) {
@@ -271,7 +277,7 @@ export default function AreaCliente() {
                       {fetchProfile.phone || "Telefone não encontrado"}
                     </span>
                     <Link
-                      href=""
+                      href={`${link}/admin`}
                       className="text-base font-semibold text-blue-600 hover:text-blue-800 underline flex justify-start items-center gap-1"
                     >
                       Link App
@@ -384,9 +390,15 @@ export default function AreaCliente() {
                     <span className="font-semibold text-base pr-4">
                       Link de Compartilhamento App
                     </span>
-                    <span className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer hover:underline">
+                    <Link
+                      href={link}
+                      target="_blank"
+                      onClick={copyToLink}
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
+                    >
                       {link}
-                    </span>
+                    </Link>
                     <div
                       className="absolute top-1 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white"
                       onClick={copyToLink}

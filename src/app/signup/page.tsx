@@ -112,7 +112,6 @@ export default function SignUp() {
       });
 
       const data = await response.json();
-      console.log("Retorno API SIGNUP: ", data);
 
       if (!response.ok) {
         throw new Error(

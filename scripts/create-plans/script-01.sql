@@ -46,4 +46,21 @@ INSERT INTO public.plans(popular, slug, type, price, pricePrevious, features)
       'App web responsivo para clientes',
       'Notificações por WhatsApp (opcional)'
     ]::TEXT[],
+),
+-- Plano 7 Dias
+(
+    false,
+    'trial_plan',
+    '7 dias',
+    0,
+    0,
+    ARRAY[
+			'Suporte técnico incluso',
+      'Interface intuitiva e fácil de usar',
+      'Gestão completa de agendamentos',
+      'Controle de clientes e serviços',
+      'Relatórios mensais',
+      'App web responsivo para clientes',
+      'Notificações por WhatsApp (opcional)'
+    ]::TEXT[],
 )

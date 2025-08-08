@@ -72,8 +72,6 @@ export async function POST(request: Request) {
     .eq("identity", cpf)
     .single();
 
-  console.log(identityError, " / ", identityExists);
-
   if (identityExists) {
     return NextResponse.json(
       { message: "O CPF informado já está cadastrado" },
@@ -161,11 +159,14 @@ export async function POST(request: Request) {
       return slug;
     }
 
+    // SLUG LINK DO USUÁRIO BASEADO NO NOME EX: usuario-full12456
+    const slug_link = await generateUniqueSlug(fullName);
+    // LINK DO APP BASEADO NO SLUG_LINK
+    const link_app = `${process.env.SHARE_LINK_APP_VIAMODELS}/${slug_link}/admin`;
+    const link_share_app = `${process.env.SHARE_LINK_APP_VIAMODELS}/${slug_link}`;
     // Se não existir cria o perfil na tabela profiles
     if (!existingProfile) {
       //Gerar slug_link único
-
-      const slug_link = await generateUniqueSlug(fullName);
 
       const { error: profileError } = await supabaseAdmin
         .from("profiles")
@@ -176,6 +177,8 @@ export async function POST(request: Request) {
             phone: phone,
             email: email,
             identity: cpf,
+            link_app: link_app,
+            link_share_app: link_share_app,
             slug_link: slug_link,
           },
         ]);
@@ -189,6 +192,97 @@ export async function POST(request: Request) {
           message:
             "Não foi possível criar o perfil, o usuário já existe na tabela.",
         },
+        { status: 500 }
+      );
+    }
+
+    const { data: existingAdmin } = await supabase
+      .from("admins")
+      .select("*")
+      .eq("slug_link", slug_link)
+      .single();
+
+    if (!existingAdmin) {
+      const { error: adminError } = await supabaseAdmin.from("admins").insert([
+        {
+          email: email,
+          slug_link: slug_link,
+          name: fullName,
+          role: "super_admin",
+        },
+      ]);
+
+      if (adminError) {
+        console.error("Erro ao criar o perfil admin: ", adminError);
+      }
+    } else if (existingAdmin) {
+      return NextResponse.json(
+        {
+          message:
+            "Não foi possível criar o perfil administrador, o usuário já existe na tabela.",
+        },
+        { status: 500 }
+      );
+    }
+
+    const { data: trialPlan, error: errorTrialPlan } = await supabase
+      .from("plans")
+      .select("*")
+      .eq("slug", "trial_plan")
+      .single();
+
+    if (errorTrialPlan) {
+      console.log("Erro ao procurar Trial Plan: ", errorTrialPlan);
+      return NextResponse.json(
+        { message: "Erro ao localizar plano de 7 dias." },
+        { status: 500 }
+      );
+    }
+
+    const { data: existingTrialPlan, error: errorExistingPlan } = await supabase
+      .from("users_plan")
+      .select("*")
+      .eq("user_id", dataSignUp.user?.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (errorExistingPlan) {
+      console.log(
+        "Erro ao consultar se usuário tem plano: ",
+        errorExistingPlan
+      );
+      return NextResponse.json(
+        { message: "Erro ao consultar se usuário possuí plano." },
+        { status: 500 }
+      );
+    }
+
+    if (!existingTrialPlan) {
+      const { error: errorPlan } = await supabaseAdmin
+        .from("users_plan")
+        .insert([
+          {
+            user_id: dataSignUp.user?.id,
+            plan_id: trialPlan?.id,
+            slug_plan_at_moment: trialPlan?.slug,
+            price_at_purchase: trialPlan?.price,
+            subscription_id: "free",
+            last_transaction_id: "none",
+            status: "active",
+          },
+        ]);
+
+      if (errorPlan) {
+        console.log("Erro ao inserir o plano gratuito por 7 dias: ", errorPlan);
+        return NextResponse.json(
+          { message: "Erro ao inserir plano ao usuário." },
+          { status: 500 }
+        );
+      }
+    } else if (existingTrialPlan) {
+      console.log("Usuário já possuí plano cadastrado.");
+      return NextResponse.json(
+        { message: "Usuário já possuí plano cadastrado" },
         { status: 500 }
       );
     }

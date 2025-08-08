@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, NextRequest } from "next/server";
+import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
 interface DataPlan {
   id: string;
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
 
   const body = await request.json();
-  console.log("whats_plan: ", body);
+  //console.log("whats_plan: ", body);
 
   const supabaseServer = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,32 +34,42 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
   }
 
-  //console.log("Datauser: ", user);
-
   const { data: userProfile } = await supabaseServer
     .from("profiles")
     .select("*")
     .eq("id", user.user?.id);
 
-  //console.log("UserProfile: ", userProfile);
+  // Verifica se o usuário existe na users_plan - VERIFICA SE TEM PLANO
+  const { data: userPlan, error: errorUserPlan } = await supabaseAdmin
+    .from("users_plan")
+    .select("*")
+    .eq("user_id", user.user?.id)
+    .single();
+
+  if (errorUserPlan) {
+    console.log("Usuário com plano não encontrado: ", errorUserPlan);
+    return NextResponse.json(
+      { message: "Usuário com plano não encontrado." },
+      { status: 404 }
+    );
+  }
+
+  console.log("UserPlan: ", userPlan);
 
   if (body !== null) {
-    const { data: dataPlan } = await supabaseServer
+    const { data: dataPlan, error: errorDataPlan } = await supabaseServer
       .from("plans")
       .select("*")
-      .eq("slug", body)
+      .eq("id", userPlan.plan_id)
       .single();
 
-    console.log("dataPlan: ", dataPlan);
-
-    if (!dataPlan) {
+    if (errorDataPlan || !dataPlan) {
+      console.log("Plano não encontrado: ", errorDataPlan);
       return NextResponse.json(
         { message: "Plano não encontrado." },
         { status: 404 }
       );
     }
-
-    console.log("DataPlan.ID = ", dataPlan.id);
 
     const formattedPlan: DataPlan = {
       id: dataPlan.id,

@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
 export async function POST(request: NextRequest) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
@@ -16,6 +17,35 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
+  }
+
+  const { data: userPlan, error: errorPlan } = await supabaseAdmin
+    .from("users_plan")
+    .select("*")
+    .eq("user_id", user.user?.id)
+    .single();
+
+  if (errorPlan) {
+    console.log("Não foi possível encontrar o plano do usuário: ", errorPlan);
+    return NextResponse.json(
+      { message: "Não foi possível encontrar o plano do usuário" },
+      { status: 500 }
+    );
+  }
+
+  if (userPlan) {
+    const { error: errorUpdateProfile } = await supabaseAdmin
+      .from("profiles")
+      .update({ whats_plan: userPlan.slug_plan_at_moment })
+      .eq("id", user.user?.id);
+
+    if (errorUpdateProfile) {
+      console.log("Não foi possível atualizar o plano do usuário.");
+      return NextResponse.json(
+        { message: "Não foi possível atualizar o plano do usuário" },
+        { status: 500 }
+      );
+    }
   }
 
   const { data: userProfile } = await supabaseServer
