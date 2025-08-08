@@ -72,7 +72,7 @@ export default function AreaCliente() {
     link_share_app: "",
     slug_link: "",
   });
-  const [fetchPlan, setFetchPlan] = useState<Plan | null>({
+  const [fetchPlan, setFetchPlan] = useState<Plan>({
     id: "",
     popular: false,
     slug: "",
@@ -141,7 +141,17 @@ export default function AreaCliente() {
 
           if (dataPlan.hasPlan === false) {
             console.log("Usuário não possui plano associado.");
-            setFetchPlan(null);
+            setFetchPlan({
+              id: dataPlan.plan.id,
+              popular: dataPlan.plan.popular,
+              slug: dataPlan.plan.slug,
+              type: dataPlan.plan.type,
+              price: dataPlan.plan.price,
+              pricePrevious: dataPlan.plan.pricePrevious,
+              features: dataPlan.plan.features,
+              created_at: dataPlan.plan.created_at,
+              updated_at: dataPlan.plan.updated_at,
+            });
             setIsLoading(false);
             return;
           }
