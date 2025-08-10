@@ -255,14 +255,14 @@ export default function AreaCliente() {
                 <div className="bg-sub-background flex flex-col justify-start items-center overflow-hidden rounded-xl w-full pb-4">
                   <div className="w-full h-52 relative">
                     <Image
-                      src="/privtime-white-16-9.png"
+                      src="/privetime-users-bg.png"
                       alt=""
                       fill
                       className="object-cover object-[50%_35%]"
                     />
                     <div className="absolute -bottom-12 left-8 rounded-full overflow-hidden">
                       <Image
-                        src="/privtime-black.png"
+                        src="/privetime-users-bg.png"
                         alt=""
                         width={120}
                         height={120}
@@ -419,7 +419,7 @@ export default function AreaCliente() {
                 </div>
                 <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2 px-4 py-4">
                   <div className="rounded-full overflow-hidden relative w-24 h-24">
-                    <Image src="/privtime-black.png" fill alt="" />
+                    <Image src="/privetime-users-bg.png" fill alt="" />
                   </div>
                   <span className="text-gray-700 font-medium text-center">
                     Nos siga em nossas redes sociais

@@ -8,8 +8,8 @@ export function Footer() {
       <div className="w-full container border-b border-gray-400 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr] gap-4 lg:gap-0 px-4 lg:px-0 mx-auto pb-8">
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
-            <Image src="/privtime-fullpink.png" alt="" width={80} height={80} />
-            <span className="font-bold text-2xl text-main-pink">PrivTime</span>
+            <Image src="/privetime-users.png" alt="" width={80} height={80} />
+            <span className="font-bold text-2xl text-main-pink">PriveTime</span>
           </div>
           <div className="max-w-sm">
             <span className="text-gray-800">
@@ -55,7 +55,7 @@ export function Footer() {
       </div>
       <div className="mx-auto container w-full flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between items-center py-8">
         <small className="text-gray-700 text-sm">
-          © 2025 PrivTime. Todos os direitos reservados.
+          © 2025 PriveTime. Todos os direitos reservados.
         </small>
         <span className="text-gray-700 text-sm">
           Desenvolvido por{" "}

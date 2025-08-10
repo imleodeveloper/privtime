@@ -35,7 +35,7 @@ export function Header() {
         <div className="desktop hidden w-full lg:flex justify-between items-center container mx-auto">
           <Link href="/" className="flex justify-center items-center relative">
             <Image
-              src="/privtime-fullpink.png"
+              src="/privetime-users.png"
               alt="Logo PrivTime"
               width={100}
               height={50}

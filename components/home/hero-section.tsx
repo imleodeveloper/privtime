@@ -1,6 +1,7 @@
 import { Check, CheckCheck, CircleCheckBig, Play } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export function HeroHome() {
   return (
@@ -22,10 +23,16 @@ export function HeroHome() {
             </h2>
           </div>
           <div className="space-x-4 flex flex-col lg:flex-row justify-start items-start gap-2">
-            <Button className="text-white w-full lg:w-auto">Ver Planos</Button>
-            <Button className="bg-sub-purple w-full lg:w-auto hover:text-white">
-              Experimente por 7 dias gratuitos
-            </Button>
+            <Link href="/#planos">
+              <Button className="text-white w-full lg:w-auto">
+                Ver Planos
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-sub-purple w-full lg:w-auto hover:text-white">
+                Experimente por 7 dias gratuitos
+              </Button>
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <span className="flex justify-start items-center gap-2 text-base text-foreground">
@@ -57,7 +64,7 @@ export function HeroHome() {
                 <Play className="text-white"></Play>
               </div>
               <span className="text-white text-xl font-bold">
-                Veja o PrivTime em ação
+                Veja o PriveTime em ação
               </span>
               <span className="text-white/70 text-md">
                 Demonstração completa do sistema
@@ -66,21 +73,21 @@ export function HeroHome() {
             <div className="bg-white w-full h-auto rounded-xl p-4">
               <div className="flex justify-start items-start gap-2">
                 <span className="rounded-full w-10 h-10 overflow-hidden relative justify-center items-center">
-                  <Image src="/privtime-black.png" alt="" fill />
+                  <Image src="/privetime-users-bg.png" alt="" fill />
                 </span>
                 <span className="flex flex-col justify-center items-start">
-                  <h3 className="font-bold text-base">PrivTime</h3>
+                  <h3 className="font-bold text-base">PriveTime</h3>
                   <p className="text-gray-700 text-sm">Sistema de Gestão</p>
                 </span>
               </div>
               <div className="grid grid-cols-1 w-full pt-2 space-y-2">
                 <span className="w-full rounded-lg p-1 gap-2 flex justify-start items-center text-xs text-gray-600 bg-blue-50">
                   <Check className="w-3 h-3"></Check>
-                  Agendamento realizado com sucesso!
+                  Agendamento realizado com sucesso
                 </span>
                 <span className="w-full rounded-lg p-1 gap-2 flex justify-start items-center text-xs text-gray-600 bg-green-50">
                   <Check className="w-3 h-3"></Check>
-                  Cliente notificado por WhatsApp
+                  Suporte e atualizações constantes
                 </span>
                 <span className="w-full rounded-lg p-1 gap-2 flex justify-start items-center text-xs text-gray-600 bg-red-50">
                   <Check className="w-3 h-3"></Check>

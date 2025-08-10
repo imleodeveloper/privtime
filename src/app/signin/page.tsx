@@ -110,7 +110,7 @@ export default function SignIn() {
               <div className="relative w-full h-24 flex justify-center items-center">
                 <Link href="/">
                   <Image
-                    src="/privtime-fullpink.png"
+                    src="/privetime-users.png"
                     alt=""
                     width={125}
                     height={125}
