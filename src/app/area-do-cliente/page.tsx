@@ -5,6 +5,7 @@ import { Header } from "../../../components/header";
 import Link from "next/link";
 import {
   BadgeInfo,
+  BotMessageSquare,
   Check,
   CircleUserRound,
   Copy,
@@ -24,7 +25,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
-import { plans } from "../../../lib/plans";
+import { formatDate, plans } from "../../../lib/plans";
 import { formatPrice } from "../../../lib/plans";
 import { supabase } from "../../../lib/supabase";
 import { Input } from "../../../components/ui/input";
@@ -59,7 +60,6 @@ export default function AreaCliente() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyLink, setCopyLink] = useState(false);
   const [planDetail, setPlanDetail] = useState(false);
-  const [configAccount, setConfigAccount] = useState(false);
   const [fetchProfile, setFetchProfile] = useState<Profile>({
     email: "",
     full_name: "",
@@ -255,11 +255,12 @@ export default function AreaCliente() {
                 <div className="bg-sub-background flex flex-col justify-start items-center overflow-hidden rounded-xl w-full pb-4">
                   <div className="w-full h-52 relative">
                     <Image
-                      src="/privetime-users-bg.png"
+                      src="/letreiro.png"
                       alt=""
                       fill
-                      className="object-cover object-[50%_35%]"
+                      className="object-cover object-[50%_47%]"
                     />
+                    {/*
                     <div className="absolute -bottom-12 left-8 rounded-full overflow-hidden">
                       <Image
                         src="/privetime-users-bg.png"
@@ -268,8 +269,9 @@ export default function AreaCliente() {
                         height={120}
                       />
                     </div>
+                   */}
                   </div>
-                  <div className="w-full pt-18 px-8 flex flex-col justify-start items-start gap-1 relative">
+                  <div className="w-full pt-8 px-8 flex flex-col justify-start items-start gap-1 relative">
                     <span className="text-2xl font-semibold flex justify-start items-center gap-2">
                       <CircleUserRound className="w-7 h-7"></CircleUserRound>{" "}
                       {fetchProfile.full_name || "Nome não encontrado"}
@@ -287,11 +289,13 @@ export default function AreaCliente() {
                       {fetchProfile.phone || "Telefone não encontrado"}
                     </span>
                     <Link
-                      href={`${link}/admin`}
-                      className="text-base font-semibold text-blue-600 hover:text-blue-800 underline flex justify-start items-center gap-1"
+                      href={`${link}`}
+                      className="text-base font-semibold text-blue-600 hover:text-blue-800 mt-4 flex justify-start items-center gap-1"
                     >
-                      Link App
-                      <ExternalLink className="w-4 h-4"></ExternalLink>
+                      <Button className="text-white flex justify-center items-center gap-2">
+                        Link de Divulgação
+                        <Copy className="w-4 h-4" onClick={copyToLink}></Copy>
+                      </Button>
                     </Link>
                   </div>
                 </div>
@@ -310,7 +314,7 @@ export default function AreaCliente() {
                           Data de Compra:
                         </span>
                         <span className="text-base text-gray-700">
-                          01/07/2025
+                          {formatDate(fetchPlan.created_at)}
                         </span>
                       </div>
                     </div>
@@ -321,7 +325,9 @@ export default function AreaCliente() {
                           Próximo Pagamento:
                         </span>
                         <span className="text-base text-gray-700">
-                          01/08/2025
+                          {fetchProfile.whats_plan === "trial_plan" && (
+                            <span>--</span>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -381,42 +387,6 @@ export default function AreaCliente() {
                 )}
               </div>
               <div className="rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2">
-                <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-start px-4 py-4">
-                  <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400">
-                    <span className="font-semibold text-base pr-4">
-                      Configurações da Conta
-                    </span>
-                    <span className="text-sm text-gray-700">
-                      Senha, e-mail...
-                    </span>
-                    <div
-                      className="absolute top-0 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white"
-                      onClick={() => setConfigAccount(true)}
-                    >
-                      <Pencil className="w-4 h-4"></Pencil>
-                    </div>
-                  </div>
-                  <div className="w-full relative flex justify-start items-start flex-col py-4">
-                    <span className="font-semibold text-base pr-4">
-                      Link de Compartilhamento App
-                    </span>
-                    <Link
-                      href={link}
-                      target="_blank"
-                      onClick={copyToLink}
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
-                    >
-                      {link}
-                    </Link>
-                    <div
-                      className="absolute top-1 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white"
-                      onClick={copyToLink}
-                    >
-                      <Copy className="w-4 h-4"></Copy>
-                    </div>
-                  </div>
-                </div>
                 <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2 px-4 py-4">
                   <div className="rounded-full overflow-hidden relative w-24 h-24">
                     <Image src="/privetime-users-bg.png" fill alt="" />
@@ -448,6 +418,25 @@ export default function AreaCliente() {
                       className="p-2 rounded-full overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple"
                     >
                       <Youtube className="w-6 h-6"></Youtube>
+                    </Link>
+                  </div>
+                </div>
+                <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2 px-4 py-4">
+                  <div className="rounded-full overflow-hidden relative w-24 h-24">
+                    <Image src="/privetime-contact-white.jpg" fill alt="" />
+                  </div>
+                  <span className="text-gray-700 font-medium text-center">
+                    Fale com nosso suporte
+                  </span>
+                  <div className="flex justify-center items-center gap-2">
+                    <Link
+                      href="https://wa.me/5511984349772"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-sm overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple font-semibold flex justify-center items-center gap-1"
+                    >
+                      <BotMessageSquare className="w-5 h-5"></BotMessageSquare>{" "}
+                      Fale conosco
                     </Link>
                   </div>
                 </div>
@@ -523,20 +512,6 @@ export default function AreaCliente() {
               </div>
               <div className="rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2">
                 <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-start px-4 py-4">
-                  <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400">
-                    <span className="font-semibold text-base pr-4">
-                      Configurações da Conta
-                    </span>
-                    <span className="text-sm text-gray-700">
-                      Senha, e-mail...
-                    </span>
-                    <div
-                      className="absolute top-0 right-0 flex justify-center items-center cursor-pointer hover:bg-main-pink p-2 rounded-full hover:text-white"
-                      onClick={() => setConfigAccount(true)}
-                    >
-                      <Pencil className="w-4 h-4"></Pencil>
-                    </div>
-                  </div>
                   <div className="w-full relative flex justify-start items-start flex-col pb-4 border-b border-gray-400 py-4">
                     <span className="font-semibold text-base pr-4">
                       Como Funciona o App?
@@ -592,6 +567,25 @@ export default function AreaCliente() {
                     </Link>
                   </div>
                 </div>
+                <div className="w-full bg-sub-background rounded-xl overflow-hidden flex flex-col justify-start items-center gap-2 px-4 py-4">
+                  <div className="rounded-full overflow-hidden relative w-24 h-24">
+                    <Image src="/privetime-contact-white.jpg" fill alt="" />
+                  </div>
+                  <span className="text-gray-700 font-medium text-center">
+                    Fale com nosso suporte
+                  </span>
+                  <div className="flex justify-center items-center gap-2">
+                    <Link
+                      href="https://wa.me/5511984349772"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-sm overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple font-semibold flex justify-center items-center gap-1"
+                    >
+                      <BotMessageSquare className="w-5 h-5"></BotMessageSquare>{" "}
+                      Fale conosco
+                    </Link>
+                  </div>
+                </div>
               </div>
             </section>
           )}
@@ -605,58 +599,6 @@ export default function AreaCliente() {
               </div>
               <div
                 onClick={() => setCopyLink(false)}
-                className="absolute top-4 right-4 p-2 overflow-hidden rounded-full cursor-pointer flex justify-center items-center hover:bg-main-pink hover:text-white"
-              >
-                <Minimize2 className="w-6 h-6"></Minimize2>
-              </div>
-            </div>
-          </div>
-        )}
-        {configAccount === true && (
-          <div className="fixed top-0 left-0 w-full h-full backdrop-blur flex justify-center items-center">
-            <div className="bg-sub-background w-auto p-8 h-1/2 shadow-xl rounded-xl relative flex flex-col justify-center items-center">
-              <span className="text-center font-bold text-gray-700 my-6">
-                Olá{" "}
-                <span className="text-main-pink">{fetchProfile.full_name}</span>
-                ! <br />
-                Altere o email ou senha aqui
-              </span>
-              <div className="flex flex-col justify-center items-start gap-1">
-                <label htmlFor="email" className="text-sm text-gray-600">
-                  E-mail
-                </label>
-                <Input
-                  className="w-full bg-white px-2 py-1 rounded-lg"
-                  type="text"
-                  id="email"
-                  defaultValue="email@dominio.com"
-                />
-              </div>
-              <div className="flex flex-col justify-center items-start gap-1">
-                <label htmlFor="phone" className="text-sm text-gray-600">
-                  Telefone
-                </label>
-                <Input
-                  className="w-full bg-white px-2 py-1 rounded-lg"
-                  type="text"
-                  id="phone"
-                  defaultValue="(11) 99999-9999"
-                />
-              </div>
-              <div className="flex flex-col justify-center items-start gap-1">
-                <label htmlFor="password" className="text-sm text-gray-600">
-                  Senha
-                </label>
-                <Input
-                  className="w-full bg-white px-2 py-1 rounded-lg"
-                  type="text"
-                  id="password"
-                  defaultValue="••••••••"
-                />
-              </div>
-              <Button className="w-full mt-2 text-white">Alterar</Button>
-              <div
-                onClick={() => setConfigAccount(false)}
                 className="absolute top-4 right-4 p-2 overflow-hidden rounded-full cursor-pointer flex justify-center items-center hover:bg-main-pink hover:text-white"
               >
                 <Minimize2 className="w-6 h-6"></Minimize2>

@@ -54,8 +54,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  console.log("UserPlan: ", userPlan);
-
   if (body !== null) {
     const { data: dataPlan, error: errorDataPlan } = await supabaseServer
       .from("plans")

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "../../components/header";
 import { Inter } from "next/font/google";
+import { WhatsAppButton } from "../../components/whatsapp-button";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body className={`${inter.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} antialiased relative`}>
+        {children}
+        <WhatsAppButton></WhatsAppButton>
+      </body>
     </html>
   );
 }

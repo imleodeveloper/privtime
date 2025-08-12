@@ -22,6 +22,14 @@ export async function POST(request: Request) {
       console.error("Erro no login: ", error.message);
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
+    if (error === "Invalid login credentials") {
+      return NextResponse.json(
+        {
+          message: "Credênciais inválidas, ou email não possuí conta.",
+        },
+        { status: 401 }
+      );
+    }
 
     return NextResponse.json(
       {

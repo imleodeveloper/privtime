@@ -15,6 +15,15 @@ export const formatPrice = (price: number) => {
   }).format(price);
 };
 
+export const formatDate = (date: string) => {
+  const stringDate = new Date(date);
+  return stringDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
 export const plans: Plan[] = [
   {
     id: 1,

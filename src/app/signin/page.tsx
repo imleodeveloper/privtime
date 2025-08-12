@@ -72,8 +72,8 @@ export default function SignIn() {
 
       const { user, session } = await response.json();
 
-      if (!response.ok) {
-        setError("Não foi possível entrar, tente novamente mais tarde.");
+      if (user === null || session === null || !response.ok) {
+        setError("Conta não existente ou as credênciais estão incorretas.");
         return;
       }
 
