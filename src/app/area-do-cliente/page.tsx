@@ -53,6 +53,7 @@ interface Plan {
   features: [];
   created_at: string;
   updated_at: string;
+  status: string;
 }
 
 export default function AreaCliente() {
@@ -82,6 +83,7 @@ export default function AreaCliente() {
     features: [],
     created_at: "",
     updated_at: "",
+    status: "",
   });
 
   const changeStateDetail = () => {
@@ -151,6 +153,7 @@ export default function AreaCliente() {
               features: dataPlan.plan.features,
               created_at: dataPlan.plan.created_at,
               updated_at: dataPlan.plan.updated_at,
+              status: dataPlan.plan.status,
             });
             setIsLoading(false);
             return;
@@ -166,6 +169,7 @@ export default function AreaCliente() {
             features: dataPlan.plan.features,
             created_at: dataPlan.plan.created_at,
             updated_at: dataPlan.plan.updated_at,
+            status: dataPlan.plan.status,
           });
           setIsLoading(false);
         }
@@ -179,12 +183,12 @@ export default function AreaCliente() {
   }, []);
 
   useEffect(() => {
-    if (fetchProfile.whats_plan !== null) {
+    if (fetchPlan.status === "active") {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
-  }, [fetchProfile.whats_plan]);
+  }, [fetchPlan.status]);
 
   let link = "";
   if (fetchProfile.link_share_app) {
@@ -288,15 +292,13 @@ export default function AreaCliente() {
                       <Phone className="w-5 h-5"></Phone>
                       {fetchProfile.phone || "Telefone não encontrado"}
                     </span>
-                    <Link
-                      href={`${link}`}
-                      className="text-base font-semibold text-blue-600 hover:text-blue-800 mt-4 flex justify-start items-center gap-1"
+                    <Button
+                      className="text-white flex justify-center items-center gap-2 mt-4"
+                      onClick={copyToLink}
                     >
-                      <Button className="text-white flex justify-center items-center gap-2">
-                        Link de Divulgação
-                        <Copy className="w-4 h-4" onClick={copyToLink}></Copy>
-                      </Button>
-                    </Link>
+                      Link de Divulgação
+                      <Copy className="w-4 h-4"></Copy>
+                    </Button>
                   </div>
                 </div>
                 <div className="bg-sub-background w-full rounded-xl overflow-hidden px-8 py-4">

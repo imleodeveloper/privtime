@@ -12,6 +12,7 @@ interface DataPlan {
   features: [];
   created_at: string;
   updated_at: string;
+  status: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
       features: dataPlan.features,
       created_at: dataPlan.created_at,
       updated_at: dataPlan.updated_at,
+      status: userPlan.status,
     };
 
     return NextResponse.json({

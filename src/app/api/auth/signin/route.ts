@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "../../../../../lib/supabase";
+import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
 export async function POST(request: Request) {
   try {
@@ -16,8 +17,6 @@ export async function POST(request: Request) {
       password: password,
     });
 
-    console.log("data: ", data);
-
     if (error) {
       console.error("Erro no login: ", error.message);
       return NextResponse.json({ error: error.message }, { status: 401 });
@@ -29,6 +28,40 @@ export async function POST(request: Request) {
         },
         { status: 401 }
       );
+    }
+
+    const { data: userPlanExist, error: userPlanError } = await supabaseAdmin
+      .from("users_plan")
+      .select("*")
+      .eq("user_id", data.user.id)
+      .single();
+
+    if (userPlanError) {
+      console.log("Plano não encontrado", userPlanError);
+      // Não é um erro usuário pode não ter um plano
+    }
+
+    const createdAt = new Date(userPlanExist.created_at);
+    const today = new Date();
+    const differenceDays = today.getTime() - createdAt.getTime();
+    const convertDays = differenceDays / (1000 * 60 * 60 * 24);
+    console.log(convertDays);
+    if (
+      userPlanExist.slug_plan_at_moment === "trial_plan" &&
+      convertDays >= 7
+    ) {
+      const { error } = await supabase
+        .from("users_plan")
+        .update({ status: "expired" })
+        .eq("user_id", data.user.id);
+
+      if (error) {
+        console.log("Erro ao fazer login, e cancelar plano gratuito", error);
+        return NextResponse.json(
+          { message: "Erro ao fazer login, e cancelar plano gratuito" },
+          { status: 500 }
+        );
+      }
     }
 
     return NextResponse.json(

@@ -8,6 +8,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        maximusWidth: {
+          "0%": { maxWidth: "0px" },
+          "100%": { maxWidth: "500px" },
+        },
+      },
+      animation: {
+        maximusWidth: "maximusWidth 10s linear infinite",
+      },
       colors: {
         background: "var(--background)",
         "sub-background": "var(--sub-background)",

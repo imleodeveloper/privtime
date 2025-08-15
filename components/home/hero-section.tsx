@@ -8,12 +8,12 @@ export function HeroHome() {
     <article className="w-full" id="inicio">
       <section className="w-full px-4 lg:px-0 container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="w-full min-h-auto bg-black-600 space-y-6">
-          <h1 className="text-3xl md:text-5xl font-bold text-foreground">
+          <h1 className="text-3xl md:text-5xl font-bold text-foreground text-center md:text-start">
             Tudo o que você precisa para ter seu{" "}
             <span className="text-main-purple">App de Agendamento</span>{" "}
             funcionando
           </h1>
-          <div className="flex flex-col justify-start items-start">
+          <div className="flex flex-col justify-start items-center md:items-start">
             <span className="text-red-600 line-through">De R$ 116,58 por</span>
             <span className="text-black/70 font-medium text-lg">
               A partir de:
@@ -22,14 +22,12 @@ export function HeroHome() {
               R$ 48,19/mês
             </h2>
           </div>
-          <div className="space-x-4 flex flex-col lg:flex-row justify-start items-start gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-12">
             <Link href="/#planos">
-              <Button className="text-white w-full lg:w-auto">
-                Ver Planos
-              </Button>
+              <Button className="text-white w-full">Ver Planos</Button>
             </Link>
             <Link href="/signup">
-              <Button className="bg-sub-purple w-full lg:w-auto hover:text-white">
+              <Button className="bg-sub-purple w-full hover:text-white">
                 Experimente por 7 dias gratuitos
               </Button>
             </Link>
