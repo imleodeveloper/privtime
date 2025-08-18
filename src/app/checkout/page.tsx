@@ -67,7 +67,8 @@ interface FetchProfile {
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const planURL = searchParams.get("plan"); //Pega o plan da URL ex: https://privtime.com.br/checkout?plan=monthly_plan
+  //const planURL = searchParams.get("plan"); //Pega o plan da URL ex: https://privtime.com.br/checkout?plan=monthly_plan
+  const [planURL, setPlanURL] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [changePlan, setChangePlan] = useState(false);
   const [userData, setUserData] = useState<CustomerData>({
@@ -88,6 +89,10 @@ export default function CheckoutPage() {
   const [selectedPlan, setSelectedPlan] = useState<(typeof plans)[0] | null>(
     null
   );
+
+  useEffect(() => {
+    setPlanURL(searchParams.get("plan"));
+  }, [searchParams]);
 
   useEffect(() => {
     if (!planURL) {
