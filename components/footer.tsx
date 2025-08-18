@@ -5,7 +5,7 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="w-full bg-sub-background h-auto pt-12">
-      <div className="w-full container border-b border-gray-400 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr] gap-4 lg:gap-0 px-4 lg:px-0 mx-auto pb-8">
+      <div className="w-full container border-b border-gray-400 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 lg:gap-0 px-4 lg:px-0 mx-auto pb-8">
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
             <Image src="/privetime-users.png" alt="" width={80} height={80} />
@@ -28,16 +28,18 @@ export function Footer() {
           <h2 className="font-bold text-xl text-main-pink">Links Rápidos</h2>
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
-              <Link href="">Início</Link>
+              <Link href="/">Início</Link>
             </li>
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
-              <Link href="">Planos</Link>
+              <Link href="/#planos">Planos</Link>
             </li>
+            {/*
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link href="">Feedbacks</Link>
-            </li>
+            </li> 
+             */}
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
-              <Link href="">Sobre</Link>
+              <Link href="/#sobre">Sobre</Link>
             </li>
           </ul>
         </div>
@@ -45,10 +47,38 @@ export function Footer() {
           <h2 className="font-bold text-xl text-main-pink">Suporte</h2>
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
-              <Link href="">Contato</Link>
+              <Link
+                href="https://wa.me/5511984349772"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp
+              </Link>
             </li>
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
-              <Link href="">ViaModels</Link>
+              <Link
+                href="https://www.viamodels.com.br/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ViaModels
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div className="flex flex-col justify-start items-start gap-4">
+          <h2 className="font-bold text-xl text-main-pink">Links Úteis</h2>
+          <ul className="flex flex-col justify-start items-start gap-2">
+            <li className="cursor-pointer text-gray-700 hover:text-main-purple">
+              <Link href="/politica-de-privacidade">
+                Política de Privacidade
+              </Link>
+            </li>
+            <li className="cursor-pointer text-gray-700 hover:text-main-purple">
+              <Link href="/politica-de-reembolso">Política de Reembolso</Link>
+            </li>
+            <li className="cursor-pointer text-gray-700 hover:text-main-purple">
+              <Link href="/termos-de-uso">Termos de Uso</Link>
             </li>
           </ul>
         </div>

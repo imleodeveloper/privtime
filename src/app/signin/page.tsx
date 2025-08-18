@@ -199,14 +199,14 @@ export default function SignIn() {
                 <span className="text-sm">
                   Ao entrar, você concorda com nossos{" "}
                   <Link
-                    href=""
+                    href="/termos-de-uso"
                     className="text-blue-500 hover:text-blue-800 underline"
                   >
                     Termos de uso
                   </Link>{" "}
                   e{" "}
                   <Link
-                    href=""
+                    href="/politica-de-privacidade"
                     className="text-blue-500 hover:text-blue-800 underline"
                   >
                     Política de privacidade

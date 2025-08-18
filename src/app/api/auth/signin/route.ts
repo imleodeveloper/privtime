@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       userPlanExist.slug_plan_at_moment === "trial_plan" &&
       convertDays >= 7
     ) {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from("users_plan")
         .update({ status: "expired" })
         .eq("user_id", data.user.id);

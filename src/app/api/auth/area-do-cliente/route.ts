@@ -56,6 +56,28 @@ export async function POST(request: NextRequest) {
 
   //console.log("UserProfile: ", userProfile);
 
+  if (userPlan.status === "active") {
+    const createdAt = new Date(userPlan.created_at);
+    const today = new Date();
+    const differenceDays = today.getTime() - createdAt.getTime();
+    const convertDays = differenceDays / (1000 * 60 * 60 * 24);
+
+    if (userPlan.slug_plan_at_moment === "trial_plan" && convertDays >= 7) {
+      const { error } = await supabaseAdmin
+        .from("users_plan")
+        .update({ status: "expired" })
+        .eq("user_id", user.user?.id);
+
+      if (error) {
+        console.log("Erro ao buscar dados, e cancelar plano gratuito", error);
+        return NextResponse.json(
+          { message: "Erro ao buscar dados, e cancelar plano gratuito" },
+          { status: 500 }
+        );
+      }
+    }
+  }
+
   return NextResponse.json({
     user: {
       id: userProfile.id,

@@ -107,7 +107,7 @@ export function Header() {
               </li>
               <li className="text-main-purple hover:text-black transition duration-300">
                 <Link
-                  href="/#via-models"
+                  href="/#sobre"
                   className="flex justify-center items-center gap-2"
                 >
                   <Users className="w-4 h-4"></Users>

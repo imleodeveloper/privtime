@@ -8,7 +8,7 @@ import {
 
 export default function AboutHome() {
   return (
-    <article className="w-full pt-24 container mx-auto" id="via-models">
+    <article className="w-full pt-24 container mx-auto" id="sobre">
       <section className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 lg:px-0">
         <div className="flex flex-col justify-start items-start gap-8">
           <h2 className="text-3xl md:text-4xl font-bold">

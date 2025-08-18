@@ -40,7 +40,7 @@ export const plans: Plan[] = [
       "App web responsivo para clientes",
       //"Notificações por WhatsApp (opcional)",
     ],
-    link: "/checkout?plan=monthly_plan",
+    link: "monthly_plan",
   },
   {
     id: 2,
@@ -57,6 +57,6 @@ export const plans: Plan[] = [
       "App web responsivo para clientes",
       //"Notificações por WhatsApp (opcional)",
     ],
-    link: "/checkout?plan=annual_plan",
+    link: "annual_plan",
   },
 ];

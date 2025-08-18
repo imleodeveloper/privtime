@@ -16,7 +16,7 @@ function generateSlug(name: string) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { fullName, phone, email, cpf, password } = body;
+  const { fullName, phone, email, cpf, password, birthDate } = body;
 
   // Verificação mais segura - usa trim
   if (
@@ -41,6 +41,31 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { message: "Erro ao verificar o email" },
       { status: 500 }
+    );
+  }
+
+  function isAdult(birthday: string): boolean {
+    const today = new Date();
+    const birth = new Date(birthday);
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    // Ajusta se o mês/dia atual ainda não chegou
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= 18;
+  }
+
+  if (!isAdult(birthDate)) {
+    return NextResponse.json(
+      { message: "Você precisa ter 18 anos ou mais para se cadastrar." },
+      { status: 400 }
     );
   }
 
@@ -180,6 +205,7 @@ export async function POST(request: Request) {
             link_app: link_app,
             link_share_app: link_share_app,
             slug_link: slug_link,
+            birthdate: birthDate,
           },
         ]);
 

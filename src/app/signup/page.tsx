@@ -15,6 +15,7 @@ interface FormData {
   cpf: string;
   password: string;
   confirmPassword: string;
+  birthDate: string;
 }
 
 export default function SignUp() {
@@ -30,6 +31,7 @@ export default function SignUp() {
     cpf: "",
     password: "",
     confirmPassword: "",
+    birthDate: "",
   });
 
   function handleInputChange<K extends keyof FormData>(
@@ -175,6 +177,23 @@ export default function SignUp() {
                 />
               </div>
               <div className="w-full flex flex-col justify-center items-start gap-2">
+                <label htmlFor="birthDate" className="text-sm text-gray-600">
+                  Data de Nascimento
+                </label>
+                <Input
+                  id="birthDate"
+                  name="birthDate"
+                  type="date"
+                  placeholder="Selecione sua data de nascimento"
+                  value={formData.birthDate}
+                  onChange={(e) =>
+                    handleInputChange("birthDate", e.target.value)
+                  }
+                  required
+                  className="text-sm"
+                />
+              </div>
+              <div className="w-full flex flex-col justify-center items-start gap-2">
                 <label htmlFor="phone" className="text-sm text-gray-600">
                   Celular
                 </label>
@@ -293,14 +312,14 @@ export default function SignUp() {
                 <span className="text-sm">
                   Ao cadastrar, você concorda com nossos{" "}
                   <Link
-                    href=""
+                    href="/termos-de-uso"
                     className="text-blue-500 hover:text-blue-800 underline"
                   >
                     Termos de uso
                   </Link>{" "}
                   e{" "}
                   <Link
-                    href=""
+                    href="/politica-de-privacidade"
                     className="text-blue-500 hover:text-blue-800 underline"
                   >
                     Política de privacidade

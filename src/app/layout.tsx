@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "../../components/header";
 import { Inter } from "next/font/google";
 import { WhatsAppButton } from "../../components/whatsapp-button";
+import { BannerAge } from "../../components/banner-age";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className={`${inter.variable} antialiased relative`}>
         {children}
+        <BannerAge></BannerAge>
         <WhatsAppButton></WhatsAppButton>
       </body>
     </html>
