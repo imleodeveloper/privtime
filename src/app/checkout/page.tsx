@@ -65,7 +65,7 @@ interface FetchProfile {
 }
 
 export default function CheckoutPage() {
-  const searchParams = useSearchParams();
+  //const searchParams = useSearchParams();
   const router = useRouter();
   //const planURL = searchParams.get("plan"); //Pega o plan da URL ex: https://privtime.com.br/checkout?plan=monthly_plan
   const [planURL, setPlanURL] = useState<string | null>(null);
@@ -91,21 +91,20 @@ export default function CheckoutPage() {
   );
 
   useEffect(() => {
-    setPlanURL(searchParams.get("plan"));
-  }, [searchParams]);
+    const params = new URLSearchParams(window.location.search);
+    const plan = params.get("plan");
 
-  useEffect(() => {
-    if (!planURL) {
+    setPlanURL(plan);
+
+    if (plan) {
+      const selected = plans.find((p) => p.link === plan);
+      setSelectedPlan(selected || null);
+    } else {
+      // redireciona se não tiver plan
       const currentURL = window.location.pathname + window.location.search;
       router.push(`/?redirect=${encodeURIComponent(currentURL)}`);
-      return;
     }
-
-    if (planURL) {
-      const plan = plans.find((p) => p.link === planURL);
-      setSelectedPlan(plan || null);
-    }
-  }, [planURL]);
+  }, []);
 
   useEffect(() => {
     const checkSession = async () => {
