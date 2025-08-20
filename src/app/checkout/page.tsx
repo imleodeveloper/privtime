@@ -165,7 +165,7 @@ export default function CheckoutPage() {
 
     if (fetchProfile && selectedPlan) {
       try {
-        const response = await fetch("/api/picpay/checkout", {
+        const response = await fetch("/api/pagar_me/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ profile: fetchProfile, plan: selectedPlan }),
