@@ -42,7 +42,7 @@ export default function ReembolsoPage() {
           após a contratação de serviços pela internet.
         </p>
         <a
-          href="https://wa.me/5511984349772"
+          href="https://wa.me/5511963646461"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block mt-4 px-6 py-3 bg-green-500 text-white font-semibold rounded-sm shadow-md border-b-4 border-green-700 hover:bg-green-600 transition"
@@ -55,7 +55,7 @@ export default function ReembolsoPage() {
         </h2>
         <p>
           Todos os pagamentos da plataforma são processados exclusivamente pelo{" "}
-          <strong>PicPay</strong>. O <strong>PriveTime</strong> não coleta,
+          <strong>Pagar Me</strong>. O <strong>PriveTime</strong> não coleta,
           armazena ou processa dados financeiros sensíveis, como números de
           cartão de crédito ou senhas bancárias. Essas informações são tratadas
           diretamente pela plataforma de intermediação financeira.

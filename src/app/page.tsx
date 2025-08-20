@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <Header />
-      <main className="w-full mx-auto py-16">
+      <main className="w-full mx-auto px-14 py-16">
         <HeroHome />
         <PlansHome />
         <AboutHome />

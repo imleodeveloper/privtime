@@ -58,7 +58,7 @@ export default function TermosUsoPage() {
         </h2>
         <p>
           Os pagamentos de serviços ou planos dentro da plataforma são
-          processados exclusivamente pelo <strong>PicPay</strong>. O PriveTime
+          processados exclusivamente pelo <strong>Pagar Me</strong>. O PriveTime
           não armazena dados financeiros sensíveis, sendo a responsabilidade do
           pagamento integralmente da plataforma de intermediação financeira.
         </p>
@@ -108,7 +108,7 @@ export default function TermosUsoPage() {
           Em caso de dúvidas ou solicitações, fale conosco:
         </p>
         <a
-          href="https://wa.me/5511984349772"
+          href="https://wa.me/5511963646461"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block px-6 py-3 bg-green-500 text-white font-semibold rounded-sm shadow-md border-b-4 border-green-700 hover:bg-green-600 transition"

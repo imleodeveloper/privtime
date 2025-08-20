@@ -1,32 +1,49 @@
 import { NextResponse, NextRequest } from "next/server";
 
-interface CreatePlanPagarMe {
-  interval: string;
-  interval_count: number;
-  pricing_scheme: {
-    scheme_type: string;
-    price: number;
+interface CreateSubscriptionPagarMe {
+  is_building: boolean;
+  payment_settings: {
+    credit_card_settings: {
+      operation_type: string;
+    };
+    pix_settings: {
+      expires_in: number;
+    };
+    accepted_payment_methods: string[];
+    statement_descriptor: string;
   };
-  quantity: number;
-  currency: string;
-  billing_type: string;
+  cart_settings: {
+    recurrences: [
+      {
+        plan_id: string;
+        start_in: number;
+      }
+    ];
+  };
+  layout_settings: {
+    image_url: string;
+    primary_color: string;
+    secondary_color: string;
+  };
   name: string;
-  payment_methods: [string, string];
-  minimum_price: number;
-  statement_descriptor: string;
-  trial_period_days: number;
-  metadata: {};
+  type: string;
+  external_reference: string;
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { plan, profile } = body;
 
+  console.log(profile);
+  console.log(plan);
+
   const interval = plan.type === "Mensal" ? "month" : "year";
   const amount = plan.type === "Mensal" ? 5819 : 57828;
   const name = plan.type === "Mensal" ? "Plano Mensal" : "Plano Anual";
+  const plan_id =
+    plan.type === "Mensal" ? "plan_MQzGwyJFpSQjoA4d" : "plan_DYZjG87hmUw3wN0R";
 
-  const createPlanPagarMe: CreatePlanPagarMe = {
+  /*const createPlanPagarMe = {
     interval: interval,
     interval_count: 1,
     pricing_scheme: {
@@ -42,27 +59,73 @@ export async function POST(request: NextRequest) {
     statement_descriptor: "APPVIAMODELS",
     trial_period_days: 1,
     metadata: { plan_type: plan.link },
+  }; */
+
+  const createSubscriptionPagarMe: CreateSubscriptionPagarMe = {
+    is_building: false,
+    payment_settings: {
+      credit_card_settings: {
+        operation_type: "auth_and_capture",
+      },
+      pix_settings: {
+        expires_in: 1,
+      },
+      accepted_payment_methods: ["credit_card"],
+      statement_descriptor: "APPVIAMODELS",
+    },
+    /* customer_settings: {
+      customer: {
+        phones: {
+          mobile_phone: {
+            country_code: "55", // PEGAR COUNTRY CODE
+            area_code: profile.phone.substring(0, 2), // PEGAR AREA CODE
+            number: profile.phone.slice(2), // REMOVER AREA CODE
+          },
+        },
+        name: profile.full_name,
+        type: "individual",
+        email: profile.email,
+        code: profile.id,
+        document: profile.identity,
+        document_type: "CPF",
+        birthdate: profile.birthdate,
+      },
+      customer_id: profile.id,
+    }, */
+    cart_settings: {
+      recurrences: [
+        {
+          plan_id: plan_id,
+          start_in: 1,
+        },
+      ],
+    },
+    layout_settings: {
+      image_url:
+        "https://privtime.vercel.app/_next/image?url=%2Fprivetime-users-bg.png&w=1920&q=75",
+      primary_color: "#faf2fa",
+      secondary_color: "#dfc1df",
+    },
+    name: name,
+    type: "subscription",
+    external_reference: `${profile.slug_link}_${plan.link}_${profile.id}_plan-id=${plan_id}`,
   };
 
   const secret_key = process.env.PAGARME_SECRET_KEY;
-  console.log("secret_key", secret_key);
   const authHeader =
     "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
 
   try {
     // Cria o plano uma única vez
-    const response = await fetch("https://api.pagar.me/core/v5/plans", {
+    const response = await fetch("https://api.pagar.me/core/v5/paymentlinks", {
       method: "POST",
       headers: {
         Authorization: authHeader,
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(createPlanPagarMe),
+      body: JSON.stringify(createSubscriptionPagarMe),
     });
-
-    console.log(response.status);
-    console.log(response.statusText);
 
     const data = await response.json();
 
@@ -76,7 +139,7 @@ export async function POST(request: NextRequest) {
 
     console.log(data);
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ url: data.url }, { status: 200 });
   } catch (error) {
     console.error("Erro ao criar plano Pagar Me:", error);
     return NextResponse.json(

@@ -58,10 +58,12 @@ interface CustomerData {
 }
 
 interface FetchProfile {
+  id: string;
   full_name: string;
   phone: string;
   email: string;
   identity: string;
+  birthdate: string;
 }
 
 export default function CheckoutPage() {
@@ -79,10 +81,12 @@ export default function CheckoutPage() {
     identity: "",
   });
   const [fetchProfile, setFetchProfile] = useState<FetchProfile>({
+    id: "",
     full_name: "",
     email: "",
     phone: "",
     identity: "",
+    birthdate: "",
   });
 
   // Qual plano foi selecionado
@@ -142,10 +146,12 @@ export default function CheckoutPage() {
 
           if (data) {
             setFetchProfile({
+              id: data.id,
               full_name: data.full_name,
               email: data.email,
               phone: data.phone,
               identity: data.identity,
+              birthdate: data.birthdate,
             });
           }
         }
@@ -170,14 +176,26 @@ export default function CheckoutPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ profile: fetchProfile, plan: selectedPlan }),
         });
-      } catch (error) {}
+
+        if (!response.ok) {
+          alert("Erro ao criar checkout Pagar Me. Tente novamente");
+          return;
+        }
+
+        const data = await response.json();
+
+        window.location.href = data.url;
+      } catch (error) {
+        console.error("Erro interno no servidor: ", error);
+        alert("Erro interno no servidor. Tente novamente");
+      }
     }
   };
 
   return (
     <div className="w-full">
       <Header />
-      <main className="w-full py-14 relative">
+      <main className="w-full px-14 py-14 relative">
         {selectedPlan ? (
           <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 lg:px-0 lg:grid-cols-[1fr_1fr_1fr] items-start">
             <div className="flex flex-col justify-start items-start gap-8">
@@ -218,6 +236,7 @@ export default function CheckoutPage() {
                   </ul>
                 ))}
               </div>
+              {/*
               <div className="w-full flex justify-center items-center flex-col bg-sub-background rounded-md overflow-hidden">
                 <Button
                   onClick={() => setChangePlan(!changePlan)}
@@ -243,7 +262,8 @@ export default function CheckoutPage() {
                       : "Plano Mensal"}
                   </span>
                 </Link>
-              </div>
+              </div> 
+               */}
             </div>
 
             <div className="relative flex justify-center items-start">

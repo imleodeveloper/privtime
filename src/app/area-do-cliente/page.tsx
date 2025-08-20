@@ -251,7 +251,7 @@ export default function AreaCliente() {
   return (
     <div className="w-full">
       <Header />
-      <main className="w-full py-14 relative">
+      <main className="w-full px-14 py-14 relative">
         <article className="w-full container mx-auto">
           {isAuthenticated && (
             <section className="min-h-screen grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 lg:gap-8 px-4 lg:px-0">
@@ -432,7 +432,7 @@ export default function AreaCliente() {
                   </span>
                   <div className="flex justify-center items-center gap-2">
                     <Link
-                      href="https://wa.me/5511984349772"
+                      href="https://wa.me/5511963646461"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-sm overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple font-semibold flex justify-center items-center gap-1"
@@ -570,7 +570,7 @@ export default function AreaCliente() {
                   </span>
                   <div className="flex justify-center items-center gap-2">
                     <Link
-                      href="https://wa.me/5511984349772"
+                      href="https://wa.me/5511963646461"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-sm overflow-hidden shadow-xl bg-main-pink text-white cursor-pointer hover:bg-main-purple font-semibold flex justify-center items-center gap-1"

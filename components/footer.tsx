@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-sub-background h-auto pt-12">
+    <footer className="w-full bg-sub-background h-auto px-8 pt-12">
       <div className="w-full container border-b border-gray-400 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 lg:gap-0 px-4 lg:px-0 mx-auto pb-8">
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
@@ -48,7 +48,7 @@ export function Footer() {
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link
-                href="https://wa.me/5511984349772"
+                href="https://wa.me/5511963646461"
                 target="_blank"
                 rel="noopener noreferrer"
               >

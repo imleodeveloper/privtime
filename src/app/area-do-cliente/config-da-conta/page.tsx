@@ -59,7 +59,11 @@ export default function ConfigDaContaPage() {
           Caso precise alterar suas informações como e-mail e senha, entre em
           contato com o nosso suporte:
         </h2>
-        <Link href="" target="_blank" rel="noopener noreferrer">
+        <Link
+          href="https://wa.me/5511963646461"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button className="text-white mt-4">Falar com o suporte</Button>
         </Link>
       </div>
