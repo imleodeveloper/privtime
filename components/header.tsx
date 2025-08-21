@@ -74,7 +74,7 @@ export function Header() {
   };
 
   return (
-    <header className="w-full bg-sub-background px-8">
+    <header className="w-full bg-sub-background lg:px-8">
       <nav className="w-full flex justify-between items-center container mx-auto">
         <div className="desktop hidden w-full lg:flex justify-between items-center container mx-auto">
           <Link href="/" className="flex justify-center items-center relative">
