@@ -31,6 +31,7 @@ import { supabase } from "../../../lib/supabase";
 import { Input } from "../../../components/ui/input";
 
 interface Profile {
+  id: string;
   email: string;
   full_name: string;
   identity: string;
@@ -62,6 +63,7 @@ export default function AreaCliente() {
   const [copyLink, setCopyLink] = useState(false);
   const [planDetail, setPlanDetail] = useState(false);
   const [fetchProfile, setFetchProfile] = useState<Profile>({
+    id: "",
     email: "",
     full_name: "",
     identity: "",
@@ -111,6 +113,7 @@ export default function AreaCliente() {
         const data = await response.json();
 
         setFetchProfile({
+          id: data.user.id,
           email: data.user.email,
           full_name: data.user.full_name,
           identity: data.user.identity,
@@ -139,7 +142,7 @@ export default function AreaCliente() {
           });
 
           const dataPlan = await responsePlan.json();
-          console.log("dataPlan: ", dataPlan);
+          // console.log("dataPlan: ", dataPlan);
 
           if (dataPlan.hasPlan === false) {
             console.log("Usuário não possui plano associado.");
@@ -181,6 +184,26 @@ export default function AreaCliente() {
 
     handleSession();
   }, []);
+
+  const handleCancelSubscription = async () => {
+    try {
+      const response = await fetch(
+        "/api/auth/area-do-cliente/cancel-subscription",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fetchProfile.id),
+        }
+      );
+
+      const data = await response.json();
+
+      alert(data.message);
+    } catch (error) {
+      console.error("Erro interno no servidor:", error);
+      alert("Erro interno no servidor");
+    }
+  };
 
   useEffect(() => {
     if (fetchPlan.status === "active") {
@@ -316,7 +339,7 @@ export default function AreaCliente() {
                           Data de Compra:
                         </span>
                         <span className="text-base text-gray-700">
-                          {formatDate(fetchPlan.created_at)}
+                          -- {/*formatDate(fetchPlan.created_at)*/}
                         </span>
                       </div>
                     </div>
@@ -384,6 +407,14 @@ export default function AreaCliente() {
                           </li>
                         </ul>
                       ))}
+                    </div>
+                    <div className="flex justify-center items-center gap-2 mt-4">
+                      <Button
+                        className="bg-transparent border border-main-pink hover:text-white text-sm"
+                        onClick={handleCancelSubscription}
+                      >
+                        Cancelar Assinatura
+                      </Button>
                     </div>
                   </div>
                 )}

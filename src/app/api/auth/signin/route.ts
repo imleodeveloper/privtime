@@ -45,7 +45,6 @@ export async function POST(request: Request) {
     const today = new Date();
     const differenceDays = today.getTime() - createdAt.getTime();
     const convertDays = differenceDays / (1000 * 60 * 60 * 24);
-    console.log(convertDays);
     if (
       userPlanExist.slug_plan_at_moment === "trial_plan" &&
       convertDays >= 7

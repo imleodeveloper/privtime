@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
 
 interface CreateSubscriptionPagarMe {
   is_building: boolean;
@@ -34,9 +35,6 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { plan, profile } = body;
 
-  console.log(profile);
-  console.log(plan);
-
   const interval = plan.type === "Mensal" ? "month" : "year";
   const amount = plan.type === "Mensal" ? 5819 : 57828;
   const name = plan.type === "Mensal" ? "Plano Mensal" : "Plano Anual";
@@ -60,6 +58,20 @@ export async function POST(request: NextRequest) {
     trial_period_days: 1,
     metadata: { plan_type: plan.link },
   }; */
+
+  const { data, error } = await supabaseAdmin
+    .from("users_plan")
+    .select("plan_id")
+    .eq("user_id", profile.id)
+    .single();
+
+  if (error) {
+    console.log("Não foi possível encontrar usuário e plano:", error);
+    return NextResponse.json(
+      { message: "Não foi possível encontrar o usuário e plano" },
+      { status: 404 }
+    );
+  }
 
   const createSubscriptionPagarMe: CreateSubscriptionPagarMe = {
     is_building: false,
@@ -108,7 +120,7 @@ export async function POST(request: NextRequest) {
     },
     name: name,
     type: "subscription",
-    external_reference: `${profile.slug_link}_${plan.link}_${profile.id}_plan-id=${plan_id}`,
+    external_reference: `${profile.slug_link}_${plan.link}_${profile.id}_plan-id-pagar-me=${plan_id}_plan-id-dbs=${data.plan_id}`,
   };
 
   const secret_key = process.env.PAGARME_SECRET_KEY;
