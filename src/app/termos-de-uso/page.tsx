@@ -5,7 +5,7 @@ export default function TermosUsoPage() {
   return (
     <div className="w-full">
       <Header />
-      <div className="max-w-3xl mx-auto p-8 text-gray-800 leading-relaxed">
+      <div className="max-w-3xl mx-auto lg:p-8 text-gray-800 leading-relaxed">
         <h1 className="text-4xl font-bold mb-6 text-main-purple">
           Termos de Uso
         </h1>

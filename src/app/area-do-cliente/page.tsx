@@ -251,7 +251,7 @@ export default function AreaCliente() {
   return (
     <div className="w-full">
       <Header />
-      <main className="w-full px-14 py-14 relative">
+      <main className="w-full lg:px-14 py-14 relative">
         <article className="w-full container mx-auto">
           {isAuthenticated && (
             <section className="min-h-screen grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 lg:gap-8 px-4 lg:px-0">

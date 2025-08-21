@@ -195,7 +195,7 @@ export default function CheckoutPage() {
   return (
     <div className="w-full">
       <Header />
-      <main className="w-full px-14 py-14 relative">
+      <main className="w-full lg:px-14 py-14 relative">
         {selectedPlan ? (
           <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 lg:px-0 lg:grid-cols-[1fr_1fr_1fr] items-start">
             <div className="flex flex-col justify-start items-start gap-8">
