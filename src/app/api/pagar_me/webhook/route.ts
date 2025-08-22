@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const data = payload.data;
 
     const metadata = data.metadata ?? {};
+    console.log(metadata);
 
     const userId = metadata.user_id;
     const slugUser = metadata.slug_link;
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     console.log("Evento:", eventType);
     console.log("Data:", data);
 
-    if (eventType === "order.paid" || eventType === "charge.paid") {
+    if (eventType === "subscription.created") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({
@@ -82,6 +83,8 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+
+    return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     console.error("Erro interno no servidor: ", error);
     return NextResponse.json(

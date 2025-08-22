@@ -7,15 +7,36 @@ interface CreateSubscriptionPagarMe {
     credit_card_settings: {
       operation_type: string;
     };
-    pix_settings: {
-      expires_in: number;
-    };
     accepted_payment_methods: string[];
     statement_descriptor: string;
-    success_url: string;
-    failure_url: string;
+  };
+  customer_settings: {
+    customer: {
+      phones: {
+        mobile_phone: {
+          country_code: string;
+          area_code: string;
+          number: string;
+        };
+      };
+      name: string;
+      type: string;
+      email: string;
+      code: string;
+      document: string;
+      document_type: string;
+      birthdate: string;
+      metadata: {
+        slug_link: string;
+        plan_link: string;
+        user_id: string;
+        plan_id_pagarme: string;
+        plan_id_db: string;
+      };
+    };
   };
   cart_settings: {
+    shipping_cost: number;
     recurrences: [
       {
         plan_id: string;
@@ -24,19 +45,12 @@ interface CreateSubscriptionPagarMe {
     ];
   };
   layout_settings: {
-    image_url: string;
-    primary_color: string;
-    secondary_color: string;
+    image_url: "https://privtime.vercel.app/_next/image?url=%2Fprivetime-users-bg.png&w=1920&q=75";
+    primary_color: "faf2fa";
+    secondary_color: "dfc1df";
   };
-  name: string;
-  type: string;
-  metadata: {
-    slug_link: string;
-    plan_link: string;
-    user_id: string;
-    plan_id_pagarme: string;
-    plan_id_db: string;
-  };
+  type: "subscription";
+  expires_in: 1;
 }
 
 interface CreatePlanPagarMe {
@@ -159,27 +173,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let profilePhone = profile.phone;
+  profilePhone = profilePhone.replace(/\D/g, "");
+  const areaCodePhone = profilePhone.slice(0, 2);
+  const WithoutAreaCode = profilePhone.slice(2);
+
   const createSubscriptionPagarMe: CreateSubscriptionPagarMe = {
     is_building: false,
     payment_settings: {
       credit_card_settings: {
         operation_type: "auth_and_capture",
       },
-      pix_settings: {
-        expires_in: 1,
-      },
       accepted_payment_methods: ["credit_card"],
       statement_descriptor: "APPVIAMODELS",
-      success_url: "https://privtime.vercel.app/",
-      failure_url: "https://privtime.vercel.app/",
     },
-    /* customer_settings: {
+    customer_settings: {
       customer: {
         phones: {
           mobile_phone: {
-            country_code: "55", // PEGAR COUNTRY CODE
-            area_code: profile.phone.substring(0, 2), // PEGAR AREA CODE
-            number: profile.phone.slice(2), // REMOVER AREA CODE
+            country_code: "55",
+            area_code: areaCodePhone,
+            number: WithoutAreaCode,
           },
         },
         name: profile.full_name,
@@ -189,10 +203,17 @@ export async function POST(request: NextRequest) {
         document: profile.identity,
         document_type: "CPF",
         birthdate: profile.birthdate,
+        metadata: {
+          slug_link: profile.slug_link,
+          plan_link: plan.link,
+          user_id: profile.id,
+          plan_id_pagarme: plan_id,
+          plan_id_db: data.plan_id,
+        },
       },
-      customer_id: profile.id,
-    }, */
+    },
     cart_settings: {
+      shipping_cost: 0,
       recurrences: [
         {
           plan_id: plan_id,
@@ -203,19 +224,70 @@ export async function POST(request: NextRequest) {
     layout_settings: {
       image_url:
         "https://privtime.vercel.app/_next/image?url=%2Fprivetime-users-bg.png&w=1920&q=75",
-      primary_color: "#faf2fa",
-      secondary_color: "#dfc1df",
+      primary_color: "faf2fa",
+      secondary_color: "dfc1df",
     },
-    name: name,
     type: "subscription",
-    metadata: {
-      slug_link: profile.slug_link,
-      plan_link: plan.link,
-      user_id: profile.id,
-      plan_id_pagarme: plan_id,
-      plan_id_db: data.plan_id,
-    },
+    expires_in: 1,
   };
+
+  // const createSubscriptionPagarMe: CreateSubscriptionPagarMe = {
+  //   is_building: false,
+  //   payment_settings: {
+  //     accepted_payment_methods: ["credit_card"],
+  //     credit_card_settings: {
+  //       operation_type: "auth_and_capture",
+  //     },
+  //     pix_settings: {
+  //       expires_in: 1,
+  //     },
+  //     statement_descriptor: "APPVIAMODELS",
+  //     success_url: "https://privtime.vercel.app/",
+  //     failure_url: "https://privtime.vercel.app/",
+  //   },
+  //   /* customer_settings: {
+  //     customer: {
+  //       phones: {
+  //         mobile_phone: {
+  //           country_code: "55", // PEGAR COUNTRY CODE
+  //           area_code: profile.phone.substring(0, 2), // PEGAR AREA CODE
+  //           number: profile.phone.slice(2), // REMOVER AREA CODE
+  //         },
+  //       },
+  //       name: profile.full_name,
+  //       type: "individual",
+  //       email: profile.email,
+  //       code: profile.id,
+  //       document: profile.identity,
+  //       document_type: "CPF",
+  //       birthdate: profile.birthdate,
+  //     },
+  //     customer_id: profile.id,
+  //   }, */
+  //   cart_settings: {
+  //     recurrences: [
+  //       {
+  //         plan_id: plan_id,
+  //         start_in: 1,
+  //       },
+  //     ],
+  //   },
+  //   layout_settings: {
+  //     image_url:
+  //       "https://privtime.vercel.app/_next/image?url=%2Fprivetime-users-bg.png&w=1920&q=75",
+  //     primary_color: "#faf2fa",
+  //     secondary_color: "#dfc1df",
+  //   },
+  //   name: name,
+  //   type: "subscription",
+  //   metadata: {
+  //     slug_link: profile.slug_link,
+  //     plan_link: plan.link,
+  //     user_id: profile.id,
+  //     plan_id_pagarme: plan_id,
+  //     plan_id_db: data.plan_id,
+  //   },
+  // };
 
   const secret_key = process.env.PAGARME_SECRET_KEY;
   const authHeader =
