@@ -9,14 +9,13 @@ export async function POST(request: NextRequest) {
     const eventType = payload.type;
     const data = payload.data;
 
-    const externalReference =
-      data.external_reference ?? data.charges?.[0].external_reference ?? null; // ${profile.slug_link}_${plan.link}_${profile.id}_plan-id=${plan_id}
-    const parts = externalReference.split("|");
-    const slugUser = parts[0];
-    const planLink = parts[1];
-    const userId = parts[2];
-    const planIdPagarMe = parts[3];
-    const planIdDbs = parts[4];
+    const metadata = data.metadata ?? {};
+
+    const userId = metadata.user_id;
+    const slugUser = metadata.slug_link;
+    const planLink = metadata.plan_link;
+    const plan_id_pagarme = metadata.plan_id_pagarme;
+    const planIdDbs = metadata.plan_id_db;
 
     const createdAt = new Date();
 
@@ -38,7 +37,6 @@ export async function POST(request: NextRequest) {
 
     const handleExpires = handleExpiresAt();
     console.log("Evento:", eventType);
-    console.log("External Reference:", externalReference);
     console.log("Data:", data);
 
     if (eventType === "order.paid" || eventType === "charge.paid") {

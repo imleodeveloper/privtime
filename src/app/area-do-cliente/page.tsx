@@ -507,10 +507,12 @@ export default function AreaCliente() {
                     </span>
                     <Link
                       href="/#planos"
-                      className="text-base font-semibold text-blue-600 hover:text-blue-800 underline flex justify-start items-center gap-1"
+                      className="text-base font-semibold text-white underline mt-4"
                     >
-                      Adquirir App
-                      <ExternalLink className="w-4 h-4"></ExternalLink>
+                      <Button className="flex justify-start items-center gap-1">
+                        Adquirir App
+                        <ExternalLink className="w-4 h-4"></ExternalLink>
+                      </Button>
                     </Link>
                   </div>
                 </div>

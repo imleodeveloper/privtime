@@ -12,6 +12,8 @@ interface CreateSubscriptionPagarMe {
     };
     accepted_payment_methods: string[];
     statement_descriptor: string;
+    success_url: string;
+    failure_url: string;
   };
   cart_settings: {
     recurrences: [
@@ -28,7 +30,13 @@ interface CreateSubscriptionPagarMe {
   };
   name: string;
   type: string;
-  external_reference: string;
+  metadata: {
+    slug_link: string;
+    plan_link: string;
+    user_id: string;
+    plan_id_pagarme: string;
+    plan_id_db: string;
+  };
 }
 
 interface CreatePlanPagarMe {
@@ -162,6 +170,8 @@ export async function POST(request: NextRequest) {
       },
       accepted_payment_methods: ["credit_card"],
       statement_descriptor: "APPVIAMODELS",
+      success_url: "https://privtime.vercel.app/",
+      failure_url: "https://privtime.vercel.app/",
     },
     /* customer_settings: {
       customer: {
@@ -198,7 +208,13 @@ export async function POST(request: NextRequest) {
     },
     name: name,
     type: "subscription",
-    external_reference: `${profile.slug_link}|${plan.link}|${profile.id}|plan-id-pagar-me=${plan_id}|plan-id-dbs=${data.plan_id}`,
+    metadata: {
+      slug_link: profile.slug_link,
+      plan_link: plan.link,
+      user_id: profile.id,
+      plan_id_pagarme: plan_id,
+      plan_id_db: data.plan_id,
+    },
   };
 
   const secret_key = process.env.PAGARME_SECRET_KEY;

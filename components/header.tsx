@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import {
   BriefcaseBusiness,
+  ChevronDown,
   Cog,
   GalleryThumbnails,
   House,
@@ -140,11 +141,12 @@ export function Header() {
                   onMouseEnter={() => setSubmenu(!submenu)}
                 >
                   <Button
-                    className={`shadow-xl text-white ${
+                    className={`flex justify-center items-center gap-1 shadow-xl text-white ${
                       submenu ? "rounded-b-none" : "rounded-sm"
                     }`}
                   >
                     Configurações
+                    <ChevronDown className="w-4 h-4"></ChevronDown>
                   </Button>
                   {submenu && (
                     <div className="absolute  z-[999] top-full pb-2 left-0 w-full h-auto flex justify-center items-start rounded-b-sm shadow-2xl bg-main-purple">
