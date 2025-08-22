@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const eventType = payload.type;
     const data = payload.data;
 
-    const metadata = data.metadata ?? {};
+    const metadata = data.customer.metadata ?? {};
     console.log(metadata);
 
     const userId = metadata.user_id;
