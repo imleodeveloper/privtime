@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     const externalReference =
       data.external_reference ?? data.charges?.[0].external_reference ?? null; // ${profile.slug_link}_${plan.link}_${profile.id}_plan-id=${plan_id}
-    const parts = externalReference.split("_");
+    const parts = externalReference.split("|");
     const slugUser = parts[0];
     const planLink = parts[1];
     const userId = parts[2];
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     const handleExpires = handleExpiresAt();
     console.log("Evento:", eventType);
     console.log("External Reference:", externalReference);
+    console.log("Data:", data);
 
     if (eventType === "order.paid" || eventType === "charge.paid") {
       const { error } = await supabaseAdmin

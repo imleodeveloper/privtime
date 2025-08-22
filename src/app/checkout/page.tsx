@@ -63,6 +63,7 @@ interface FetchProfile {
   phone: string;
   email: string;
   identity: string;
+  slug_link: string;
   birthdate: string;
 }
 
@@ -86,6 +87,7 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     identity: "",
+    slug_link: "",
     birthdate: "",
   });
 
@@ -151,6 +153,7 @@ export default function CheckoutPage() {
               email: data.email,
               phone: data.phone,
               identity: data.identity,
+              slug_link: data.slug_link,
               birthdate: data.birthdate,
             });
           }
@@ -166,6 +169,7 @@ export default function CheckoutPage() {
     checkSession();
   }, [router]);
 
+  console.log(fetchProfile);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

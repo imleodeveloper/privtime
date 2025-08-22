@@ -31,17 +31,95 @@ interface CreateSubscriptionPagarMe {
   external_reference: string;
 }
 
+interface CreatePlanPagarMe {
+  interval: string;
+  interval_count: number;
+  pricing_scheme: {
+    scheme_type: string;
+    price: number;
+  };
+  quantity: number;
+  currency: string;
+  billing_type: string;
+  name: string;
+  payment_methods: string[];
+  minimum_price: number;
+  statement_descriptor: string;
+  trial_period_days: number;
+  metadata: { plan_type: string };
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { plan, profile } = body;
 
-  const interval = plan.type === "Mensal" ? "month" : "year";
-  const amount = plan.type === "Mensal" ? 5819 : 57828;
-  const name = plan.type === "Mensal" ? "Plano Mensal" : "Plano Anual";
-  const plan_id =
-    plan.type === "Mensal" ? "plan_MQzGwyJFpSQjoA4d" : "plan_DYZjG87hmUw3wN0R";
+  // console.log(plan);
 
-  /*const createPlanPagarMe = {
+  // const interval = plan.type === "Mensal" ? "month" : "year";
+  let interval: string = "";
+  switch (plan.type) {
+    case "Mensal":
+      interval = "month";
+      break;
+    case "Anual":
+      interval = "year";
+      break;
+    case "Test":
+      interval = "month";
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  // const amount = plan.type === "Mensal" ? 5819 : 57828;
+  let amount: number = 0;
+  switch (plan.type) {
+    case "Mensal":
+      amount = 5819;
+      break;
+    case "Anual":
+      amount = 57828;
+      break;
+    case "Test":
+      amount = 100;
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  // const name = plan.type === "Mensal" ? "Plano Mensal" : "Plano Anual";
+  let name: string = "";
+  switch (plan.type) {
+    case "Mensal":
+      name = "Plano Mensal";
+      break;
+    case "Anual":
+      name = "Plano Anual";
+      break;
+    case "Test":
+      name = "Plano Teste";
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  let plan_id: string = "";
+  switch (plan.type) {
+    case "Mensal":
+      plan_id = "plan_MQzGwyJFpSQjoA4d";
+      break;
+    case "Anual":
+      plan_id = "plan_DYZjG87hmUw3wN0R";
+      break;
+    case "Test":
+      plan_id = "plan_xXj8xm2S1vUNYegQ"; //"plan_E1j3Q6HZNFzlDn4r";
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+  //plan.type === "Mensal" ? "plan_MQzGwyJFpSQjoA4d" : "plan_DYZjG87hmUw3wN0R";
+
+  const createPlanPagarMe: CreatePlanPagarMe = {
     interval: interval,
     interval_count: 1,
     pricing_scheme: {
@@ -57,7 +135,7 @@ export async function POST(request: NextRequest) {
     statement_descriptor: "APPVIAMODELS",
     trial_period_days: 1,
     metadata: { plan_type: plan.link },
-  }; */
+  };
 
   const { data, error } = await supabaseAdmin
     .from("users_plan")
@@ -120,15 +198,15 @@ export async function POST(request: NextRequest) {
     },
     name: name,
     type: "subscription",
-    external_reference: `${profile.slug_link}_${plan.link}_${profile.id}_plan-id-pagar-me=${plan_id}_plan-id-dbs=${data.plan_id}`,
+    external_reference: `${profile.slug_link}|${plan.link}|${profile.id}|plan-id-pagar-me=${plan_id}|plan-id-dbs=${data.plan_id}`,
   };
 
   const secret_key = process.env.PAGARME_SECRET_KEY;
   const authHeader =
     "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
-
+  console.log("Objeto sub:", createSubscriptionPagarMe);
   try {
-    // Cria o plano uma única vez
+    // Redireciona pro checkout uma única vez
     const response = await fetch("https://api.pagar.me/core/v5/paymentlinks", {
       method: "POST",
       headers: {
@@ -138,6 +216,18 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(createSubscriptionPagarMe),
     });
+
+    // console.log(createPlanPagarMe);
+
+    // const response = await fetch("https://api.pagar.me/core/v5/plans", {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: authHeader,
+    //     "Content-Type": "application/json",
+    //     Accept: "application/json",
+    //   },
+    //   body: JSON.stringify(createPlanPagarMe),
+    // });
 
     const data = await response.json();
 
