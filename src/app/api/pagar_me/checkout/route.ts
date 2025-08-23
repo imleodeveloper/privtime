@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       amount = 57828;
       break;
     case "Test":
-      amount = 100;
+      amount = 99;
       break;
     default:
       throw new Error("Tipo de plano inválido");
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
       plan_id = "plan_DYZjG87hmUw3wN0R";
       break;
     case "Test":
-      plan_id = "plan_xXj8xm2S1vUNYegQ"; //"plan_E1j3Q6HZNFzlDn4r";
+      plan_id = "plan_qEX0JmzTvTNQB1o7"; //"plan_KQ6A3nWsVUKyoeEX"; //"plan_xXj8xm2S1vUNYegQ"; //"plan_E1j3Q6HZNFzlDn4r";
       break;
     default:
       throw new Error("Tipo de plano inválido");
@@ -320,9 +320,9 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log("Não foi possível criar um plano de assinatura: ", data);
+      console.log("Não foi possível criar uma assinatura: ", data);
       return NextResponse.json(
-        { message: "Erro ao criar plano de assinatura." },
+        { message: "Erro ao criar uma assinatura." },
         { status: 401 }
       );
     }
