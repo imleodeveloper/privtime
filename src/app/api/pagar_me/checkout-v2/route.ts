@@ -52,6 +52,24 @@ interface CreateSubscriptionPagarMe {
     user_plan: string;
   };
 }
+
+interface CreatePlanPagarMe {
+  interval: string;
+  interval_count: number;
+  pricing_scheme: {
+    scheme_type: string;
+    price: number;
+  };
+  quantity: number;
+  currency: string;
+  billing_type: string;
+  name: string;
+  payment_methods: string[];
+  minimum_price: number;
+  statement_descriptor: string;
+  metadata: { plan_type: string };
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { infoForPayment, selectedPlan, fetchProfile } = body;
@@ -72,6 +90,76 @@ export async function POST(request: NextRequest) {
   // CLEAN CPF OU CNPJ
   const identity = infoForPayment.identity;
   const cleanIdentity = identity.replace(/\D/g, "");
+
+  // Auth
+  const secret_key = process.env.PAGARME_SECRET_KEY;
+  const authHeader =
+    "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
+
+  // const interval = plan.type === "Mensal" ? "month" : "year";
+  let interval: string = "";
+  switch (selectedPlan.type) {
+    case "Mensal":
+      interval = "month";
+      break;
+    case "Anual":
+      interval = "year";
+      break;
+    case "Test":
+      interval = "month";
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  // const amount = plan.type === "Mensal" ? 5819 : 57828;
+  let amount: number = 0;
+  switch (selectedPlan.type) {
+    case "Mensal":
+      amount = 5819;
+      break;
+    case "Anual":
+      amount = 57828;
+      break;
+    case "Test":
+      amount = 99;
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  // const name = plan.type === "Mensal" ? "Plano Mensal" : "Plano Anual";
+  let name: string = "";
+  switch (selectedPlan.type) {
+    case "Mensal":
+      name = "Plano Mensal";
+      break;
+    case "Anual":
+      name = "Plano Anual";
+      break;
+    case "Test":
+      name = "Plano Teste";
+      break;
+    default:
+      throw new Error("Tipo de plano inválido");
+  }
+
+  const createPlanPagarMe: CreatePlanPagarMe = {
+    interval: interval,
+    interval_count: 1,
+    pricing_scheme: {
+      scheme_type: "unit",
+      price: amount,
+    },
+    quantity: 1,
+    currency: "BRL",
+    billing_type: "prepaid",
+    name: name,
+    payment_methods: ["credit_card", "boleto"],
+    minimum_price: amount,
+    statement_descriptor: "APPVIAMODELS",
+    metadata: { plan_type: selectedPlan.link },
+  };
 
   const createCustomerPagarMe: CreateCustomerPagarMe = {
     address: {
@@ -106,21 +194,49 @@ export async function POST(request: NextRequest) {
   let plan_id: string = "";
   switch (selectedPlan.type) {
     case "Mensal":
-      plan_id = "plan_MQzGwyJFpSQjoA4d";
+      plan_id = "plan_XmjB1bJivTj4GnOx";
       break;
     case "Anual":
-      plan_id = "plan_DYZjG87hmUw3wN0R";
+      plan_id = "plan_B1z0OXEHmS1BZWJe";
       break;
     case "Test":
-      plan_id = "plan_qEX0JmzTvTNQB1o7"; //"plan_KQ6A3nWsVUKyoeEX"; //"plan_xXj8xm2S1vUNYegQ"; //"plan_E1j3Q6HZNFzlDn4r";
+      plan_id = "plan_e8gljV4TZZhdzlA0";
       break;
     default:
       throw new Error("Tipo de plano inválido");
   }
   try {
-    const secret_key = process.env.PAGARME_SECRET_KEY;
-    const authHeader =
-      "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
+    // API PARA DELETAR PLANO
+    // const responseDeletePlan = await fetch(
+    //   "https://api.pagar.me/core/v5/plans/${plan_id}",
+    //   {
+    //     method: "DELETE",
+    //     headers: {
+    //       Authorization: authHeader,
+    //       Accept: "application/json",
+    //     },
+    //   }
+    // );
+    // const dataDeletePlan = await responseDeletePlan.json();
+    // console.log("Delete: ", dataDeletePlan);
+
+    // API PARA CRIAR PLANO
+    // const responseCreatePlan = await fetch(
+    //   "https://api.pagar.me/core/v5/plans",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       Authorization: authHeader,
+    //       "Content-Type": "application/json",
+    //       Accept: "application/json",
+    //     },
+    //     body: JSON.stringify(createPlanPagarMe),
+    //   }
+    // );
+
+    // const dataCreatePlan = await responseCreatePlan.json();
+    // console.log("Create: ", dataCreatePlan);
+
     console.log("Objeto CreateCustomer: ", createCustomerPagarMe);
 
     const responseCreateCustomer = await fetch(

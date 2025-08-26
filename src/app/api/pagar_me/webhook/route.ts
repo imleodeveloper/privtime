@@ -48,10 +48,9 @@ export async function POST(request: NextRequest) {
           slug_plan_at_moment: planLink,
           price_at_purchase: data.amount,
           subscription_id: data.id,
-          last_transaction_id: data.charges[0].last_transaction.id,
           created_at: createdAt,
           expires_at: handleExpires,
-          status: "active",
+          status: "future",
         })
         .eq("user_id", userId);
 
