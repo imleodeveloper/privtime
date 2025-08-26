@@ -34,6 +34,81 @@ export default function SignUp() {
     birthDate: "",
   });
 
+  const formatName = (value: string) => {
+    return value
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  const formatTel = (value: string) => {
+    // Remove tudo que não for número
+    let digits = value.replace(/\D/g, "");
+
+    // Limita para 11 digitos (ddd + 9 digit)
+    if (digits.length > 11) {
+      digits = digits.slice(0, 11);
+    }
+
+    // Monta no formato XX XXXXX-XXXX
+    if (digits.length > 6) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    } else if (digits.length > 2) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else if (digits.length > 0) {
+      return `(${digits})`;
+    }
+
+    return "";
+  };
+
+  const formatIdentity = (value: string, identity: "cpf" | "cnpj") => {
+    let digits = value.replace(/\D/g, "");
+    if (identity === "cpf") {
+      // Limita para 11 digitos de CPF
+      digits = digits.slice(0, 11);
+
+      // Monta no formato XXX.XXX.XXX-XX
+      if (digits.length > 9) {
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(
+          6,
+          9
+        )}-${digits.slice(9)}`;
+      } else if (digits.length > 6) {
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+      } else {
+        return digits;
+      }
+    }
+    if (identity === "cnpj") {
+      // Limita para 14 digitos de CNPJ
+      digits = digits.slice(0, 14);
+
+      // Monta no formato XX.XXX.XXX/XXXX-XX
+      if (digits.length > 12) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(
+          5,
+          8
+        )}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+      } else if (digits.length > 8) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(
+          5,
+          8
+        )}/${digits.slice(8)}`;
+      } else if (digits.length > 5) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
+      } else if (digits.length > 2) {
+        return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+      } else {
+        return digits;
+      }
+    }
+
+    return digits;
+  };
+
   function handleInputChange<K extends keyof FormData>(
     key: K,
     value: FormData[K]
@@ -170,7 +245,7 @@ export default function SignUp() {
                   placeholder="Seu nome completo"
                   value={formData.fullName}
                   onChange={(e) =>
-                    handleInputChange("fullName", e.target.value)
+                    handleInputChange("fullName", formatName(e.target.value))
                   }
                   className="text-sm"
                   required
@@ -203,7 +278,9 @@ export default function SignUp() {
                   type="tel"
                   placeholder="(11) 91234-5678"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("phone", formatTel(e.target.value))
+                  }
                   required
                   className="text-sm"
                 />
@@ -232,9 +309,13 @@ export default function SignUp() {
                   name="CPF"
                   type="text"
                   placeholder="000.000.000-00"
-                  maxLength={11}
                   value={formData.cpf}
-                  onChange={(e) => handleInputChange("cpf", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "cpf",
+                      formatIdentity(e.target.value, "cpf")
+                    )
+                  }
                   required
                   className="text-sm"
                 />
