@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           plan_id: planIdDbs,
           slug_plan_at_moment: planLink,
           price_at_purchase: amount,
-          subscription_id: data.id,
+          subscription_id: data.invoice.subscriptionId,
           last_transaction_id: data.last_transaction?.id ?? null,
           created_at: createdAt,
           expires_at: handleExpires,
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Erro interno no servidor: ", error);
     return NextResponse.json(
-      { message: "Erro interno no servidor" },
+      { message: "Erro interno no servidor", error },
       { status: 500 }
     );
   }
