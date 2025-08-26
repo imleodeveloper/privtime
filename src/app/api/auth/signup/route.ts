@@ -70,9 +70,10 @@ export async function POST(request: Request) {
   }
 
   const cpfTrim = cpf.trim();
+  const cpfClean = cpfTrim.replace(/\D/g, "");
   const hasLettersInCPF = /^[0-9]+$/.test(cpfTrim);
   // CHECK CPF
-  if (cpf.trim().length !== 11) {
+  if (cpfClean.length !== 11) {
     return NextResponse.json(
       {
         message: "O CPF deve ter exatamente 11 dígitos",

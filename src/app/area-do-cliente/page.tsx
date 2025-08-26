@@ -328,7 +328,7 @@ export default function AreaCliente() {
                   <span className="text-2xl font-semibold">
                     Detalhes do Plano -{" "}
                     <span className="text-xl font-bold text-main-pink">
-                      App {isMonthly || "- (Plano Não Encontrado)"}
+                      App {isMonthly}
                     </span>
                   </span>
                   <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-0 pt-6">
@@ -388,9 +388,15 @@ export default function AreaCliente() {
                     </span>
                     <span>
                       <span className="font-bold text-xl text-main-pink">
-                        {formatPrice(fetchPlan.price)}
+                        {formatPrice(
+                          fetchPlan.type === "Anual"
+                            ? fetchPlan.price * 12
+                            : fetchPlan.price
+                        )}
                       </span>{" "}
-                      <span className="text-base text-gray-700">/mês</span>
+                      <span className="text-base text-gray-700">
+                        {fetchPlan.type === "Anual" ? "/ano" : "/mês"}
+                      </span>
                     </span>
                     <div className="flex flex-col justify-start items-start pt-4">
                       <span className="text-base text-main-pink font-bold">
