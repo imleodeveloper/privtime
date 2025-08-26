@@ -203,13 +203,13 @@ export async function POST(request: NextRequest) {
   let plan_id: string = "";
   switch (selectedPlan.type) {
     case "Mensal":
-      plan_id = "plan_XmjB1bJivTj4GnOx";
+      plan_id = "plan_l17dMJKFgFxjeQOz"; // ESSE É PARA PRODUÇÃO "plan_XmjB1bJivTj4GnOx";
       break;
     case "Anual":
-      plan_id = "plan_B1z0OXEHmS1BZWJe";
+      plan_id = "plan_7JEn0rnVSbHN0GxB"; // ESSE É PARA PRODUÇÃO "plan_B1z0OXEHmS1BZWJe";
       break;
     case "Test":
-      plan_id = "plan_1Y02XvBt2tYXgM4z";
+      plan_id = "plan_J8R6WNJs8s3WAMNr"; // ESSE É PARA PRODUÇÃO "plan_1Y02XvBt2tYXgM4z";
       break;
     default:
       throw new Error("Tipo de plano inválido");
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
   try {
     // API PARA DELETAR PLANO
     // const responseDeletePlan = await fetch(
-    //   "https://api.pagar.me/core/v5/plans/plan_e8gljV4TZZhdzlA0",
+    //   "https://sdx-api.pagar.me/core/v5/plans/plan_e8gljV4TZZhdzlA0",
     //   {
     //     method: "DELETE",
     //     headers: {
@@ -242,6 +242,9 @@ export async function POST(request: NextRequest) {
     //     body: JSON.stringify(createPlanPagarMe),
     //   }
     // );
+
+    // console.log(responseCreatePlan.status);
+    // console.log(responseCreatePlan.statusText);
 
     // const dataCreatePlan = await responseCreatePlan.json();
     // console.log("Create: ", dataCreatePlan);
