@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
     const handleExpires = handleExpiresAt();
     console.log("Evento:", eventType);
     console.log("Data:", data);
+    console.log("GateWay Response: ", data.last_transaction.gateway_response);
 
     if (
       eventType === "subscription.created" ||
