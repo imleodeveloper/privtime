@@ -86,7 +86,7 @@ export function PlansHome() {
                 </ul>
               </div>
               <div className="w-full">
-                <Link href={`/checkout?plan=${plan.link}`}>
+                <Link href={`/checkout-v2?plan=${plan.link}`}>
                   <Button
                     className={`w-full ${
                       plan.type === "Mensal"

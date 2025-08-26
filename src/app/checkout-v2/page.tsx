@@ -1,0 +1,1194 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { Footer } from "../../../components/footer";
+import { Header } from "../../../components/header";
+import { formatPrice, plans } from "../../../lib/plans";
+import React, { useState, useEffect } from "react";
+import {
+  BadgeCheck,
+  CreditCard,
+  ExternalLink,
+  Info,
+  LockKeyhole,
+  MessageSquareWarning,
+  MoveUpRight,
+  PanelTopOpen,
+  Star,
+} from "lucide-react";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { supabase } from "../../../lib/supabase";
+import Link from "next/link";
+
+interface FaqQuestions {
+  question: string;
+  answer: string;
+}
+
+const faqQuestions: FaqQuestions[] = [
+  {
+    question: "Como posso alterar o plano antes de finalizar a compra?",
+    answer:
+      "Você pode selecionar outro plano diretamente na página de checkout ou voltar à página de planos para escolher uma nova opção. Assim que selecionar, o resumo do pedido será atualizado automaticamente.",
+  },
+  {
+    question: "Quais métodos de pagamento vocês aceitam?",
+    answer:
+      "Aceitamos cartões de crédito, PIX e pagamentos recorrentes via assinatura. Todas as transações são processadas de forma 100% segura.",
+  },
+  {
+    question: "Minha assinatura é renovada automaticamente?",
+    answer:
+      "Sim, as assinaturas mensais e anuais são renovadas automaticamente ao final do período contratado. Você pode cancelar a renovação a qualquer momento pelo painel do usuário.",
+  },
+  {
+    question: "Minhas informações de pagamento estão seguras?",
+    answer:
+      "Sim, utilizamos gateways de pagamento confiáveis e certificados (do Mercado Pago) que garantem a segurança de todos os dados transacionados.",
+  },
+  {
+    question: "Receberei acesso imediato após o pagamento?",
+    answer:
+      "Pagamentos com cartão de crédito e PIX têm confirmação instantânea.",
+  },
+  {
+    question: "Posso cancelar minha assinatura e obter reembolso?",
+    answer:
+      "Você pode cancelar a qualquer momento. Se o cancelamento for solicitado em até 7 dias após a compra, oferecemos reembolso integral, conforme o Código de Defesa do Consumidor.",
+  },
+];
+
+interface CustomerData {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  identity: string;
+}
+
+interface FetchProfile {
+  id: string;
+  full_name: string;
+  phone: string;
+  email: string;
+  identity: string;
+  slug_link: string;
+  birthdate: string;
+}
+
+interface InfoUser {
+  email: string;
+  full_name: string;
+  identity: string;
+  typeDoc: string;
+  phone: string;
+}
+
+interface InfoForPayment {
+  email: string;
+  full_name: string;
+  identity: string;
+  typeDoc: string;
+  phone: string;
+  cep: string;
+  state: string;
+  city: string;
+  address: string;
+  neighborhood: string;
+  numberHouse: string;
+  complement: string;
+  cardNumber: string;
+  cardHolder: string;
+  expiry: string;
+  cvv: string;
+}
+
+export default function CheckoutPage() {
+  //const searchParams = useSearchParams();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  //const planURL = searchParams.get("plan"); //Pega o plan da URL ex: https://privtime.com.br/checkout?plan=monthly_plan
+  const [planURL, setPlanURL] = useState<string | null>(null);
+  const [faqOpen, setFaqOpen] = useState<number | null>(null);
+  const [changePlan, setChangePlan] = useState(false);
+  const [userData, setUserData] = useState<CustomerData>({
+    id: "",
+    email: "",
+    name: "",
+    phone: "",
+    identity: "",
+  });
+  const [fetchProfile, setFetchProfile] = useState<FetchProfile>({
+    id: "",
+    full_name: "",
+    email: "",
+    phone: "",
+    identity: "",
+    slug_link: "",
+    birthdate: "",
+  });
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
+
+  // FORM DE CHECKOUT
+  const [fullNameValue, setFullNameValue] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+  const [docType, setDocType] = useState<"cpf" | "cnpj">("cpf");
+  const [docValue, setDocValue] = useState("");
+  const [telValue, setTelValue] = useState("");
+  const [infoUser, setInfoUser] = useState<InfoUser>({
+    email: emailValue,
+    full_name: fullNameValue,
+    identity: docValue,
+    typeDoc: docType,
+    phone: telValue,
+  });
+
+  // FORM DE CHECKOUT V2
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCep, setIsLoadingCep] = useState(true);
+  const [cep, setCep] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [neighborhood, setNeighborhood] = useState("");
+  const [numberHouse, setNumberHouse] = useState("");
+  const [complement, setComplement] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+
+  const handleFetchCEP = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cepValue = e.target.value.replace(/\D/g, "");
+    setCep(cepValue);
+
+    if (cepValue.length !== 8) {
+      setError("O CEP tem que conter 8 digitos, tente novamente.");
+      return;
+    }
+    if (cepValue.length === 8) {
+      setError("");
+    }
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cepValue}/json/`
+      );
+      const data = await response.json();
+      if (data.erro) {
+        setError("CEP não encontrado, tente outro CEP.");
+        return;
+      }
+      // console.log("VIACEP: ", data);
+
+      setNeighborhood(data.bairro);
+      setCep(data.cep);
+      setState(data.uf);
+      setCity(data.localidade);
+      setAddress(data.logradouro);
+
+      setIsLoadingCep(false);
+    } catch (error) {
+      console.error("Erro ao procurar CEP:", error);
+      setError("Erro ao procurar CEP no servidor. Tente novamente");
+      return;
+    }
+  };
+
+  const handleChangeDoc = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDocType(e.target.value as "cpf" | "cnpj");
+    setDocValue("");
+  };
+  const formatName = (value: string) => {
+    return value
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+  const handleFullName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFullNameValue(formatName(e.target.value));
+  };
+  const formatTel = (value: string) => {
+    // Remove tudo que não for número
+    let digits = value.replace(/\D/g, "");
+
+    // Limita para 11 digitos (ddd + 9 digit)
+    if (digits.length > 11) {
+      digits = digits.slice(0, 11);
+    }
+
+    // Monta no formato XX XXXXX-XXXX
+    if (digits.length > 6) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    } else if (digits.length > 2) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else if (digits.length > 0) {
+      return `(${digits})`;
+    }
+
+    return "";
+  };
+  const formatIdentity = (value: string, identity: "cpf" | "cnpj") => {
+    let digits = value.replace(/\D/g, "");
+    if (identity === "cpf") {
+      // Limita para 11 digitos de CPF
+      digits = digits.slice(0, 11);
+
+      // Monta no formato XXX.XXX.XXX-XX
+      if (digits.length > 9) {
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(
+          6,
+          9
+        )}-${digits.slice(9)}`;
+      } else if (digits.length > 6) {
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+      } else if (digits.length > 3) {
+        return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+      } else {
+        return digits;
+      }
+    }
+    if (identity === "cnpj") {
+      // Limita para 14 digitos de CNPJ
+      digits = digits.slice(0, 14);
+
+      // Monta no formato XX.XXX.XXX/XXXX-XX
+      if (digits.length > 12) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(
+          5,
+          8
+        )}/${digits.slice(8, 12)}-${digits.slice(12)}`;
+      } else if (digits.length > 8) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(
+          5,
+          8
+        )}/${digits.slice(8)}`;
+      } else if (digits.length > 5) {
+        return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5)}`;
+      } else if (digits.length > 2) {
+        return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+      } else {
+        return digits;
+      }
+    }
+
+    return digits;
+  };
+  const formatCardNumber = (value: string) => {
+    let digits = value.replace(/\D/g, ""); // remove tudo que não é número
+    if (digits.length > 16) digits = digits.slice(0, 16);
+
+    let formatted = "";
+    for (let i = 0; i < digits.length; i += 4) {
+      if (formatted) formatted += " ";
+      formatted += digits.slice(i, i + 4);
+    }
+
+    return formatted;
+  };
+  const formatExpiry = (value: string) => {
+    let digits = value.replace(/\D/g, ""); // remove tudo que não for número
+    if (digits.length > 4) digits = digits.slice(0, 4);
+
+    if (digits.length >= 3) {
+      return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    } else if (digits.length >= 1) {
+      return digits;
+    }
+
+    return "";
+  };
+
+  const handleChangeTel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTelValue(formatTel(e.target.value));
+  };
+  const handleChangeIdentity = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDocValue(formatIdentity(e.target.value, docType));
+  };
+
+  // Qual plano foi selecionado
+  const [selectedPlan, setSelectedPlan] = useState<(typeof plans)[0] | null>(
+    null
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const plan = params.get("plan");
+
+    setPlanURL(plan);
+
+    if (plan) {
+      const selected = plans.find((p) => p.link === plan);
+      setSelectedPlan(selected || null);
+    } else {
+      // redireciona se não tiver plan
+      const currentURL = window.location.pathname + window.location.search;
+      router.push(`/?redirect=${encodeURIComponent(currentURL)}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          // Redireciona para o login se não tiver sessão logada
+          const currentURL = window.location.pathname + window.location.search;
+          router.push(`/signin?redirect=${encodeURIComponent(currentURL)}`);
+          return;
+        }
+
+        if (session.user) {
+          setUserData((prev) => ({
+            ...prev,
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.full_name || "",
+            phone: session.user.user_metadata?.phone || "",
+            identity: session.user.user_metadata?.identity || "",
+          }));
+
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+
+          if (error) {
+            console.log("Não foi possível localizar as informações do usuário");
+          }
+
+          if (data) {
+            setFetchProfile({
+              id: data.id,
+              full_name: data.full_name,
+              email: data.email,
+              phone: data.phone,
+              identity: data.identity,
+              slug_link: data.slug_link,
+              birthdate: data.birthdate,
+            });
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Erro ao verificar sessão ou localizar informações do usuário: ",
+          error
+        );
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  // console.log(fetchProfile);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (fetchProfile && selectedPlan) {
+  //     try {
+  //       const response = await fetch("/api/pagar_me/checkout", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ profile: fetchProfile, plan: selectedPlan }),
+  //       });
+
+  //       if (!response.ok) {
+  //         alert("Erro ao criar checkout Pagar Me. Tente novamente");
+  //         return;
+  //       }
+
+  //       const data = await response.json();
+
+  //       window.location.href = data.url;
+  //     } catch (error) {
+  //       console.error("Erro interno no servidor: ", error);
+  //       alert("Erro interno no servidor. Tente novamente");
+  //     }
+  //   }
+  // };
+
+  const handleSubmitCheck = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const infoUserToSend: InfoUser = {
+      email: emailValue,
+      full_name: fullNameValue,
+      identity: docValue,
+      typeDoc: docType,
+      phone: telValue,
+    };
+
+    const response = await fetch("/api/pagar_me/checkout-v2/verify-info", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(infoUserToSend),
+    });
+
+    const data = await response.json();
+
+    if (data.message) {
+      setError(data.message);
+      return;
+    }
+    setError("");
+    setShowPaymentStep(data.showPayments);
+  };
+
+  const handleSubmitPayment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const infoForPayment: InfoForPayment = {
+      email: emailValue,
+      full_name: fullNameValue,
+      identity: docValue,
+      typeDoc: docType,
+      phone: telValue,
+      cep: cep,
+      state: state,
+      city: city,
+      address: address,
+      neighborhood: neighborhood,
+      numberHouse: numberHouse,
+      complement: complement,
+      cardNumber: cardNumber,
+      cardHolder: cardHolder,
+      expiry: expiry,
+      cvv: cvv,
+    };
+    try {
+      const response = await fetch("/api/pagar_me/checkout-v2", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ infoForPayment, selectedPlan, fetchProfile }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      if (data.message) {
+        setError(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      setError(
+        "Erro interno no servidor, não foi possível realizar pagamento."
+      );
+      setIsLoading(false);
+      console.error("Erro interno do servidor: ", error);
+      return;
+    }
+  };
+
+  return (
+    <div className="w-full">
+      <Header />
+      {!showPaymentStep && (
+        <main className="w-full xl:px-14 py-14 relative">
+          {selectedPlan ? (
+            <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 xl:px-0 xl:grid-cols-[1fr_1fr] items-start">
+              <div className="w-full flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1">
+                <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pb-6">
+                  <span className="w-full text-start text-2xl text-black font-bold">
+                    Método de pagamento
+                  </span>
+                  <div className="w-full flex justify-start items-center gap-4 p-4 rounded-md bg-sub-background border border-main-pink">
+                    <CreditCard className="p-2 w-8 h-8 rounded-full bg-sub-purple text-main-pink"></CreditCard>
+                    <span className="text-lg text-main-pink font-semibold">
+                      Crédito
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
+                  <span className="w-full text-start text-2xl text-black font-bold">
+                    Dados pessoais
+                  </span>
+                  {error && (
+                    <div className="w-full p-4 bg-red-100 rounded-md border border-red-600 flex justify-start items-start gap-2">
+                      <MessageSquareWarning className="w-6 h-6 text-red-800"></MessageSquareWarning>{" "}
+                      <span className="text-red-700 flex justify-start items-center">
+                        {error}
+                      </span>
+                    </div>
+                  )}
+                  <form
+                    className="w-full grid grid-cols-1 justify-center items-center gap-4"
+                    onSubmit={handleSubmitCheck}
+                  >
+                    <div className="w-full flex flex-col justify-center items-start gap-2">
+                      <label htmlFor="email" className="pl-1">
+                        E-mail{" "}
+                        <span className="text-main-pink font-extrabold text-lg">
+                          *
+                        </span>
+                      </label>
+                      <Input
+                        type="email"
+                        name="e-mail"
+                        id="email"
+                        required
+                        value={emailValue}
+                        onChange={(e) => setEmailValue(e.target.value)}
+                        placeholder="pedrosilva@exemplo.com"
+                      />
+                    </div>
+                    <div className="w-full flex flex-col justify-center items-start gap-2">
+                      <label htmlFor="name" className="pl-1">
+                        Nome completo{" "}
+                        <span className="text-main-pink font-extrabold text-lg">
+                          *
+                        </span>
+                      </label>
+                      <Input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={fullNameValue}
+                        required
+                        onChange={handleFullName}
+                        placeholder="Pedro Ribeiro da Silva"
+                      />
+                    </div>
+                    <div className="w-full grid grid-cols-[1fr_2fr] justify-center items-start gap-2">
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="docType" className="pl-1">
+                          Documento{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <select
+                          name="docType"
+                          id="docType"
+                          value={docType}
+                          onChange={handleChangeDoc}
+                          className="w-full text-sm bg-white px-2 py-1 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                        >
+                          <option value="cpf">CPF</option>
+                          <option value="cnpj">CNPJ</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="docValue" className="pl-1">
+                          Número do documento{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="docValue"
+                          id="docValue"
+                          required
+                          placeholder={
+                            docType === "cpf"
+                              ? "000.000.000-00"
+                              : "00.000.000/0000-00"
+                          }
+                          value={docValue}
+                          onChange={handleChangeIdentity}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="CodTel" className="pl-1">
+                          Código do país{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <select
+                          name="CodTel"
+                          id="CodTel"
+                          className="w-full bg-white px-2 py-2 text-sm rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                        >
+                          <option value="cpf">(+55)</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="telValue" className="pl-1">
+                          Celular com DDD{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="telValue"
+                          id="telValue"
+                          required
+                          placeholder={"(00) 0 0000-0000"}
+                          value={telValue}
+                          onChange={handleChangeTel}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 items-center justify-center pt-4">
+                      <div className="gap-2 flex justify-center items-center text-gray-600">
+                        <LockKeyhole className="w-4 h-4"></LockKeyhole>
+                        <span className="text-sm">Pagamento protegido</span>
+                        <div className="group relative">
+                          <Info className="w-4 h-4"></Info>
+                          <div className="invisible group-hover:visible absolute right-0 mx-auto bottom-full w-48 h-auto px-2 py-1 rounded-md bg-gray-900 text-white text-xs">
+                            <span>
+                              Seu pagamento é processado de forma segura pela
+                              Pagar.me, que segue o padrão internacional PCI
+                              DSS.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="gap-2 flex justify-center items-center text-gray-600">
+                        <Button className="w-full flex justify-center items-center text-center gap-2 text-white text-sm font-normal">
+                          <CreditCard className="w-5 h-5"></CreditCard>{" "}
+                          Continuar
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="w-full flex flex-col justify-start items-center xl:px-16 order-1 xl:order-2">
+                <div className="w-full flex justify-center items-start flex-col gap-2">
+                  <span className="uppercase text-gray-600 font-semibold">
+                    REDEX SOLUÇÕES LTDA (PRIVETIME)
+                  </span>
+                  <span className="text-3xl font-bold">
+                    Resumo da assinatura
+                  </span>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4">
+                  {selectedPlan.type === "Anual" && (
+                    <span className="text-base font-semibold">Plano Anual</span>
+                  )}
+                  {selectedPlan.type === "Mensal" && (
+                    <span className="text-base font-semibold">
+                      Plano Mensal
+                    </span>
+                  )}
+                  {selectedPlan.type === "Test" && (
+                    <span className="text-base font-semibold">Plano Teste</span>
+                  )}
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Detalhes da assinatura
+                  </span>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Frequência</span>
+                    {selectedPlan.type === "Anual" ? (
+                      <span>Anual (a cada 365 dias)</span>
+                    ) : (
+                      <span>Mensal (a cada 30 dias)</span>
+                    )}
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Cobrança se repete</span>
+                    <span>Sem prazo determinado</span>
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Valor da assinatura</span>
+                    <span>
+                      {formatPrice(
+                        selectedPlan.type === "Anual"
+                          ? selectedPlan.price * 12
+                          : selectedPlan.price
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Entenda as cobranças
+                  </span>
+                  <div className="w-full flex flex-col justify-center items-start gap-6">
+                    <div className="flex justify-start items-start gap-2">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-main-pink text-white flex justify-center items-center"></BadgeCheck>
+                        <div className="absolute -bottom-8 left-1/2 w-[2px] h-6 bg-main-pink"></div>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          {selectedPlan.type === "Anual"
+                            ? "A cada 365 dias"
+                            : "A cada 30 dias"}{" "}
+                          ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          As cobranças seguintes vão ser feitas{" "}
+                          {selectedPlan.type === "Anual"
+                            ? "a cada 365 dias"
+                            : "a cada 30 dias"}
+                          .
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-start items-start gap-2 opacity-75">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-gray-600 text-black flex justify-center items-center"></BadgeCheck>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          Hoje ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          Cobrança da assinatura ao finalizar pagamento.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ) : (
+            <div className="">Não encontrado</div>
+          )}
+        </main>
+      )}
+
+      {showPaymentStep && (
+        <main className="w-full xl:px-14 py-14 relative">
+          {selectedPlan ? (
+            <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 xl:px-0 xl:grid-cols-[1fr_1fr] items-start">
+              <form
+                onSubmit={handleSubmitPayment}
+                className="flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1"
+              >
+                <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pb-6">
+                  <div className="w-full flex justify-between items-center">
+                    <span className="text-start text-2xl text-black font-bold">
+                      Endereço
+                    </span>
+                    <a
+                      href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex justify-center items-center gap-2 text-main-pink font-bold underline text-sm hover:text-main-purple"
+                    >
+                      Não sei meu CEP (BR){" "}
+                      <MoveUpRight className="w-5 h-5"></MoveUpRight>
+                    </a>
+                  </div>
+
+                  {error && (
+                    <div className="w-full p-4 bg-red-100 rounded-md border border-red-600 flex justify-start items-start gap-2">
+                      <MessageSquareWarning className="w-6 h-6 text-red-800"></MessageSquareWarning>{" "}
+                      <span className="text-red-700 flex justify-start items-center">
+                        {error}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
+                  <div className="w-full grid grid-cols-1 justify-center items-center gap-4">
+                    <div className="w-full grid grid-cols-[1fr_1fr] justify-center items-start gap-2">
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="country" className="pl-1">
+                          País{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <select
+                          name="country"
+                          id="country"
+                          disabled
+                          className={`w-full text-sm bg-white px-2 py-1 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 opacity-50 `}
+                        >
+                          <option value="BR">Brasil</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="cepInput" className="pl-1">
+                          CEP{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="cepInput"
+                          id="cepInput"
+                          value={cep}
+                          onChange={handleFetchCEP}
+                          required
+                          className="text-sm"
+                          placeholder="00000-000"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="state" className="pl-1">
+                          Estado{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="state"
+                          id="state"
+                          required
+                          disabled={isLoadingCep}
+                          value={state}
+                          placeholder="SP"
+                          onChange={(e) => setState(e.target.value)}
+                          className={`w-full bg-white px-2 py-2 text-sm rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 ${
+                            isLoadingCep ? "opacity-50" : "opacity-100"
+                          } `}
+                        ></Input>
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="city" className="pl-1">
+                          Cidade{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="city"
+                          id="city"
+                          required
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          disabled={isLoadingCep}
+                          className={`text-sm ${
+                            isLoadingCep ? "opacity-50" : "opacity-100"
+                          }`}
+                          placeholder={"São Paulo"}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="address" className="pl-1">
+                          Endereço{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="address"
+                          id="address"
+                          required
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          disabled={isLoadingCep}
+                          className={`text-sm ${
+                            isLoadingCep ? "opacity-50" : "opacity-100"
+                          }`}
+                          placeholder={"Av. Nove de Julho"}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="neighborhood" className="pl-1">
+                          Bairro{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="neighborhood"
+                          id="neighborhood"
+                          required
+                          value={neighborhood}
+                          onChange={(e) => setNeighborhood(e.target.value)}
+                          disabled={isLoadingCep}
+                          className={`text-sm ${
+                            isLoadingCep ? "opacity-50" : "opacity-100"
+                          }`}
+                          placeholder={"Centro Histórico"}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="numberHouse" className="pl-1">
+                          Número{" "}
+                          <span className="text-main-pink font-normal text-xs">
+                            (opcional)
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="numberHouse"
+                          id="numberHouse"
+                          value={numberHouse}
+                          onChange={(e) => setNumberHouse(e.target.value)}
+                          className="text-sm"
+                          placeholder={"123, 1A, 12B"}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-start gap-2">
+                        <label htmlFor="complement" className="pl-1">
+                          Complemento{" "}
+                          <span className="text-main-pink font-normal text-xs">
+                            (opcional)
+                          </span>
+                        </label>
+                        <Input
+                          type="text"
+                          name="complement"
+                          id="complement"
+                          value={complement}
+                          onChange={(e) => setComplement(e.target.value)}
+                          className="text-sm"
+                          placeholder={"BL 11, APT 24"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
+                  <span className="w-full text-start text-xl text-black font-bold">
+                    Dados do cartão de crédito
+                  </span>
+                  <div className="w-full grid grid-cols-1 items-center justify-center gap-2 p-5 rounded-md bg-sub-background">
+                    <div className="w-full flex flex-col justify-center items-start gap-2">
+                      <label className="" htmlFor="cardNumber">
+                        Número do cartão{" "}
+                        <span className="text-main-pink font-extrabold text-lg">
+                          *
+                        </span>
+                      </label>
+                      <div className="relative w-full flex justify-center items-center">
+                        <Input
+                          type="text"
+                          id="cardNumber"
+                          name="cardNumber"
+                          required
+                          value={cardNumber}
+                          onChange={(e) =>
+                            setCardNumber(formatCardNumber(e.target.value))
+                          }
+                          placeholder="0000 0000 0000 0000"
+                          className="pl-10"
+                        />
+                        <CreditCard className="w-6 h-6 absolute top-1 left-2"></CreditCard>
+                      </div>
+                    </div>
+                    <div className="w-full flex flex-col justify-center items-start gap-2">
+                      <label className="" htmlFor="cardHolder">
+                        Nome como está no cartão{" "}
+                        <span className="text-main-pink font-extrabold text-lg">
+                          *
+                        </span>
+                      </label>
+                      <div className="relative w-full flex justify-center items-center">
+                        <Input
+                          type="text"
+                          id="cardHolder"
+                          name="cardHolder"
+                          required
+                          value={cardHolder}
+                          onChange={(e) =>
+                            setCardHolder(formatName(e.target.value))
+                          }
+                          placeholder="Pedro Silva Ribeiro"
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full grid grid-cols-2 gap-8">
+                      <div className="w-full flex flex-col justify-center items-start gap-2">
+                        <label className="" htmlFor="expiryCard">
+                          Expiração{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <div className="relative w-full flex justify-center items-center">
+                          <Input
+                            type="text"
+                            id="expiryCard"
+                            name="expiryCard"
+                            required
+                            value={expiry}
+                            onChange={(e) =>
+                              setExpiry(formatExpiry(e.target.value))
+                            }
+                            placeholder="01/32"
+                          />
+                        </div>
+                      </div>
+                      <div className="w-full flex flex-col justify-center items-start gap-2">
+                        <label className="" htmlFor="cvvCard">
+                          CVV{" "}
+                          <span className="text-main-pink font-extrabold text-lg">
+                            *
+                          </span>
+                        </label>
+                        <div className="relative w-full flex justify-center items-center">
+                          <Input
+                            type="text"
+                            id="cvvCard"
+                            name="cvvCard"
+                            required
+                            maxLength={3}
+                            value={cvv}
+                            onChange={(e) => setCvv(e.target.value)}
+                            placeholder="123"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-full flex justify-center items-center gap-4">
+                    <input
+                      type="checkbox"
+                      className="w-10 h-10"
+                      id="accept-payment"
+                      name=""
+                      required
+                    />
+                    <label
+                      className="text-sm text-gray-700 "
+                      htmlFor="accept-payment"
+                    >
+                      Concordo com a realização de cobranças automáticas no meu
+                      cartão de crédito, conforme as condições descritas no
+                      resumo desta assinatura.
+                    </label>
+                  </div>
+                  <div className="w-full flex justify-end items-center gap-2">
+                    <button
+                      className="px-4 py-2 text-white bg-gray-700 font-bold rounded hover:bg-gray-900 transition cursor-pointer"
+                      onClick={() => setShowPaymentStep(!showPaymentStep)}
+                    >
+                      Voltar
+                    </button>
+                    <Button className="text-white" type="submit">
+                      Finalizar
+                    </Button>
+                  </div>
+                </div>
+              </form>
+              <div className="w-full flex flex-col justify-start items-center xl:px-16 order-1 xl:order-2">
+                <div className="w-full flex justify-center items-start flex-col gap-2">
+                  <span className="uppercase text-gray-600 font-semibold">
+                    REDEX SOLUÇÕES LTDA (PRIVETIME)
+                  </span>
+                  <span className="text-3xl font-bold">
+                    Resumo da assinatura
+                  </span>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4">
+                  {selectedPlan.type === "Anual" && (
+                    <span className="text-base font-semibold">Plano Anual</span>
+                  )}
+                  {selectedPlan.type === "Mensal" && (
+                    <span className="text-base font-semibold">
+                      Plano Mensal
+                    </span>
+                  )}
+                  {selectedPlan.type === "Test" && (
+                    <span className="text-base font-semibold">Plano Teste</span>
+                  )}
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Detalhes da assinatura
+                  </span>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Frequência</span>
+                    {selectedPlan.type === "Anual" ? (
+                      <span>Anual (a cada 365 dias)</span>
+                    ) : (
+                      <span>Mensal (a cada 30 dias)</span>
+                    )}
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Cobrança se repete</span>
+                    <span>Sem prazo determinado</span>
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Valor da assinatura</span>
+                    <span>
+                      {" "}
+                      {formatPrice(
+                        selectedPlan.type === "Anual"
+                          ? selectedPlan.price * 12
+                          : selectedPlan.price
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Entenda as cobranças
+                  </span>
+                  <div className="w-full flex flex-col justify-center items-start gap-6">
+                    <div className="flex justify-start items-start gap-2">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-main-pink text-white flex justify-center items-center"></BadgeCheck>
+                        <div className="absolute -bottom-8 left-1/2 w-[2px] h-6 bg-main-pink"></div>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          {selectedPlan.type === "Anual"
+                            ? "A cada 365 dias"
+                            : "A cada 30 dias"}{" "}
+                          ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          As cobranças seguintes vão ser feitas{" "}
+                          {selectedPlan.type === "Anual"
+                            ? "a cada 365 dias"
+                            : "a cada 30 dias"}
+                          .
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-start items-start gap-2 opacity-75">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-gray-600 text-black flex justify-center items-center"></BadgeCheck>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          Hoje ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          Cobrança da assinatura ao finalizar pagamento.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ) : (
+            <div className="">Não encontrado</div>
+          )}
+        </main>
+      )}
+      <Footer />
+    </div>
+  );
+}

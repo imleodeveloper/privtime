@@ -10,12 +10,30 @@ interface CreateSubscriptionPagarMe {
     accepted_payment_methods: string[];
     statement_descriptor: string;
   };
-  metadata: {
-    slug_link: string;
-    plan_link: string;
-    user_id: string;
-    plan_id_pagarme: string;
-    plan_id_db: string;
+  customer_settings: {
+    customer: {
+      phones: {
+        mobile_phone: {
+          country_code: string;
+          area_code: string;
+          number: string;
+        };
+      };
+      name: string;
+      type: string;
+      email: string;
+      code: string;
+      document: string;
+      document_type: string;
+      birthdate: string;
+      metadata: {
+        slug_link: string;
+        plan_link: string;
+        user_id: string;
+        plan_id_pagarme: string;
+        plan_id_db: string;
+      };
+    };
   };
   cart_settings: {
     shipping_cost: number;
@@ -169,12 +187,30 @@ export async function POST(request: NextRequest) {
       accepted_payment_methods: ["credit_card"],
       statement_descriptor: "APPVIAMODELS",
     },
-    metadata: {
-      slug_link: profile.slug_link,
-      plan_link: plan.link,
-      user_id: profile.id,
-      plan_id_pagarme: plan_id,
-      plan_id_db: data.plan_id,
+    customer_settings: {
+      customer: {
+        phones: {
+          mobile_phone: {
+            country_code: "55",
+            area_code: areaCodePhone,
+            number: WithoutAreaCode,
+          },
+        },
+        name: profile.full_name,
+        type: "individual",
+        email: profile.email,
+        code: profile.id,
+        document: profile.identity,
+        document_type: "CPF",
+        birthdate: profile.birthdate,
+        metadata: {
+          slug_link: profile.slug_link,
+          plan_link: plan.link,
+          user_id: profile.id,
+          plan_id_pagarme: plan_id,
+          plan_id_db: data.plan_id,
+        },
+      },
     },
     cart_settings: {
       shipping_cost: 0,
