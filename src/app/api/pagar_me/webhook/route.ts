@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     const amount = data ? data.amount : data.minimum_price;
 
     if (eventType === "charge.paid") {
-      const { error } = await supabaseAdmin
+      const { error: errorUpdatedPlan } = await supabaseAdmin
         .from("users_plan")
         .update({
           plan_id: planIdDbs,
@@ -97,10 +97,25 @@ export async function POST(request: NextRequest) {
         })
         .eq("user_id", userId);
 
-      if (error) {
-        console.log("Não foi possível atualizar plano: ", error);
+      if (errorUpdatedPlan) {
+        console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
         return NextResponse.json(
           { message: "Erro ao atualizar plano" },
+          { status: 500 }
+        );
+      }
+
+      const dateNow = new Date();
+      const { error: errorUpdatedProfile } = await supabaseAdmin
+        .from("profiles")
+        .update({ whats_plan: planLink, updated_at: dateNow })
+        .eq("id", userId)
+        .select();
+
+      if (errorUpdatedProfile) {
+        console.log("Não foi possível atualizar perfil: ", errorUpdatedProfile);
+        return NextResponse.json(
+          { message: "Erro ao atualizar perfil" },
           { status: 500 }
         );
       }
