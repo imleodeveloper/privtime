@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!hasLettersInCPF) {
+  if (!cpfClean) {
     return NextResponse.json(
       {
         message: "O CPF deve conter apenas números",
