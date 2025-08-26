@@ -28,6 +28,7 @@ interface CreateCustomerPagarMe {
     slug_link: string;
     user_id: string;
     user_plan: string;
+    plan_id_dbs: string;
   };
 }
 
@@ -50,6 +51,7 @@ interface CreateSubscriptionPagarMe {
     slug_link: string;
     user_id: string;
     user_plan: string;
+    plan_id_dbs: string;
   };
 }
 
@@ -144,6 +146,12 @@ export async function POST(request: NextRequest) {
       throw new Error("Tipo de plano inválido");
   }
 
+  const { data: idPlan, error: errorIdPlan } = await supabaseAdmin
+    .from("plans")
+    .select("id")
+    .eq("slug", selectedPlan.link)
+    .single();
+
   const createPlanPagarMe: CreatePlanPagarMe = {
     interval: interval,
     interval_count: 1,
@@ -188,6 +196,7 @@ export async function POST(request: NextRequest) {
       slug_link: fetchProfile.slug_link,
       user_id: fetchProfile.id,
       user_plan: selectedPlan.link,
+      plan_id_dbs: idPlan?.id,
     },
   };
 
@@ -295,6 +304,7 @@ export async function POST(request: NextRequest) {
         slug_link: fetchProfile.slug_link,
         user_id: fetchProfile.id,
         user_plan: selectedPlan.link,
+        plan_id_dbs: idPlan?.id,
       },
     };
 
