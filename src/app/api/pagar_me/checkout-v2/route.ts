@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       amount = 57828;
       break;
     case "Test":
-      amount = 99;
+      amount = 100;
       break;
     default:
       throw new Error("Tipo de plano inválido");
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
       plan_id = "plan_B1z0OXEHmS1BZWJe";
       break;
     case "Test":
-      plan_id = "plan_e8gljV4TZZhdzlA0";
+      plan_id = "plan_1Y02XvBt2tYXgM4z";
       break;
     default:
       throw new Error("Tipo de plano inválido");
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
   try {
     // API PARA DELETAR PLANO
     // const responseDeletePlan = await fetch(
-    //   "https://api.pagar.me/core/v5/plans/${plan_id}",
+    //   "https://api.pagar.me/core/v5/plans/plan_e8gljV4TZZhdzlA0",
     //   {
     //     method: "DELETE",
     //     headers: {
