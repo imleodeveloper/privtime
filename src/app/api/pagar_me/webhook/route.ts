@@ -9,18 +9,19 @@ export async function POST(request: NextRequest) {
     const eventType = payload.type;
     const data = payload.data;
 
-    const metadata = data.customer.metadata ?? {};
+    const metadata = data.metadata ?? {};
     console.log(metadata);
 
     const userId = metadata.user_id;
-    const planLink = metadata.slug_link;
+    const userLink = metadata.slug_link;
+    const planLink = metadata.user_plan;
     const plan_id_pagarme = metadata.plan_id_pagarme;
     const planIdDbs = metadata.plan_id_dbs;
 
     const createdAt = new Date();
 
     function handleExpiresAt() {
-      if (planLink === "monthly_plan") {
+      if (planLink === "monthly_plan" || planLink === "test_plan") {
         const expiresAt = new Date(createdAt);
         expiresAt.setMonth(expiresAt.getMonth() + 1);
         return expiresAt;
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
           slug_plan_at_moment: planLink,
           price_at_purchase: amount,
           subscription_id: data.id,
-          last_transaction_id: data.last_transaction.id,
+          last_transaction_id: data.last_transaction?.id ?? null,
           created_at: createdAt,
           expires_at: handleExpires,
           status: "active",
