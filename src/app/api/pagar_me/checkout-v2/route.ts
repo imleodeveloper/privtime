@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
   const cleanIdentity = identity.replace(/\D/g, "");
 
   // Auth
-  const secret_key = process.env.NEXT_PUBLIC_PAGARME_PUBLIC_TEST_KEY;
+  const secret_key = process.env.PAGARME_PUBLIC_TEST_KEY;
   const authHeader =
     "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
   console.log(authHeader);
