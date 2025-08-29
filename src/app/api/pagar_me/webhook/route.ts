@@ -116,11 +116,11 @@ export async function POST(request: NextRequest) {
       const checkTypePlan = () => {
         if (planLink) {
           if (planLink === "test_plan") {
-            return "Teste";
+            return "monthly_fee";
           } else if (planLink === "monthly_plan") {
-            return "Mensal";
+            return "monthly_fee";
           } else if (planLink === "annual_plan") {
-            return "Anual";
+            return "annual";
           } else {
             return null;
           }
