@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
     // const dataCreatePlan = await responseCreatePlan.json();
     // console.log("Create: ", dataCreatePlan);
 
-    console.log("Objeto CreateCustomer: ", createCustomerPagarMe);
+    // console.log("Objeto CreateCustomer: ", createCustomerPagarMe);
 
     const responseCreateCustomer = await fetch(
       "https://api.pagar.me/core/v5/customers",
@@ -278,7 +278,7 @@ export async function POST(request: NextRequest) {
 
     const dataCreateCustomer = await responseCreateCustomer.json();
 
-    console.log("Customer criado:", dataCreateCustomer);
+    // console.log("Customer criado:", dataCreateCustomer);
 
     // Clean info for create-subscription-pagarme
     const cardNumber = infoForPayment.cardNumber;
@@ -311,7 +311,7 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    console.log("Objeto Create Subscription: ", createSubscriptionPagarMe);
+    // console.log("Objeto Create Subscription: ", createSubscriptionPagarMe);
 
     const responseCreateSubscription = await fetch(
       "https://api.pagar.me/core/v5/subscriptions",

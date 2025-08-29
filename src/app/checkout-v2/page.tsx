@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import LogoPix from "/pix-svg.svg";
 import { Footer } from "../../../components/footer";
 import { Header } from "../../../components/header";
 import { formatPrice, plans } from "../../../lib/plans";
@@ -20,6 +21,7 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { supabase } from "../../../lib/supabase";
 import Link from "next/link";
+import Image from "next/image";
 
 interface FaqQuestions {
   question: string;
@@ -145,19 +147,23 @@ export default function CheckoutPage() {
   });
 
   // FORM DE CHECKOUT V2
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(true);
-  const [cep, setCep] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [address, setAddress] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [numberHouse, setNumberHouse] = useState("");
-  const [complement, setComplement] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
+  const [cep, setCep] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [neighborhood, setNeighborhood] = useState<string>("");
+  const [numberHouse, setNumberHouse] = useState<string>("");
+  const [complement, setComplement] = useState<string>("");
+  const [cardNumber, setCardNumber] = useState<string>("");
+  const [cardHolder, setCardHolder] = useState<string>("");
+  const [expiry, setExpiry] = useState<string>("");
+  const [cvv, setCvv] = useState<string>("");
+
+  const [paymentMethod, setPaymentMethod] = useState<"credit-card" | "pix">(
+    "credit-card"
+  );
 
   const handleFetchCEP = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const cepValue = e.target.value.replace(/\D/g, "");
@@ -171,6 +177,7 @@ export default function CheckoutPage() {
       setError("");
     }
     try {
+      setIsLoading(true);
       const response = await fetch(
         `https://viacep.com.br/ws/${cepValue}/json/`
       );
@@ -188,7 +195,9 @@ export default function CheckoutPage() {
       setAddress(data.logradouro);
 
       setIsLoadingCep(false);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error("Erro ao procurar CEP:", error);
       setError("Erro ao procurar CEP no servidor. Tente novamente");
       return;
@@ -503,11 +512,33 @@ export default function CheckoutPage() {
                   <span className="w-full text-start text-2xl text-black font-bold">
                     Método de pagamento
                   </span>
-                  <div className="w-full flex justify-start items-center gap-4 p-4 rounded-md bg-sub-background border border-main-pink">
-                    <CreditCard className="p-2 w-8 h-8 rounded-full bg-sub-purple text-main-pink"></CreditCard>
-                    <span className="text-lg text-main-pink font-semibold">
-                      Crédito
-                    </span>
+                  <div className="w-full grid grid-cols-2 items-center gap-4">
+                    <div
+                      onClick={() => setPaymentMethod("credit-card")}
+                      className={`w-full flex justify-start items-center cursor-pointer gap-4 p-4 rounded-md ${
+                        paymentMethod === "credit-card"
+                          ? "bg-green-200 border border-green-600"
+                          : "bg-gray-400 border border-gray-600 hover:bg-green-200 hover:border-green-600"
+                      } transition-all duration-300 `}
+                    >
+                      <CreditCard className="w-8 h-8"></CreditCard>
+                      <span className="text-lg text-gray-800 font-semibold">
+                        Crédito
+                      </span>
+                    </div>
+                    <div
+                      onClick={() => setPaymentMethod("pix")}
+                      className={`w-full flex justify-start items-center gap-4 p-4 rounded-md ${
+                        paymentMethod === "pix"
+                          ? "bg-green-200 border border-green-600"
+                          : "bg-gray-400 border border-gray-600 hover:bg-green-200 hover:border-green-600"
+                      }  transition-all duration-300 cursor-pointer`}
+                    >
+                      <Image src="/pix-svg.svg" alt="" width={30} height={30} />
+                      <span className="text-lg text-gray-800 font-semibold">
+                        Pix
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
@@ -1182,6 +1213,16 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               </div>
+              {isLoading && (
+                <div className="w-full h-full absolute top-0 left-0 z-10 backdrop-blur-sm">
+                  <div className="container mx-auto px-4 py-20">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-36 w-36 border-b-2 border-main-pink mx-auto mb-4"></div>
+                      <p className="text-gray-600 text-xl">Carregando...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </article>
           ) : (
             <div className="">Não encontrado</div>

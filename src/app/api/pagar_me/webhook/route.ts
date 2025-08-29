@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
     const data = payload.data;
 
     const metadata = data.metadata ?? {};
-    console.log(metadata);
 
     const userId = metadata.user_id;
     const userLink = metadata.slug_link;
@@ -37,16 +36,10 @@ export async function POST(request: NextRequest) {
     }
 
     const handleExpires = handleExpiresAt();
-    console.log("Evento:", eventType);
-    console.log("Data:", data);
-    if (data.last_transaction) {
-      console.log("GateWay Response: ", data.last_transaction.gateway_response);
-    }
+    // console.log("Evento:", eventType);
+    // console.log("Data:", data);
 
-    if (
-      eventType === "subscription.created" ||
-      eventType === "charge.created"
-    ) {
+    if (eventType === "charge.created") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({
@@ -54,27 +47,27 @@ export async function POST(request: NextRequest) {
         })
         .eq("user_id", userId);
 
-      if (eventType === "subscription.created") {
-        const { error } = await supabaseAdmin
-          .from("users_plan")
-          .update({
-            subscription_id: data.id,
-          })
-          .eq("user_id", userId);
-
-        if (error) {
-          console.log("Não foi possível atualizar o id da assinatura: ", error);
-          return NextResponse.json(
-            { message: "Erro ao atualizar plano" },
-            { status: 500 }
-          );
-        }
-      }
-
       if (error) {
         console.log("Não foi possível atualizar plano: ", error);
         return NextResponse.json(
           { message: "Erro ao atualizar plano" },
+          { status: 500 }
+        );
+      }
+    }
+
+    if (eventType === "charge.pending") {
+      const { error } = await supabaseAdmin
+        .from("users_plan")
+        .update({ status: "pending" })
+        .eq("user_id", userId);
+
+      if (error) {
+        console.log("Não foi possível atualizar o status do plano: ", error);
+        return NextResponse.json(
+          {
+            message: "Erro ao atualizar plano",
+          },
           { status: 500 }
         );
       }
@@ -116,16 +109,71 @@ export async function POST(request: NextRequest) {
         console.log("Não foi possível atualizar perfil: ", errorUpdatedProfile);
         return NextResponse.json(
           { message: "Erro ao atualizar perfil" },
-          { status: 500 }
+          { status: 404 }
         );
+      }
+
+      const checkTypePlan = () => {
+        if (planLink) {
+          if (planLink === "test_plan") {
+            return "Teste";
+          } else if (planLink === "monthly_plan") {
+            return "Mensal";
+          } else if (planLink === "annual_plan") {
+            return "Anual";
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      };
+      const typePlan = checkTypePlan();
+
+      const { data: checkTransactionId, error: checkError } =
+        await supabaseAdmin
+          .from("history_payments")
+          .select("*")
+          .eq("transaction_id", data.last_transaction.id)
+          .single();
+
+      if (checkError) {
+        console.error("Erro ao consultar histórico: ", checkError);
+        return NextResponse.json(
+          { message: "Erro ao consultar histórico" },
+          { status: 202 }
+        );
+      }
+
+      if (!checkTransactionId) {
+        const { error: historyPaymentError } = await supabaseAdmin
+          .from("history_payments")
+          .insert({
+            slug_link: userLink,
+            transaction_id: data.last_transaction.id,
+            subscription_id: data.invoice.subscriptionId,
+            price: amount,
+            type: typePlan,
+            currency: data.currency,
+            payment_method: data.payment_method,
+            paid_at: data.paid_at,
+            status: data.status,
+          });
+
+        if (historyPaymentError) {
+          console.log(
+            "Não foi possível salvar o pagamento na tabela: ",
+            historyPaymentError
+          );
+          return NextResponse.json(
+            { message: "Erro ao salvar pagamento no histórico" },
+            { status: 202 }
+          );
+        }
       }
     }
 
-    if (
-      eventType === "charge.payment_failed" ||
-      eventType === "order.payment_failed" ||
-      eventType === "invoice.payment_failed"
-    ) {
+    if (eventType === "charge.payment_failed") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({
@@ -136,13 +184,20 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.log("Não foi possível atualizar plano do usuário: ", error);
         return NextResponse.json(
-          { message: "Não foi possível atualizar plano de usuário" },
-          { status: 500 }
+          {
+            message: "Não foi possível atualizar plano de usuário",
+          },
+          { status: 202 }
         );
       }
     }
 
-    return NextResponse.json({ message: "OK" }, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Sucesso na compra da assinatura!",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Erro interno no servidor: ", error);
     return NextResponse.json(

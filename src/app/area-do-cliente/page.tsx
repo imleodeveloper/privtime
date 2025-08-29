@@ -339,7 +339,7 @@ export default function AreaCliente() {
                           Data de Compra:
                         </span>
                         <span className="text-base text-gray-700">
-                          -- {/*formatDate(fetchPlan.created_at)*/}
+                          {formatDate(fetchPlan.created_at)}
                         </span>
                       </div>
                     </div>
