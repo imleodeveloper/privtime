@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     const profile: UserProfile = {
       full_name: userProfile.full_name,
       phone: userProfile.phone,
-      email: userProfile,
+      email: userProfile.email,
       identity: userProfile.identity,
       created_at: userProfile.created_at,
       updated_at: userProfile.updated_at,

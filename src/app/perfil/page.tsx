@@ -124,7 +124,7 @@ export default function Profile() {
   return (
     <>
       <Header />
-      <main className="w-full h-screen flex justify-center items-start">
+      <main className="w-full h-auto flex justify-center items-start pb-20">
         <NavigationProfile />
         <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6">
           <div className="flex flex-col justify-start items-start gap-8">

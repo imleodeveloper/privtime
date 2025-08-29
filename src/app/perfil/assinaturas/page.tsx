@@ -23,7 +23,7 @@ import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
 
-export default function Profile() {
+export default function Assinaturas() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
@@ -114,7 +114,7 @@ export default function Profile() {
   return (
     <>
       <Header />
-      <main className="w-full h-screen flex justify-center items-start">
+      <main className="w-full h-auto pb-20 flex justify-center items-start">
         <NavigationProfile />
         <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6 relative">
           <div className="flex justify-start items-center gap-3">

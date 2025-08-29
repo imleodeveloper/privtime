@@ -2,6 +2,19 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../../../../lib/supabaseAdmin";
 
+export interface UserPayments {
+  transaction_id: string;
+  subscription_id: string;
+  price: string;
+  type: string;
+  payment_method: string;
+  currency: string;
+  paid_at: string;
+  refund_at: string;
+  status: string;
+  created_at: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
@@ -30,7 +43,29 @@ export async function POST(request: NextRequest) {
       //Não é um erro usuário pode não ter pagamento, pode seguir.
     }
 
-    console.log(userPayment);
+    if (userPayment && userPayment.length > 0) {
+      const userPayments: UserPayments[] = userPayment.map(
+        (payment: UserPayments) => ({
+          transaction_id: payment.transaction_id,
+          subscription_id: payment.subscription_id,
+          price: payment.price,
+          type: payment.type,
+          payment_method: payment.payment_method,
+          currency: payment.currency,
+          paid_at: payment.paid_at,
+          refund_at: payment.refund_at,
+          status: payment.status,
+          created_at: payment.created_at,
+        })
+      );
+
+      return NextResponse.json(
+        { message: "Pagamentos encontrados", userPayments },
+        { status: 200 }
+      );
+    }
+
+    return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     console.error("Erro interno no servidor:", error);
     return NextResponse.json(

@@ -61,13 +61,13 @@ export function NavigationProfile() {
         </li>
         <li
           className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
-            pathname === "/perfil/informacoes-da-conta"
+            pathname === "/perfil/informacoes-de-conta"
               ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
               : "font-normal  hover:bg-main-purple/10 rounded-lg"
           }`}
         >
           <Link
-            href="/perfil/informacoes-da-conta"
+            href="/perfil/informacoes-de-conta"
             className="w-full p-3 flex justify-start items-center gap-2"
           >
             <UserRound className="w-5 h-5"></UserRound> Informações de Conta
