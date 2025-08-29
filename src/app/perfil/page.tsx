@@ -73,9 +73,6 @@ export default function Profile() {
       if (!response.ok) {
         console.log(response.status);
         console.log(response.statusText);
-        alert(
-          "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
-        );
         setIsLoading(false);
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
@@ -89,9 +86,6 @@ export default function Profile() {
       setIsLoading(false);
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
-      alert(
-        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário em 3 segundos"
-      );
       setIsLoading(false);
       setTimeout(
         () => (window.location.href = "/signin?redirect=/perfil"),

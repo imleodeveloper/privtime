@@ -146,6 +146,7 @@ export async function POST(request: NextRequest) {
           .from("history_payments")
           .insert({
             slug_link: userLink,
+            user_id: userId,
             transaction_id: data.last_transaction.id,
             subscription_id: data.invoice.subscriptionId,
             price: amount,
