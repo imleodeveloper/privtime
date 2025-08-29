@@ -23,6 +23,7 @@ import { formatDate } from "../../../lib/plans";
 import Link from "next/link";
 
 export default function Profile() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -72,7 +73,14 @@ export default function Profile() {
       if (!response.ok) {
         console.log(response.status);
         console.log(response.statusText);
-        alert("Erro interno no servidor ao buscar dados do usuário");
+        alert(
+          "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
+        );
+        setIsLoading(false);
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          3000
+        );
         return;
       }
 
@@ -82,9 +90,13 @@ export default function Profile() {
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       alert(
-        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
+        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário em 3 segundos"
       );
       setIsLoading(false);
+      setTimeout(
+        () => (window.location.href = "/signin?redirect=/perfil"),
+        3000
+      );
       return;
     }
   };

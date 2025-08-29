@@ -139,10 +139,6 @@ export async function POST(request: NextRequest) {
 
       if (checkError) {
         console.error("Erro ao consultar histórico: ", checkError);
-        return NextResponse.json(
-          { message: "Erro ao consultar histórico" },
-          { status: 202 }
-        );
       }
 
       if (!checkTransactionId) {
