@@ -210,7 +210,7 @@ export default function Assinaturas() {
             </div>
             <div className="md:hidden w-full mt-8 flex justify-center items-center">
               <div className="w-1/2 p-4 border-r border-black/20">
-                <ul className="w-full flex justify-start items-start flex-col items-center gap-8">
+                <ul className="w-full flex justify-start items-start flex-col lg:items-center gap-8">
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
                     Assinatura <ChevronRight className="w-4 h-4"></ChevronRight>
                   </li>
@@ -226,7 +226,7 @@ export default function Assinaturas() {
               </div>
 
               <div className="w-1/2 pl-5 py-4">
-                <ul className="w-full flex justify-start flex-col items-start gap-4">
+                <ul className="w-full flex justify-start flex-col items-start gap-8">
                   <li className="flex justify-start items-center gap-2 font-semibold">
                     <div className="flex flex-col justify-center items-start">
                       <span className="font-normal text-base">

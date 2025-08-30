@@ -7,6 +7,7 @@ import {
   CircleEllipsis,
   Crown,
   Home,
+  SidebarOpen,
   TriangleAlert,
   X,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { UserPayments } from "@/app/api/auth/perfil/pagamentos/route";
 
 export default function HistoricoDePagamentos() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userPayments, setUserPayments] = useState<UserPayments[]>([]);
   const [section, setSection] = useState<"pagamentos" | "reembolsos">(
@@ -95,10 +97,16 @@ export default function HistoricoDePagamentos() {
     <>
       <Header />
       <main className="w-full h-auto pb-20 flex justify-center items-start">
-        <NavigationProfile />
-        <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6 relative">
-          <div className="flex justify-start items-center gap-3">
-            <span className="text-xl font-semibold py-1 pr-4 border-r border-black/20">
+        <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+          <div
+            className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            <SidebarOpen className="w-7 h-7"></SidebarOpen>
+          </div>
+          <div className="flex justify-center md:justify-start items-center gap-3">
+            <span className="text-xl font-semibold py-1 text-center md:text-start md:pr-4 border-r border-black/20">
               Histórico de Pagamentos
             </span>
             <span className="flex justify-center items-center gap-1">
@@ -122,7 +130,7 @@ export default function HistoricoDePagamentos() {
                   section === "pagamentos"
                     ? "border-b-2 border-main-pink text-main-pink font-semibold"
                     : ""
-                } 									relative px-4 py-2 cursor-pointer rounded-sm
+                } relative px-4 py-2 cursor-pointer rounded-sm text-center md:text-start
 									hover:text-main-pink hover:bg-gray-200 transition-all duration-300
 									after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-main-pink 
 									after:transition-all after:duration-500
@@ -133,7 +141,7 @@ export default function HistoricoDePagamentos() {
               <span
                 onClick={() => setSection("reembolsos")}
                 className={`
-									relative px-4 py-2 cursor-pointer rounded-sm
+									relative px-4 py-2 cursor-pointer rounded-sm text-center md:text-start
 									hover:text-main-pink hover:bg-gray-200 transition-all duration-300
 									after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-main-pink 
 									after:transition-all after:duration-500
@@ -157,7 +165,7 @@ export default function HistoricoDePagamentos() {
                         key={index}
                         className="w-full flex justify-center items-center py-3 px-4 border-b border-black/20"
                       >
-                        <ul className="w-full grid grid-cols-7 items-start gap-8">
+                        <ul className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 items-start gap-8">
                           <li className="flex justify-start items-center">
                             <div className="flex flex-col justify-center items-start gap-1">
                               <span className="text-gray-600 text-sm">

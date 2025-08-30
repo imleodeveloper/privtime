@@ -8,6 +8,7 @@ import {
   Cog,
   Home,
   IdCard,
+  SidebarOpen,
   Trash,
   TriangleAlert,
   UserCog,
@@ -27,6 +28,8 @@ import { formatDate, formatPrice } from "../../../../lib/plans";
 
 export default function InformacoesDeConta() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [deleteAccount, setDeleteAccount] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -122,10 +125,16 @@ export default function InformacoesDeConta() {
     <>
       <Header />
       <main className="w-full h-auto flex justify-center items-start pb-20">
-        <NavigationProfile />
-        <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6 relative">
-          <div className="flex justify-start items-center gap-3">
-            <span className="text-xl font-semibold py-1 pr-4 border-r border-black/20">
+        <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+          <div
+            className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            <SidebarOpen className="w-7 h-7"></SidebarOpen>
+          </div>
+          <div className="flex justify-center sm:justify-start items-center gap-3">
+            <span className="text-xl font-semibold text-center sm:text-start py-1 pr-4 border-r border-black/20">
               Informações de Conta
             </span>
             <span className="flex justify-center items-center gap-1">
@@ -274,7 +283,7 @@ export default function InformacoesDeConta() {
               </div>
 
               <div className="w-full px-5 py-4 border-b border-black/20">
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex flex-col gap-6 sm:gap-0 sm:flex-row justify-center sm:justify-between items-center">
                   <div className="flex flex-col justify-center items-start">
                     <span className="font-normal text-black">
                       Excluir conta
@@ -285,13 +294,46 @@ export default function InformacoesDeConta() {
                       restauração.
                     </span>
                   </div>
-                  <Button className="flex justify-center items-center gap-2 text-white text-sm">
+                  <Button
+                    className="flex justify-center items-center gap-2 text-white text-sm"
+                    onClick={() => setDeleteAccount(!deleteAccount)}
+                  >
                     <Trash className="w-4 h-4"></Trash> Excluir
                   </Button>
                 </div>
               </div>
             </div>
           </div>
+          {deleteAccount && (
+            <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center backdrop-blur-md">
+              <div className="max-w-lg border border-black/40 rounded-md bg-sub-background h-auto p-4 flex justify-between items-center flex-col">
+                <div className="w-full flex justify-start items-center pb-2 border-b border-black/30">
+                  <span className="text-lg font-bold">Deletar conta</span>
+                </div>
+                <div className="w-full flex justify-center items-center gap-4 py-4">
+                  <span className="font-normal">
+                    Você tem certeza que deseja deletar sua conta? Lembrando ao
+                    clicar em deletar{" "}
+                    <span className="underline text-red-600 font-bold">
+                      não será possível recuperar nenhum dados
+                    </span>
+                    .
+                  </span>
+                </div>
+                <div className="w-full flex justify-end items-center gap-2 py-2">
+                  <Button className="bg-red-600 text-white hover:bg-red-900 flex justify-center items-center gap-2 text-sm">
+                    Deletar
+                  </Button>
+                  <Button
+                    className="bg-sub-background border border-main-pink/60 hover:text-white flex justify-center items-center gap-2 text-sm"
+                    onClick={() => setDeleteAccount(!deleteAccount)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </article>
       </main>
       <Footer />

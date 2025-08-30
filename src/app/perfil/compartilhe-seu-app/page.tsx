@@ -8,6 +8,7 @@ import {
   IdCard,
   LinkIcon,
   ShieldUser,
+  SidebarOpen,
   Trash,
   TriangleAlert,
   UserCog,
@@ -26,6 +27,7 @@ import { formatDate, formatPrice } from "../../../../lib/plans";
 
 export default function CompartilheSeuApp() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -121,10 +123,16 @@ export default function CompartilheSeuApp() {
     <>
       <Header />
       <main className="w-full h-auto flex justify-center items-start pb-20">
-        <NavigationProfile />
-        <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6 relative">
-          <div className="flex justify-start items-center gap-3">
-            <span className="text-xl font-semibold py-1 pr-4 border-r border-black/20">
+        <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+          <div
+            className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            <SidebarOpen className="w-7 h-7"></SidebarOpen>
+          </div>
+          <div className="flex justify-center sm:justify-start items-center gap-3">
+            <span className="text-xl font-semibold text-center sm:text-start py-1 pr-4 border-r border-black/20">
               Compartilhe seu App
             </span>
             <span className="flex justify-center items-center gap-1">
@@ -152,7 +160,7 @@ export default function CompartilheSeuApp() {
               </div>
 
               <div className="w-full px-5 py-4 border-b border-black/20">
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex flex-col sm:flex-row gap-5 sm:gap-0 justify-center sm:justify-between items-center">
                   <div className="flex flex-col justify-center items-center">
                     <span className="font-semibold text-main-purple">
                       Para você!
@@ -175,7 +183,7 @@ export default function CompartilheSeuApp() {
               </div>
               <div className="w-full px-5 py-4 border-b border-black/20">
                 <div className="w-full flex justify-center items-center">
-                  <div className="text-red-600 text-sm font-bold flex justify-center items-center gap-2">
+                  <div className="text-red-600 text-sm font-bold flex flex-col sm:flex-row justify-center items-center gap-2">
                     <TriangleAlert className="w-7 h-7 animate-bounce"></TriangleAlert>
                     <span>
                       Não compartilhe esse link, acesso limitado ao
@@ -198,7 +206,7 @@ export default function CompartilheSeuApp() {
               </div>
 
               <div className="w-full px-5 py-4 border-b border-black/20">
-                <div className="w-full flex justify-between items-center">
+                <div className="w-full flex flex-col sm:flex-row sm:justify-between justify-center gap-5 sm:gap-0 items-center">
                   <div className="flex flex-col justify-center items-center">
                     <span className="font-semibold text-main-purple">
                       Para seus clientes
@@ -228,7 +236,7 @@ export default function CompartilheSeuApp() {
               </div>
               <div className="w-full px-5 py-4 border-b border-black/20">
                 <div className="w-full flex justify-center items-center">
-                  <div className="text-blue-600 text-sm font-bold flex justify-center items-center gap-2">
+                  <div className="text-blue-600 text-sm font-bold flex flex-col sm:flex-row justify-center items-center gap-2">
                     <TriangleAlert className="w-7 h-7 animate-bounce"></TriangleAlert>
                     <span>
                       Ao compartilhar este link com seus clientes, eles terão
