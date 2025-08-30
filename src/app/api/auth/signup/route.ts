@@ -285,6 +285,7 @@ export async function POST(request: Request) {
     }
 
     if (!existingTrialPlan) {
+      const createdAt = new Date();
       const { error: errorPlan } = await supabaseAdmin
         .from("users_plan")
         .insert([
@@ -295,6 +296,7 @@ export async function POST(request: Request) {
             price_at_purchase: trialPlan?.price,
             subscription_id: "free",
             last_transaction_id: "none",
+            created_at: createdAt,
             status: "active",
           },
         ]);

@@ -23,8 +23,12 @@ import { supabase } from "../../../lib/supabase";
 import { UserPlan, UserProfile } from "../api/auth/perfil/route";
 import { formatDate } from "../../../lib/plans";
 import Link from "next/link";
+import { Banner } from "../../../components/banner-alert";
 
 export default function Profile({ children }: { children: React.ReactNode }) {
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
+  const [isAlert, setIsAlert] = useState<string>("");
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,6 +80,11 @@ export default function Profile({ children }: { children: React.ReactNode }) {
         console.log(response.status);
         console.log(response.statusText);
         setIsLoading(false);
+        setTypeAlert("error");
+        setShowAlert(!showAlert);
+        setIsAlert(
+          "Não foi possível encontrar usuário. Redirecionando para o login."
+        );
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
           200
@@ -86,6 +95,9 @@ export default function Profile({ children }: { children: React.ReactNode }) {
       setUserPlan(data.planOfUser);
       setUserProfile(data.profile);
       setIsLoading(false);
+      setTypeAlert("success");
+      setShowAlert(!showAlert);
+      setIsAlert("Usuário encontrado com sucesso. Dados carregados.");
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       setIsLoading(false);
@@ -125,6 +137,12 @@ export default function Profile({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <Banner
+        type={typeAlert}
+        show={showAlert}
+        hide={() => setTimeout(() => setShowAlert(false), 5000)}
+        message={isAlert}
+      />
       <Header />
       <main className="w-full h-auto flex justify-center items-start pb-20">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
@@ -164,7 +182,10 @@ export default function Profile({ children }: { children: React.ReactNode }) {
                     <ScreenShare className="w-5 h-5"></ScreenShare>
                   </Link>
                   <span className="text-sm text-gray-600">
-                    Expira em {formatDate(userPlan.expires_at)}
+                    Expira em{" "}
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criação da conta"
+                      : formatDate(userPlan.expires_at)}
                   </span>
                 </div>
               </div>
@@ -221,7 +242,10 @@ export default function Profile({ children }: { children: React.ReactNode }) {
                 <div className="flex flex-col justify-start items-start">
                   <span className="font-bold">Plano {userPlan.plan_type}</span>
                   <span className="text-sm text-gray-600">
-                    Expira em {formatDate(userPlan.expires_at)}
+                    Expira em{" "}
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criação da conta"
+                      : formatDate(userPlan.expires_at)}
                   </span>
                 </div>
               </div>

@@ -21,7 +21,7 @@ import { NavigationProfile } from "../../../../components/profile/navigation-pro
 import Link from "next/link";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
@@ -29,6 +29,7 @@ import { formatDate, formatPrice } from "../../../../lib/plans";
 export default function InformacoesDeConta() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const divRef = useRef<HTMLDivElement>(null);
   const [deleteAccount, setDeleteAccount] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
@@ -91,18 +92,61 @@ export default function InformacoesDeConta() {
       setIsLoading(false);
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
-      alert(
-        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
+      setTimeout(
+        () => (window.location.href = "/signin?redirect=/perfil"),
+        200
       );
       setIsLoading(false);
       return;
     }
   };
 
-  const copyToLink = () => {
-    navigator.clipboard.writeText(userPlan.subscription_id).then(() => {
-      setCopyLink(!copyLink);
-    });
+  useEffect(() => {
+    if (deleteAccount && divRef.current) {
+      divRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [deleteAccount]);
+
+  const handleDeleteAccount = async () => {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      const userId = user.user?.id;
+
+      console.log(userId);
+
+      const responseDelete = await fetch("/api/auth/perfil/delete-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await responseDelete.json();
+      console.log(data);
+
+      if (data.status === 400) {
+        alert(data.message);
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          200
+        );
+        return;
+      }
+
+      if (data.status === 200) {
+        alert(data.message);
+        await supabase.auth.signOut();
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          200
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Não foi possível deletar conta de usuário: ", error);
+      return;
+    }
   };
 
   if (isLoading) {
@@ -306,7 +350,10 @@ export default function InformacoesDeConta() {
           </div>
           {deleteAccount && (
             <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center backdrop-blur-md">
-              <div className="max-w-lg border border-black/40 rounded-md bg-sub-background h-auto p-4 flex justify-between items-center flex-col">
+              <div
+                ref={divRef}
+                className="max-w-lg border border-black/40 rounded-md bg-sub-background h-auto p-4 flex justify-between items-center flex-col"
+              >
                 <div className="w-full flex justify-start items-center pb-2 border-b border-black/30">
                   <span className="text-lg font-bold">Deletar conta</span>
                 </div>
@@ -321,7 +368,10 @@ export default function InformacoesDeConta() {
                   </span>
                 </div>
                 <div className="w-full flex justify-end items-center gap-2 py-2">
-                  <Button className="bg-red-600 text-white hover:bg-red-900 flex justify-center items-center gap-2 text-sm">
+                  <Button
+                    className="bg-red-600 text-white hover:bg-red-900 flex justify-center items-center gap-2 text-sm"
+                    onClick={handleDeleteAccount}
+                  >
                     Deletar
                   </Button>
                   <Button

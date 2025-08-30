@@ -185,11 +185,15 @@ export default function Assinaturas() {
                     </div>
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal text-base">
-                    {formatDate(userPlan.expires_at)}
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criar conta"
+                      : formatDate(userPlan.expires_at)}
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal">
                     <div className="bg-green-200 p-2 rounded-xl text-sm font-semibold text-green-800">
-                      Ligado
+                      {userPlan.plan_slug === "trial_plan"
+                        ? "Gratuito"
+                        : "Ligado"}
                     </div>
                   </li>
                   <li className="flex justify-center items-center gap-4">
@@ -238,11 +242,15 @@ export default function Assinaturas() {
                     </div>
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal text-base">
-                    {formatDate(userPlan.expires_at)}
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criar conta"
+                      : formatDate(userPlan.expires_at)}
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal">
                     <div className="bg-green-200 p-2 rounded-xl text-sm font-semibold text-green-800">
-                      Ligado
+                      {userPlan.plan_slug === "trial_plan"
+                        ? "Gratuito"
+                        : "Ligado"}
                     </div>
                   </li>
                 </ul>
@@ -322,7 +330,9 @@ export default function Assinaturas() {
                 <span className="text-sm">Data de expiração</span>
                 <div className="flex justify-center items-center gap-2">
                   <span className="text-sm">
-                    {formatDate(userPlan.expires_at)}
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criar conta"
+                      : formatDate(userPlan.expires_at)}
                   </span>
                 </div>
               </div>
