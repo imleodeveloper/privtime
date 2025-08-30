@@ -9,6 +9,7 @@ import {
   LinkIcon,
   ShieldUser,
   Trash,
+  TriangleAlert,
   UserCog,
   UserX,
 } from "lucide-react";
@@ -74,7 +75,10 @@ export default function CompartilheSeuApp() {
       if (!response.ok) {
         console.log(response.status);
         console.log(response.statusText);
-        alert("Erro interno no servidor ao buscar dados do usuário");
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          200
+        );
         return;
       }
 
@@ -141,8 +145,8 @@ export default function CompartilheSeuApp() {
               <div className="w-full pl-5 py-4 border-b border-black/20">
                 <ul className="w-full flex justify-start items-center gap-4">
                   <li className="flex justify-start items-center gap-2 font-semibold">
-                    <LinkIcon className="w-5 h-5 text-main-pink"></LinkIcon>{" "}
-                    Link para Compartilhar
+                    <ShieldUser className="w-5 h-5 text-main-pink"></ShieldUser>{" "}
+                    Link para Administrador
                   </li>
                 </ul>
               </div>
@@ -150,7 +154,53 @@ export default function CompartilheSeuApp() {
               <div className="w-full px-5 py-4 border-b border-black/20">
                 <div className="w-full flex justify-between items-center">
                   <div className="flex flex-col justify-center items-center">
-                    <span className="font-normal text-sm text-gray-500">
+                    <span className="font-semibold text-main-purple">
+                      Para você!
+                    </span>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <span className="font-normal text-sm">
+                      {userProfile.link_app}
+                    </span>
+                  </div>
+                  <a
+                    href={userProfile.link_app}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"
+                  >
+                    <ExternalLink className="w-6 h-6 group-hover:animate-scale"></ExternalLink>
+                  </a>
+                </div>
+              </div>
+              <div className="w-full px-5 py-4 border-b border-black/20">
+                <div className="w-full flex justify-center items-center">
+                  <div className="text-red-600 text-sm font-bold flex justify-center items-center gap-2">
+                    <TriangleAlert className="w-7 h-7 animate-bounce"></TriangleAlert>
+                    <span>
+                      Não compartilhe esse link, acesso limitado ao
+                      administrador com email e senha de usuário.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center items-start w-full bg-white border border-black/30 rounded-md">
+            <div className="w-full mt-2">
+              <div className="w-full pl-5 py-4 border-b border-black/20">
+                <ul className="w-full flex justify-start items-center gap-4">
+                  <li className="flex justify-start items-center gap-2 font-semibold">
+                    <LinkIcon className="w-5 h-5 text-main-pink"></LinkIcon>{" "}
+                    Link para Compartilhar com Clientes
+                  </li>
+                </ul>
+              </div>
+
+              <div className="w-full px-5 py-4 border-b border-black/20">
+                <div className="w-full flex justify-between items-center">
+                  <div className="flex flex-col justify-center items-center">
+                    <span className="font-semibold text-main-purple">
                       Para seus clientes
                     </span>
                   </div>
@@ -178,55 +228,13 @@ export default function CompartilheSeuApp() {
               </div>
               <div className="w-full px-5 py-4 border-b border-black/20">
                 <div className="w-full flex justify-center items-center">
-                  <span className="text-gray-600 text-sm">
-                    Note que este link é para compartilhamento somente para seus
-                    clientes. Não é possível entrar no perfil administrador por
-                    este link.
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-start w-full bg-white border border-black/30 rounded-md">
-            <div className="w-full mt-2">
-              <div className="w-full pl-5 py-4 border-b border-black/20">
-                <ul className="w-full flex justify-start items-center gap-4">
-                  <li className="flex justify-start items-center gap-2 font-semibold">
-                    <ShieldUser className="w-5 h-5 text-main-pink"></ShieldUser>{" "}
-                    Link para Administrador
-                  </li>
-                </ul>
-              </div>
-
-              <div className="w-full px-5 py-4 border-b border-black/20">
-                <div className="w-full flex justify-between items-center">
-                  <div className="flex flex-col justify-center items-center">
-                    <span className="font-normal text-sm text-gray-500">
-                      Para você!
+                  <div className="text-blue-600 text-sm font-bold flex justify-center items-center gap-2">
+                    <TriangleAlert className="w-7 h-7 animate-bounce"></TriangleAlert>
+                    <span>
+                      Ao compartilhar este link com seus clientes, eles terão
+                      acesso a sua agenda e poderão reservar horários.
                     </span>
                   </div>
-                  <div className="flex justify-center items-center">
-                    <span className="font-normal text-sm">
-                      {userProfile.link_app}
-                    </span>
-                  </div>
-                  <a
-                    href={userProfile.link_app}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"
-                  >
-                    <ExternalLink className="w-6 h-6 group-hover:animate-scale"></ExternalLink>
-                  </a>
-                </div>
-              </div>
-              <div className="w-full px-5 py-4 border-b border-black/20">
-                <div className="w-full flex justify-center items-center">
-                  <span className="text-red-600 text-sm">
-                    Note que este link é para entrar no perfil administrador de
-                    seu App. Não o compartilhe com mais ninguém! Para entrar em
-                    sua conta é o mesmo login para este site.
-                  </span>
                 </div>
               </div>
             </div>

@@ -51,7 +51,10 @@ export default function HistoricoDePagamentos() {
       if (!response.ok) {
         console.log(response.status);
         console.log(response.statusText);
-        alert("Erro interno no servidor ao buscar dados do usuário");
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          200
+        );
         return;
       }
 

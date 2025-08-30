@@ -7,23 +7,25 @@ import {
   Group,
   History,
   House,
+  Menu,
   ScreenShare,
   Server,
   ShieldUser,
+  SidebarOpen,
   WalletCards,
 } from "lucide-react";
 import { Footer } from "../../../components/footer";
 import { Header } from "../../../components/header";
 import { NavigationProfile } from "../../../components/profile/navigation-profile";
 import { Button } from "../../../components/ui/button";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { UserPlan, UserProfile } from "../api/auth/perfil/route";
 import { formatDate } from "../../../lib/plans";
 import Link from "next/link";
 
-export default function Profile() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+export default function Profile({ children }: { children: React.ReactNode }) {
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -76,7 +78,7 @@ export default function Profile() {
         setIsLoading(false);
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
-          3000
+          200
         );
         return;
       }
@@ -125,8 +127,14 @@ export default function Profile() {
     <>
       <Header />
       <main className="w-full h-auto flex justify-center items-start pb-20">
-        <NavigationProfile />
-        <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6">
+        <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+          <div
+            className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            <SidebarOpen className="w-7 h-7"></SidebarOpen>
+          </div>
           <div className="flex flex-col justify-start items-start gap-8">
             <span className="text-3xl font-bold">Olá,</span>
             <span className="text-2xl font-bold">
@@ -139,7 +147,7 @@ export default function Profile() {
                 Seu App de Agendamento
               </span>
             </div>
-            <div className="w-full flex justify-between items-center">
+            <div className="w-full flex flex-col sm:flex-row justify-between items-center">
               <div className="flex justify-start items-center gap-4 p-4">
                 <div className="p-2 bg-main-pink/10 rounded-lg">
                   <span className="relative">
@@ -202,7 +210,7 @@ export default function Profile() {
                 Assinatura
               </span>
             </div>
-            <div className="w-full flex justify-between items-center">
+            <div className="w-full flex flex-col sm:flex-row justify-between items-center">
               <div className="flex justify-start items-center gap-4 p-4">
                 <div className="p-2 bg-main-pink/10 rounded-lg">
                   <span className="relative">
@@ -236,7 +244,7 @@ export default function Profile() {
                 Histórico de Pagamentos
               </span>
             </div>
-            <div className="w-full flex justify-between items-center">
+            <div className="w-full flex flex-col sm:flex-row justify-between items-center">
               <div className="flex justify-start items-center gap-4 p-4">
                 <div className="p-2 bg-main-pink/10 rounded-lg">
                   <span className="relative">

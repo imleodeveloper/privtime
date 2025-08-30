@@ -3,18 +3,34 @@ import {
   BanknoteArrowDown,
   CreditCard,
   House,
-  User,
+  PanelLeftClose,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavigationProfile() {
+export function NavigationProfile({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const pathname = usePathname();
 
   return (
-    <nav className="h-full w-[20%] bg-sub-background/40 pt-2 grid grid-cols-1 gap-1 border-r border-black/80">
+    <nav
+      className={`fixed top-0 left-0 z-10 lg:relative h-full w-1/2 lg:w-[20%] bg-sub-background/40 pt-12 lg:pt-2 backdrop-blur-md grid grid-cols-1 gap-1 border-r border-black/80 transition-all duration-500 ${
+        open ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div
+        onClick={onClose}
+        className="absolute top-2 right-2 flex justify-center items-center p-2 hover:bg-main-pink hover:text-white rounded-full cursor-pointer"
+      >
+        <PanelLeftClose className="w-6 h-6"></PanelLeftClose>
+      </div>
       <ul className="w-full flex justify-start items-center flex-col gap-1 p-2">
         <li
           className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${

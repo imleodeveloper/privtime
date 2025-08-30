@@ -3,12 +3,14 @@ import {
   Ban,
   CheckCircle,
   ChevronDown,
+  ChevronRight,
   CircleAlert,
   CircleEllipsis,
   Copy,
   Home,
   MoveDown,
   Search,
+  SidebarOpen,
   TriangleAlert,
   X,
 } from "lucide-react";
@@ -25,6 +27,7 @@ import { formatDate, formatPrice } from "../../../../lib/plans";
 
 export default function Assinaturas() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -74,7 +77,10 @@ export default function Assinaturas() {
       if (!response.ok) {
         console.log(response.status);
         console.log(response.statusText);
-        alert("Erro interno no servidor ao buscar dados do usuário");
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          200
+        );
         return;
       }
 
@@ -115,8 +121,14 @@ export default function Assinaturas() {
     <>
       <Header />
       <main className="w-full h-auto pb-20 flex justify-center items-start">
-        <NavigationProfile />
-        <article className="w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-12 px-6 relative">
+        <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+          <div
+            className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            <SidebarOpen className="w-7 h-7"></SidebarOpen>
+          </div>
           <div className="flex justify-start items-center gap-3">
             <span className="text-xl font-semibold py-1 pr-4 border-r border-black/20">
               Assinaturas
@@ -143,7 +155,7 @@ export default function Assinaturas() {
                 placeholder="Funcionalidade de pesquisar ainda não disponível"
               ></input>
             </div>
-            <div className="w-full mt-8">
+            <div className="hidden md:block w-full mt-8">
               <div className="w-full pl-5 py-4 border-b border-black/20">
                 <ul className="w-full grid grid-cols-[1fr_1fr_1fr_2fr] items-center gap-4">
                   <li className="flex justify-start items-center gap-2 text-sm font-semibold">
@@ -196,9 +208,66 @@ export default function Assinaturas() {
                 </ul>
               </div>
             </div>
+            <div className="md:hidden w-full mt-8 flex justify-center items-center">
+              <div className="w-1/2 p-4 border-r border-black/20">
+                <ul className="w-full flex justify-start items-start flex-col items-center gap-8">
+                  <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
+                    Assinatura <ChevronRight className="w-4 h-4"></ChevronRight>
+                  </li>
+                  <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
+                    Data de expiração{" "}
+                    <ChevronRight className="w-4 h-4"></ChevronRight>
+                  </li>
+                  <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
+                    Renovação automática{" "}
+                    <ChevronRight className="w-4 h-4"></ChevronRight>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="w-1/2 pl-5 py-4">
+                <ul className="w-full flex justify-start flex-col items-start gap-4">
+                  <li className="flex justify-start items-center gap-2 font-semibold">
+                    <div className="flex flex-col justify-center items-start">
+                      <span className="font-normal text-base">
+                        Plano {userPlan.plan_type}
+                      </span>
+                      <span className="font-normal text-sm text-gray-500">
+                        {userProfile.slug_link}
+                      </span>
+                    </div>
+                  </li>
+                  <li className="flex justify-center items-center gap-2 font-normal text-base">
+                    {formatDate(userPlan.expires_at)}
+                  </li>
+                  <li className="flex justify-center items-center gap-2 font-normal">
+                    <div className="bg-green-200 p-2 rounded-xl text-sm font-semibold text-green-800">
+                      Ligado
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="md:hidden w-full py-4 flex justify-center items-center">
+              <ul className="w-full flex justify-center items-center">
+                <li className="flex justify-center items-center gap-4">
+                  <Button className="text-sm font-semibold text-white">
+                    Configurar renovação
+                  </Button>
+                  <div
+                    className="p-1 bg-main-pink/20 hover:bg-main-pink cursor-pointer hover:text-white rounded-md flex justify-center items-center"
+                    onClick={() => setDetailsPlan(!detailsPlan)}
+                  >
+                    <span className="text-center flex justify-center items-center">
+                      <CircleEllipsis className="w-7 h-7"></CircleEllipsis>
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
           <div
-            className={`h-screen w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-6 transition-all duration-500 ${
+            className={`h-screen w-[85%] md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
               detailsPlan
                 ? "translate-x-0 pointers-events-auto"
                 : "translate-x-full pointers-events-none"
