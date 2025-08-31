@@ -328,20 +328,20 @@ export function Header() {
                             )}
                             <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
                               <Link
-                                href="/area-do-cliente"
+                                href="/perfil"
                                 className="w-full py-2 flex justify-center items-center gap-1"
                               >
                                 <User className="w-4 h-4"></User> Perfil
                               </Link>
                             </li>
-                            <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
+                            {/* <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
                               <Link
                                 href="/area-do-cliente/config-da-conta"
                                 className="w-full py-2 flex justify-center items-center gap-1"
                               >
                                 <Cog className="w-4 h-4"></Cog> Config. da Conta
                               </Link>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       )}
