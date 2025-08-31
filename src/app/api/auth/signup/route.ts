@@ -298,6 +298,7 @@ export async function POST(request: Request) {
             last_transaction_id: "none",
             created_at: createdAt,
             status: "active",
+            payment_method: "none",
           },
         ]);
 

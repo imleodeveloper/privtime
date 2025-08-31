@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
           created_at: createdAt,
           expires_at: handleExpires,
           status: "active",
+          payment_method: data.payment_method,
         })
         .eq("user_id", userId);
 

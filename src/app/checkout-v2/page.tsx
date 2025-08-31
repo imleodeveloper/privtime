@@ -87,7 +87,7 @@ interface InfoUser {
   phone: string;
 }
 
-interface InfoForPayment {
+interface InfoForPaymentCreditCard {
   email: string;
   full_name: string;
   identity: string;
@@ -104,6 +104,13 @@ interface InfoForPayment {
   cardHolder: string;
   expiry: string;
   cvv: string;
+}
+interface InfoForPaymentPix {
+  email: string;
+  full_name: string;
+  identity: string;
+  typeDoc: string;
+  phone: string;
 }
 
 export default function CheckoutPage() {
@@ -161,8 +168,8 @@ export default function CheckoutPage() {
   const [expiry, setExpiry] = useState<string>("");
   const [cvv, setCvv] = useState<string>("");
 
-  const [paymentMethod, setPaymentMethod] = useState<"credit-card" | "pix">(
-    "credit-card"
+  const [paymentMethod, setPaymentMethod] = useState<"credit_card" | "pix">(
+    "credit_card"
   );
 
   const handleFetchCEP = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -447,56 +454,94 @@ export default function CheckoutPage() {
     setShowPaymentStep(data.showPayments);
   };
 
-  const handleSubmitPayment = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitPaymentCreditCard = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const infoForPayment: InfoForPayment = {
-      email: emailValue,
-      full_name: fullNameValue,
-      identity: docValue,
-      typeDoc: docType,
-      phone: telValue,
-      cep: cep,
-      state: state,
-      city: city,
-      address: address,
-      neighborhood: neighborhood,
-      numberHouse: numberHouse,
-      complement: complement,
-      cardNumber: cardNumber,
-      cardHolder: cardHolder,
-      expiry: expiry,
-      cvv: cvv,
-    };
+    if (paymentMethod === "credit_card") {
+      const infoForPayment: InfoForPaymentCreditCard = {
+        email: emailValue,
+        full_name: fullNameValue,
+        identity: docValue,
+        typeDoc: docType,
+        phone: telValue,
+        cep: cep,
+        state: state,
+        city: city,
+        address: address,
+        neighborhood: neighborhood,
+        numberHouse: numberHouse,
+        complement: complement,
+        cardNumber: cardNumber,
+        cardHolder: cardHolder,
+        expiry: expiry,
+        cvv: cvv,
+      };
+      try {
+        const response = await fetch("/api/pagar_me/checkout-v2/credit_card", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            infoForPayment,
+            selectedPlan,
+            fetchProfile,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          setError(data.message);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data.message) {
+          setError(data.message);
+          setIsLoading(false);
+          return;
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        setError(
+          "Erro interno no servidor, não foi possível realizar pagamento."
+        );
+        setIsLoading(false);
+        console.error("Erro interno do servidor: ", error);
+        return;
+      }
+    }
+  };
+
+  const handleSubmitPaymentPix = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      const response = await fetch("/api/pagar_me/checkout-v2", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ infoForPayment, selectedPlan, fetchProfile }),
-      });
+      if (paymentMethod === "pix") {
+        const infoForPayment: InfoForPaymentPix = {
+          email: emailValue,
+          full_name: fullNameValue,
+          identity: docValue,
+          typeDoc: docType,
+          phone: telValue,
+        };
 
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.message);
-        setIsLoading(false);
-        return;
+        const responsePix = await fetch("/api/pagar_me/checkout-v2/pix", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ infoForPayment, selectedPlan, fetchProfile }),
+        });
+
+        const dataPix = await responsePix.json();
+
+        console.log(dataPix);
       }
-
-      if (data.message) {
-        setError(data.message);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(false);
     } catch (error) {
-      setError(
-        "Erro interno no servidor, não foi possível realizar pagamento."
-      );
-      setIsLoading(false);
-      console.error("Erro interno do servidor: ", error);
-      return;
+      console.error("Não foi possível realizar ordem PIX:", error);
     }
   };
 
@@ -514,9 +559,9 @@ export default function CheckoutPage() {
                   </span>
                   <div className="w-full grid grid-cols-2 items-center gap-4">
                     <div
-                      onClick={() => setPaymentMethod("credit-card")}
+                      onClick={() => setPaymentMethod("credit_card")}
                       className={`w-full flex justify-start items-center cursor-pointer gap-4 p-4 rounded-md ${
-                        paymentMethod === "credit-card"
+                        paymentMethod === "credit_card"
                           ? "bg-green-200 border border-green-600"
                           : "bg-gray-400 border border-gray-600 hover:bg-green-200 hover:border-green-600"
                       } transition-all duration-300 `}
@@ -555,7 +600,11 @@ export default function CheckoutPage() {
                   )}
                   <form
                     className="w-full grid grid-cols-1 justify-center items-center gap-4"
-                    onSubmit={handleSubmitCheck}
+                    onSubmit={
+                      paymentMethod === "credit_card"
+                        ? handleSubmitCheck
+                        : handleSubmitPaymentPix
+                    }
                   >
                     <div className="w-full flex flex-col justify-center items-start gap-2">
                       <label htmlFor="email" className="pl-1">
@@ -797,12 +846,12 @@ export default function CheckoutPage() {
         </main>
       )}
 
-      {showPaymentStep && (
+      {showPaymentStep && paymentMethod === "credit_card" && (
         <main className="w-full xl:px-14 py-14 relative">
           {selectedPlan ? (
             <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 xl:px-0 xl:grid-cols-[1fr_1fr] items-start">
               <form
-                onSubmit={handleSubmitPayment}
+                onSubmit={handleSubmitPaymentCreditCard}
                 className="flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1"
               >
                 <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pb-6">
@@ -1111,6 +1160,130 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               </form>
+              <div className="w-full flex flex-col justify-start items-center xl:px-16 order-1 xl:order-2">
+                <div className="w-full flex justify-center items-start flex-col gap-2">
+                  <span className="uppercase text-gray-600 font-semibold">
+                    REDEX SOLUÇÕES LTDA (PRIVETIME)
+                  </span>
+                  <span className="text-3xl font-bold">
+                    Resumo da assinatura
+                  </span>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4">
+                  {selectedPlan.type === "Anual" && (
+                    <span className="text-base font-semibold">Plano Anual</span>
+                  )}
+                  {selectedPlan.type === "Mensal" && (
+                    <span className="text-base font-semibold">
+                      Plano Mensal
+                    </span>
+                  )}
+                  {selectedPlan.type === "Test" && (
+                    <span className="text-base font-semibold">Plano Teste</span>
+                  )}
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Detalhes da assinatura
+                  </span>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Frequência</span>
+                    {selectedPlan.type === "Anual" ? (
+                      <span>Anual (a cada 365 dias)</span>
+                    ) : (
+                      <span>Mensal (a cada 30 dias)</span>
+                    )}
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Cobrança se repete</span>
+                    <span>Sem prazo determinado</span>
+                  </div>
+                  <div className="w-full flex justify-between items-center">
+                    <span>Valor da assinatura</span>
+                    <span>
+                      {" "}
+                      {formatPrice(
+                        selectedPlan.type === "Anual"
+                          ? selectedPlan.price * 12
+                          : selectedPlan.price
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full p-4 rounded-md bg-sub-background mt-4 flex flex-col justify-center items-center gap-2">
+                  <span className="w-full text-start text-base font-semibold">
+                    Entenda as cobranças
+                  </span>
+                  <div className="w-full flex flex-col justify-center items-start gap-6">
+                    <div className="flex justify-start items-start gap-2">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-main-pink text-white flex justify-center items-center"></BadgeCheck>
+                        <div className="absolute -bottom-8 left-1/2 w-[2px] h-6 bg-main-pink"></div>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          {selectedPlan.type === "Anual"
+                            ? "A cada 365 dias"
+                            : "A cada 30 dias"}{" "}
+                          ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          As cobranças seguintes vão ser feitas{" "}
+                          {selectedPlan.type === "Anual"
+                            ? "a cada 365 dias"
+                            : "a cada 30 dias"}
+                          .
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-start items-start gap-2 opacity-75">
+                      <div className="relative">
+                        <BadgeCheck className="w-8 h-8 p-1 rounded-full bg-gray-600 text-black flex justify-center items-center"></BadgeCheck>
+                      </div>
+                      <div className="flex flex-col justify-start items-start gap-1">
+                        <span className="text-black">
+                          Hoje ·{" "}
+                          {formatPrice(
+                            selectedPlan.type === "Anual"
+                              ? selectedPlan.price * 12
+                              : selectedPlan.price
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          Cobrança da assinatura ao finalizar pagamento.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {isLoading && (
+                <div className="w-full h-full absolute top-0 left-0 z-10 backdrop-blur-sm">
+                  <div className="container mx-auto px-4 py-20">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-36 w-36 border-b-2 border-main-pink mx-auto mb-4"></div>
+                      <p className="text-gray-600 text-xl">Carregando...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </article>
+          ) : (
+            <div className="">Não encontrado</div>
+          )}
+        </main>
+      )}
+
+      {showPaymentStep && paymentMethod === "pix" && (
+        <main className="w-full xl:px-14 py-14 relative">
+          {selectedPlan ? (
+            <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 xl:px-0 xl:grid-cols-[1fr_1fr] items-start">
+              <form className="flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1"></form>
               <div className="w-full flex flex-col justify-start items-center xl:px-16 order-1 xl:order-2">
                 <div className="w-full flex justify-center items-start flex-col gap-2">
                   <span className="uppercase text-gray-600 font-semibold">

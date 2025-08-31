@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { supabaseAdmin } from "../../../../../lib/supabaseAdmin";
+import { supabaseAdmin } from "../../../../../../lib/supabaseAdmin";
 
 interface CreateCustomerPagarMe {
   address: {
@@ -17,7 +17,7 @@ interface CreateCustomerPagarMe {
       number: number;
     };
   };
-  birthdate: string;
+  // birthdate: string;
   name: string;
   email: string;
   code: string;
@@ -78,6 +78,14 @@ export async function POST(request: NextRequest) {
   // console.log("INFOFORPAYMENT: ", infoForPayment);
   // console.log("SELECTEDPLAN: ", selectedPlan);
   // console.log("FETCHPROFILE: ", fetchProfile);
+
+  const individualOrCompany = infoForPayment.typeDoc;
+  let indivOrCompany = "";
+  if (individualOrCompany === "cpf") {
+    indivOrCompany = "individual";
+  } else if (individualOrCompany === "cnpj") {
+    indivOrCompany = "company";
+  }
 
   // CLEAN CEP
   const zipCode = infoForPayment.cep;
@@ -185,13 +193,13 @@ export async function POST(request: NextRequest) {
         number: notAreaMobilePhone,
       },
     },
-    birthdate: fetchProfile.birthdate,
+    // birthdate: fetchProfile.birthdate,
     name: infoForPayment.full_name,
     email: infoForPayment.email,
     code: fetchProfile.slug_link,
     document: cleanIdentity,
     document_type: infoForPayment.typeDoc,
-    type: "individual",
+    type: indivOrCompany,
     metadata: {
       slug_link: fetchProfile.slug_link,
       user_id: fetchProfile.id,
