@@ -128,16 +128,23 @@ export default function InformacoesDeConta() {
 
       const data = await responseDelete.json();
 
-      if (data.status === 400) {
+      if (data.error === true) {
+        setTypeAlert("error");
         setIsAlert(data.message);
-        setTimeout(() => (window.location.href = "/signin"), 1000);
+        setTimeout(
+          () => (window.location.href = "/signin?redirect=/perfil"),
+          5000
+        );
         return;
       }
 
-      if (data.status === 200) {
+      console.log(data.message);
+
+      if (data.error === false) {
+        setTypeAlert("success");
         setIsAlert(data.message);
         await supabase.auth.signOut();
-        setTimeout(() => (window.location.href = "/signin"), 1000);
+        setTimeout(() => (window.location.href = "/signup"), 5000);
         return;
       }
     } catch (error) {
