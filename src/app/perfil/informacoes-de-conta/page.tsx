@@ -25,8 +25,12 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
+import { Banner } from "../../../../components/banner-alert";
 
 export default function InformacoesDeConta() {
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
+  const [isAlert, setIsAlert] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const divRef = useRef<HTMLDivElement>(null);
@@ -82,7 +86,7 @@ export default function InformacoesDeConta() {
         console.log(response.statusText);
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
-          200
+          1000
         );
         return;
       }
@@ -123,29 +127,32 @@ export default function InformacoesDeConta() {
       });
 
       const data = await responseDelete.json();
-      console.log(data);
 
       if (data.status === 400) {
-        alert(data.message);
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          200
-        );
+        setIsAlert(data.message);
+        setTimeout(() => (window.location.href = "/signin"), 1000);
         return;
       }
 
       if (data.status === 200) {
-        alert(data.message);
+        setIsAlert(data.message);
         await supabase.auth.signOut();
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          200
-        );
+        setTimeout(() => (window.location.href = "/signin"), 1000);
         return;
       }
     } catch (error) {
       console.error("Não foi possível deletar conta de usuário: ", error);
       return;
+    }
+  };
+
+  useEffect(() => {
+    handleHideAlert();
+  }, [showAlert]);
+
+  const handleHideAlert = () => {
+    if (showAlert) {
+      setTimeout(() => setShowAlert(false), 5000);
     }
   };
 
@@ -167,6 +174,12 @@ export default function InformacoesDeConta() {
   console.log(userProfile);
   return (
     <>
+      <Banner
+        type={typeAlert}
+        show={showAlert}
+        hide={() => setShowAlert(false)}
+        message={isAlert}
+      />
       <Header />
       <main className="w-full h-auto flex justify-center items-start pb-20">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />

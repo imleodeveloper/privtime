@@ -25,7 +25,7 @@ import { formatDate } from "../../../lib/plans";
 import Link from "next/link";
 import { Banner } from "../../../components/banner-alert";
 
-export default function Profile({ children }: { children: React.ReactNode }) {
+export default function Profile() {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
   const [isAlert, setIsAlert] = useState<string>("");
@@ -87,7 +87,7 @@ export default function Profile({ children }: { children: React.ReactNode }) {
         );
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
-          200
+          1000
         );
         return;
       }
@@ -106,6 +106,16 @@ export default function Profile({ children }: { children: React.ReactNode }) {
         3000
       );
       return;
+    }
+  };
+
+  useEffect(() => {
+    handleHideAlert();
+  }, [showAlert]);
+
+  const handleHideAlert = () => {
+    if (showAlert) {
+      setTimeout(() => setShowAlert(false), 5000);
     }
   };
 
@@ -140,7 +150,7 @@ export default function Profile({ children }: { children: React.ReactNode }) {
       <Banner
         type={typeAlert}
         show={showAlert}
-        hide={() => setTimeout(() => setShowAlert(false), 5000)}
+        hide={() => setShowAlert(false)}
         message={isAlert}
       />
       <Header />
