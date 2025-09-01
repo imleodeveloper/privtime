@@ -28,8 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { Banner } from "../../../../components/banner-alert";
 
 export default function Assinaturas() {
-  const searchParams = new URLSearchParams(window.location.search);
-  const msgParams = searchParams.get("msg");
+  const [params, setParams] = useState<string>("");
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
   const [isAlert, setIsAlert] = useState<string>("");
@@ -63,11 +62,16 @@ export default function Assinaturas() {
 
   useEffect(() => {
     handleSession();
+    const searchParams = new URLSearchParams(window.location.search);
+    const msgParams = searchParams.get("msg");
+    if (msgParams) {
+      setParams(msgParams);
+    }
     checkParams();
   }, []);
 
   const checkParams = () => {
-    if (msgParams === "existing_plan") {
+    if (params === "existing_plan") {
       setTypeAlert("error");
       setShowAlert(!showAlert);
       setIsAlert(
