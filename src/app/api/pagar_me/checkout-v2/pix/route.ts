@@ -9,7 +9,7 @@ interface CreateCustomerPagarMe {
       number: number;
     };
   };
-  // birthdate: string;
+  birthdate: string;
   name: string;
   email: string;
   code: string;
@@ -36,13 +36,14 @@ interface CreateObjectPix {
   ];
   payments: [
     {
+      payment_method: string;
       Pix: {
         expires_in: number;
       };
-      payment_method: string;
       amount: number;
     }
   ];
+  antifraud_enabled: boolean;
   closed: boolean;
 }
 
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     const cleanIdentity = identity.replace(/\D/g, "");
 
     // Auth
-    const secret_key = process.env.PAGARME_SECRET_TEST_KEY;
+    const secret_key = process.env.PAGARME_SECRET_KEY;
     const authHeader =
       "Basic " + Buffer.from(`${secret_key}:`).toString("base64");
 
@@ -136,7 +137,7 @@ export async function POST(request: NextRequest) {
           number: notAreaMobilePhone,
         },
       },
-      // birthdate: "string",
+      birthdate: fetchProfile.birthdate,
       name: infoForPayment.full_name,
       email: infoForPayment.email,
       code: fetchProfile.slug_link,
@@ -179,6 +180,15 @@ export async function POST(request: NextRequest) {
     const dataCreateCustomer = await responseCreateCustomer.json();
 
     const createPix: CreateObjectPix = {
+      payments: [
+        {
+          payment_method: "pix",
+          Pix: {
+            expires_in: 3600,
+          },
+          amount: amount,
+        },
+      ],
       customer_id: dataCreateCustomer.id,
       items: [
         {
@@ -188,15 +198,7 @@ export async function POST(request: NextRequest) {
           code: selectedPlan.link,
         },
       ],
-      payments: [
-        {
-          Pix: {
-            expires_in: 3600,
-          },
-          payment_method: "pix",
-          amount: amount,
-        },
-      ],
+      antifraud_enabled: true,
       closed: true,
     };
 
@@ -213,11 +215,22 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    if (!responseCreatePix.ok) {
+      console.error("Erro ao consultar servidor de PIX do Pagar-Me");
+      return NextResponse.json(
+        { message: "Erro ao consultar servidor de PIX do Pagar-Me" },
+        { status: 400 }
+      );
+    }
+
     const dataPix = await responseCreatePix.json();
 
-    console.log("DataPix: ", dataPix);
+    const pixLastTransaction = dataPix.charges[0].last_transaction;
 
-    return NextResponse.json({ data: dataPix }, { status: 200 });
+    return NextResponse.json(
+      { pix_transaction: pixLastTransaction },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Não foi possível realizar o pedido via PIX:", error);
     return NextResponse.json(

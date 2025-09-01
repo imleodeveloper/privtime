@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // console.log("Evento:", eventType);
     // console.log("Data:", data);
 
-    if (eventType === "charge.created") {
+    if (eventType === "charge.created" || eventType === "order.created") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (eventType === "charge.pending") {
+    if (eventType === "charge.pending" || eventType === "order.pending") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({ status: "pending" })
@@ -169,9 +169,103 @@ export async function POST(request: NextRequest) {
           );
         }
       }
+    } else if (eventType === "order.paid") {
+      const { error: errorUpdatedPlan } = await supabaseAdmin
+        .from("users_plan")
+        .update({
+          plan_id: planIdDbs,
+          slug_plan_at_moment: planLink,
+          price_at_purchase: amount,
+          subscription_id: "Payment via Pix",
+          last_transaction_id: data.last_transaction?.id ?? null,
+          created_at: createdAt,
+          expires_at: handleExpires,
+          status: "active",
+          payment_method: data.payment_method,
+        })
+        .eq("user_id", userId);
+
+      if (errorUpdatedPlan) {
+        console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
+        return NextResponse.json(
+          { message: "Erro ao atualizar plano" },
+          { status: 500 }
+        );
+      }
+
+      const dateNow = new Date();
+      const { error: errorUpdatedProfile } = await supabaseAdmin
+        .from("profiles")
+        .update({ whats_plan: planLink, updated_at: dateNow })
+        .eq("id", userId)
+        .select();
+
+      if (errorUpdatedProfile) {
+        console.log("Não foi possível atualizar perfil: ", errorUpdatedProfile);
+        return NextResponse.json(
+          { message: "Erro ao atualizar perfil" },
+          { status: 404 }
+        );
+      }
+
+      const checkTypePlan = () => {
+        if (planLink) {
+          if (planLink === "test_plan") {
+            return "monthly_fee";
+          } else if (planLink === "monthly_plan") {
+            return "monthly_fee";
+          } else if (planLink === "annual_plan") {
+            return "annual";
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
+      };
+      const typePlan = checkTypePlan();
+
+      const { data: checkTransactionId, error: checkError } =
+        await supabaseAdmin
+          .from("history_payments")
+          .select("*")
+          .eq("transaction_id", data.last_transaction.id)
+          .single();
+
+      if (checkError) {
+        console.error("Erro ao consultar histórico: ", checkError);
+      }
+
+      if (!checkTransactionId) {
+        const { error: historyPaymentError } = await supabaseAdmin
+          .from("history_payments")
+          .insert({
+            slug_link: userLink,
+            user_id: userId,
+            transaction_id: data.last_transaction.id,
+            subscription_id: "Payment via Pix",
+            price: amount,
+            type: typePlan,
+            currency: data.currency,
+            payment_method: data.payment_method,
+            paid_at: data.paid_at,
+            status: data.status,
+          });
+
+        if (historyPaymentError) {
+          console.log(
+            "Não foi possível salvar o pagamento na tabela: ",
+            historyPaymentError
+          );
+          return NextResponse.json(
+            { message: "Erro ao salvar pagamento no histórico" },
+            { status: 202 }
+          );
+        }
+      }
     }
 
-    if (eventType === "charge.payment_failed") {
+    if (eventType === "charge.payment_failed" || eventType === "order.failed") {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({

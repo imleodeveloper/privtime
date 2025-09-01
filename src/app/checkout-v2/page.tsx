@@ -8,6 +8,7 @@ import { formatPrice, plans } from "../../../lib/plans";
 import React, { useState, useEffect } from "react";
 import {
   BadgeCheck,
+  Copy,
   CreditCard,
   ExternalLink,
   Info,
@@ -113,6 +114,11 @@ interface InfoForPaymentPix {
   phone: string;
 }
 
+interface UsePix {
+  qr_code: string;
+  qr_code_url: string;
+}
+
 export default function CheckoutPage() {
   //const searchParams = useSearchParams();
   const router = useRouter();
@@ -168,6 +174,10 @@ export default function CheckoutPage() {
   const [expiry, setExpiry] = useState<string>("");
   const [cvv, setCvv] = useState<string>("");
 
+  const [usePix, setUsePix] = useState<UsePix>({
+    qr_code: "",
+    qr_code_url: "",
+  });
   const [paymentMethod, setPaymentMethod] = useState<"credit_card" | "pix">(
     "credit_card"
   );
@@ -537,12 +547,26 @@ export default function CheckoutPage() {
         });
 
         const dataPix = await responsePix.json();
-
-        console.log(dataPix);
+        const pix_transaction = dataPix.pix_transaction;
+        setUsePix({
+          qr_code: pix_transaction.qr_code,
+          qr_code_url: pix_transaction.qr_code_url,
+        });
+        setIsLoading(false);
+        setShowPaymentStep(!showPaymentStep);
       }
     } catch (error) {
       console.error("Não foi possível realizar ordem PIX:", error);
     }
+  };
+
+  const [copyPix, setCopyPix] = useState<boolean>(false);
+  const handleCopyPix = () => {
+    navigator.clipboard.writeText(usePix.qr_code).then(() => {
+      setCopyPix(!copyPix);
+    });
+
+    setTimeout(() => setCopyPix(false), 5000);
   };
 
   return (
@@ -1283,7 +1307,51 @@ export default function CheckoutPage() {
         <main className="w-full xl:px-14 py-14 relative">
           {selectedPlan ? (
             <article className="w-full container mx-auto min-h-auto gap-12 grid grid-cols-1 px-4 xl:px-0 xl:grid-cols-[1fr_1fr] items-start">
-              <form className="flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1"></form>
+              <form className="flex flex-col justify-center items-center gap-6 xl:px-16 order-2 xl:order-1">
+                {usePix && (
+                  <>
+                    <Image
+                      src={usePix.qr_code_url}
+                      alt="QR Code PIX - Pagar Me"
+                      className="object-cover"
+                      width={180}
+                      height={180}
+                    />
+                    <div className="text-center text-lg font-bold text-main-pink">
+                      <span>
+                        Caso prefira, você também pode copiar e colar o código
+                        abaixo diretamente no aplicativo do seu banco:
+                      </span>
+                    </div>
+                    <div className="w-full p-4 rounded-md bg-gray-600 text-gray-200 text-center flex flex-col justify-center items-center gap-2">
+                      <div className="flex flex-col justify-center items-center relative">
+                        <span
+                          className={`absolute top-0 bottom-0 right-full py-1 px-2 rounded-md bg-green-600 text-center text-sm flex justfiy-center items-center font-bold  ${
+                            copyPix
+                              ? "opacity-100 transform -translate-x-6"
+                              : "opacity-0 transform translate-x-0"
+                          } transition-all duration-300`}
+                        >
+                          Copiado!
+                        </span>
+                        <Copy
+                          onClick={handleCopyPix}
+                          className="w-10 h-10 text-blue-600 cursor-pointer bg-gray-200 rounded-full p-1 hover:bg-green-600 hover:text-white transform hover:scale-125 transition-all duration-300"
+                        ></Copy>
+                      </div>
+                      <span className="text-xs">{usePix.qr_code}</span>
+                    </div>
+                    <div className="flex justify-center items-center">
+                      <Button className="text-white">
+                        Já realizei o pagamento
+                      </Button>
+                    </div>
+                    <span className="text-center text-gray-600 text-sm">
+                      Este QR Code estará válido por 1 hora a partir da geração.
+                    </span>
+                  </>
+                )}
+              </form>
               <div className="w-full flex flex-col justify-start items-center xl:px-16 order-1 xl:order-2">
                 <div className="w-full flex justify-center items-start flex-col gap-2">
                   <span className="uppercase text-gray-600 font-semibold">
