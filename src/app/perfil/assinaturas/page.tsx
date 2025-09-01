@@ -62,23 +62,23 @@ export default function Assinaturas() {
 
   useEffect(() => {
     handleSession();
-    const searchParams = new URLSearchParams(window.location.search);
-    const msgParams = searchParams.get("msg");
-    if (msgParams) {
-      setParams(msgParams);
-    }
-    checkParams();
   }, []);
 
-  const checkParams = () => {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const msgParams = searchParams.get("msg") ?? "";
+    setParams(msgParams);
+  }, []);
+
+  useEffect(() => {
     if (params === "existing_plan") {
       setTypeAlert("error");
-      setShowAlert(!showAlert);
+      setShowAlert(true);
       setIsAlert(
         "Você já possui um plano ativo vinculado ao seu perfil. Para realizar uma renovação ou reativação, acesse a página Assinaturas no seu perfil."
       );
     }
-  };
+  }, [params]);
 
   useEffect(() => {
     handleHideAlert();
