@@ -21,7 +21,7 @@ export function NavigationProfile({
 
   return (
     <nav
-      className={`fixed top-0 left-0 z-10 lg:relative h-full w-1/2 lg:w-[20%] bg-sub-background/40 pt-12 lg:pt-2 backdrop-blur-md grid grid-cols-1 gap-1 border-r border-black/80 transition-all duration-500 ${
+      className={`fixed top-0 left-0 z-10 lg:relative h-full w-1/2 lg:w-[20%] bg-sub-background/40 pt-12 lg:pt-2 backdrop-blur-md grid grid-cols-1 gap-1 border-r border-b border-main-pink/40 shadow-sm rounded-br-lg transition-all duration-500 ${
         open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}
     >

@@ -358,6 +358,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        setIsLoading(true);
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -366,6 +367,18 @@ export default function CheckoutPage() {
           // Redireciona para o login se não tiver sessão logada
           const currentURL = window.location.pathname + window.location.search;
           router.push(`/signin?redirect=${encodeURIComponent(currentURL)}`);
+          return;
+        }
+
+        const response = await fetch("/api/auth/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: session.user.id }),
+        });
+
+        if (response.status === 401) {
+          // Redireciona para o login se já tiver plano
+          router.push(`/perfil/assinaturas?msg=existing_plan`);
           return;
         }
 
@@ -401,6 +414,7 @@ export default function CheckoutPage() {
             });
           }
         }
+        setIsLoading(false);
       } catch (error) {
         console.error(
           "Erro ao verificar sessão ou localizar informações do usuário: ",

@@ -24,8 +24,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
+import { useSearchParams } from "next/navigation";
+import { Banner } from "../../../../components/banner-alert";
 
 export default function Assinaturas() {
+  const searchParams = useSearchParams();
+  const msgParams = searchParams.get("msg");
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
+  const [isAlert, setIsAlert] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
@@ -56,7 +63,28 @@ export default function Assinaturas() {
 
   useEffect(() => {
     handleSession();
+    checkParams();
   }, []);
+
+  const checkParams = () => {
+    if (msgParams === "existing_plan") {
+      setTypeAlert("error");
+      setShowAlert(!showAlert);
+      setIsAlert(
+        "Você já possui um plano ativo vinculado ao seu perfil. Para realizar uma renovação ou reativação, acesse a página Assinaturas no seu perfil."
+      );
+    }
+  };
+
+  useEffect(() => {
+    handleHideAlert();
+  }, [showAlert]);
+
+  const handleHideAlert = () => {
+    if (showAlert) {
+      setTimeout(() => setShowAlert(false), 5000);
+    }
+  };
 
   const handleSession = async () => {
     setIsLoading(true);
@@ -119,6 +147,12 @@ export default function Assinaturas() {
   }
   return (
     <>
+      <Banner
+        type={typeAlert}
+        show={showAlert}
+        hide={() => setShowAlert(false)}
+        message={isAlert}
+      />
       <Header />
       <main className="w-full h-auto pb-20 flex justify-center items-start">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
@@ -190,9 +224,15 @@ export default function Assinaturas() {
                       : formatDate(userPlan.expires_at)}
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal">
-                    <div className="bg-green-200 p-2 rounded-xl text-sm font-semibold text-green-800">
+                    <div
+                      className={`${
+                        userPlan.plan_slug === "trial_plan"
+                          ? "bg-red-200 text-red-800"
+                          : "bg-green-200 text-green-800"
+                      } p-2 rounded-xl text-sm font-semibold`}
+                    >
                       {userPlan.plan_slug === "trial_plan"
-                        ? "Gratuito"
+                        ? "Desligado"
                         : "Ligado"}
                     </div>
                   </li>
