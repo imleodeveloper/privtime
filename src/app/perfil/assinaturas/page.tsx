@@ -28,7 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { Banner } from "../../../../components/banner-alert";
 
 export default function Assinaturas() {
-  const searchParams = useSearchParams();
+  const searchParams = new URLSearchParams(window.location.search);
   const msgParams = searchParams.get("msg");
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
