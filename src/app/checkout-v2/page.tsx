@@ -8,6 +8,7 @@ import { formatPrice, plans } from "../../../lib/plans";
 import React, { useState, useEffect } from "react";
 import {
   BadgeCheck,
+  CheckCircle,
   Copy,
   CreditCard,
   ExternalLink,
@@ -122,7 +123,8 @@ interface UsePix {
 export default function CheckoutPage() {
   //const searchParams = useSearchParams();
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   //const planURL = searchParams.get("plan"); //Pega o plan da URL ex: https://privtime.com.br/checkout?plan=monthly_plan
   const [planURL, setPlanURL] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
@@ -513,6 +515,17 @@ export default function CheckoutPage() {
           return;
         }
 
+        if (data.subscription.billing_type === "prepaid") {
+          setSuccess(
+            "Pagamento pendente de confirmação, redirecionando para página de pêndencia."
+          );
+          setTimeout(
+            () => (window.location.href = "/checkout-v2/pending"),
+            5000
+          );
+          setIsLoading(false);
+        }
+
         setIsLoading(false);
       } catch (error) {
         setError(
@@ -879,6 +892,14 @@ export default function CheckoutPage() {
                 className="flex flex-col justify-start items-center xl:px-16 order-2 xl:order-1"
               >
                 <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pb-6">
+                  {success && (
+                    <div className="w-full p-4 bg-green-100 rounded-md border border-green-600 flex justify-start items-start gap-2">
+                      <CheckCircle className="w-6 h-6 text-green-800"></CheckCircle>{" "}
+                      <span className="text-green-700 flex justify-start items-center">
+                        {success}
+                      </span>
+                    </div>
+                  )}
                   <div className="w-full flex justify-between items-center">
                     <span className="text-start text-2xl text-black font-bold">
                       Endereço
@@ -1342,7 +1363,12 @@ export default function CheckoutPage() {
                       <span className="text-xs">{usePix.qr_code}</span>
                     </div>
                     <div className="flex justify-center items-center">
-                      <Button className="text-white">
+                      <Button
+                        className="text-white"
+                        onClick={() =>
+                          (window.location.href = "/checkout-v2/pending")
+                        }
+                      >
                         Já realizei o pagamento
                       </Button>
                     </div>

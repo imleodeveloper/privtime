@@ -364,7 +364,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message_ok: "Assinatura criada com sucesso!",
+        message_ok: "Assinatura criada com sucesso! Aguardando pagamento",
         subscription: dataCreateSubscription,
         customer: dataCreateCustomer,
       },

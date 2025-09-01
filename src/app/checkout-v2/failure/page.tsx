@@ -82,7 +82,7 @@ function FailureContent() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
                 <Button className="bg-[#1e90ff] hover:bg-[#022041] flex items-center space-x-2 text-white">
                   <RefreshCw className="h-4 w-4" />
-                  <span>Tentar Novamente</span>
+                  <Link href="/#planos">Tentar Novamente</Link>
                 </Button>
                 <Button className="bg-sub-background hover:text-white">
                   <Link href="/">Voltar ao Início</Link>
