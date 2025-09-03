@@ -4,7 +4,6 @@ import { supabaseAdmin } from "../../../../../../../lib/supabaseAdmin";
 export async function POST(request: NextRequest) {
   try {
     const { userPlan, userProfile } = await request.json();
-    console.log(userPlan);
 
     const secret_key = process.env.PAGARME_SECRET_TEST_KEY;
     const authHeader =
@@ -20,25 +19,22 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    console.log("Disable: ", data);
+    if (!data.manual_billing) {
+      const { error: errorUpdate } = await supabaseAdmin
+        .from("users_plan")
+        .update({
+          automatic_renewal: true,
+        })
+        .eq("user_id", userProfile.user_id);
 
-    // if (data.status === "canceled") {
-    //   const { error: errorUpdate } = await supabaseAdmin
-    //     .from("users_plan")
-    //     .update({
-    //       automatic_renewal: false,
-    //       canceled_at: data.canceled_at,
-    //     })
-    //     .eq("user_id", userProfile.id);
-
-    //   if (errorUpdate) {
-    //     console.log(
-    //       "Não foi possível encontrar usuário na tabela de planos de usuário: ",
-    //       errorUpdate
-    //     );
-    //     return NextResponse.json({ status: 404 });
-    //   }
-    // }
+      if (errorUpdate) {
+        console.log(
+          "DISABLE MANUAL: Não foi possível encontrar usuário na tabela de planos de usuário: ",
+          errorUpdate
+        );
+        return NextResponse.json({ status: 404 });
+      }
+    }
 
     return NextResponse.json(
       { message: "Renovação automática atualizada com sucesso!" },

@@ -33,6 +33,7 @@ export default function Profile() {
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
+    user_id: "",
     full_name: "",
     phone: "",
     email: "",

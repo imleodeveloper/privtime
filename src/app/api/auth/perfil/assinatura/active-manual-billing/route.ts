@@ -4,7 +4,6 @@ import { supabaseAdmin } from "../../../../../../../lib/supabaseAdmin";
 export async function POST(request: NextRequest) {
   try {
     const { userPlan, userProfile } = await request.json();
-    console.log(userPlan);
 
     const secret_key = process.env.PAGARME_SECRET_TEST_KEY;
     const authHeader =
@@ -20,20 +19,17 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    console.log("Active: ", data);
-
-    if (data.status === "canceled") {
+    if (data.manual_billing === true) {
       const { error: errorUpdate } = await supabaseAdmin
         .from("users_plan")
         .update({
           automatic_renewal: false,
-          canceled_at: data.canceled_at,
         })
-        .eq("user_id", userProfile.id);
+        .eq("user_id", userProfile.user_id);
 
       if (errorUpdate) {
         console.log(
-          "Não foi possível encontrar usuário na tabela de planos de usuário: ",
+          "ACTIVE MANUAL: Não foi possível encontrar usuário na tabela de planos de usuário: ",
           errorUpdate
         );
         return NextResponse.json({ status: 404 });

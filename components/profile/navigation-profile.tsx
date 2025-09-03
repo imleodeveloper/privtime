@@ -72,7 +72,7 @@ export function NavigationProfile({
             className="w-full p-3 flex justify-start items-center gap-2"
           >
             <BanknoteArrowDown className="w-5 h-5"></BanknoteArrowDown>{" "}
-            Histórico de Pagamentos
+            Histórico
           </Link>
         </li>
         <li

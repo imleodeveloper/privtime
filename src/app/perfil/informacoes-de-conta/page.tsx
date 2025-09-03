@@ -38,6 +38,7 @@ export default function InformacoesDeConta() {
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
+    user_id: "",
     full_name: "",
     phone: "",
     email: "",
@@ -238,7 +239,8 @@ export default function InformacoesDeConta() {
                       {userProfile.full_name}
                     </span>
                   </div>
-                  <div className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white">
+                  <div className="flex justify-center items-center pointers-events-none bg-main-pink/20 p-2 rounded-xl text-gray-500">
+                    {/* // className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"> */}
                     <Cog className="w-6 h-6 group-hover:animate-spin"></Cog>
                   </div>
                 </div>
@@ -255,7 +257,8 @@ export default function InformacoesDeConta() {
                       {userProfile.phone}
                     </span>
                   </div>
-                  <div className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white">
+                  <div className="flex justify-center items-center pointers-events-none bg-main-pink/20 p-2 rounded-xl text-gray-500">
+                    {/* // className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"> */}
                     <Cog className="w-6 h-6 group-hover:animate-spin"></Cog>
                   </div>
                 </div>
@@ -300,7 +303,8 @@ export default function InformacoesDeConta() {
                       {userProfile.email}
                     </span>
                   </div>
-                  <div className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white">
+                  <div className="flex justify-center items-center pointers-events-none bg-main-pink/20 p-2 rounded-xl text-gray-500">
+                    {/* className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"> */}
                     <Cog className="w-6 h-6 group-hover:animate-spin"></Cog>
                   </div>
                 </div>
@@ -315,7 +319,8 @@ export default function InformacoesDeConta() {
                   <div className="flex justify-center items-center">
                     <span className="font-normal text-sm">••••••••</span>
                   </div>
-                  <div className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white">
+                  <div className="flex justify-center items-center pointers-events-none bg-main-pink/20 p-2 rounded-xl text-gray-500">
+                    {/* className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"> */}
                     <Cog className="w-6 h-6 group-hover:animate-spin"></Cog>
                   </div>
                 </div>

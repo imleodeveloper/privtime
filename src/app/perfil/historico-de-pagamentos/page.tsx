@@ -107,7 +107,7 @@ export default function HistoricoDePagamentos() {
           </div>
           <div className="flex justify-center md:justify-start items-center gap-3">
             <span className="text-xl font-semibold py-1 text-center md:text-start md:pr-4 border-r border-black/20">
-              Histórico de Pagamentos
+              Histórico
             </span>
             <span className="flex justify-center items-center gap-1">
               <Link
@@ -118,7 +118,11 @@ export default function HistoricoDePagamentos() {
               </Link>
               <span className="text-gray-500">-</span>
               <span className="text-gray-500 text-sm hover:text-main-purple">
-                Histórico de pagamentos
+                Histórico
+              </span>
+              <span className="text-gray-500">-</span>
+              <span className="text-gray-500 text-sm hover:text-main-purple">
+                Histórico de {section}
               </span>
             </span>
           </div>
@@ -162,92 +166,114 @@ export default function HistoricoDePagamentos() {
                   {userPayments.length > 0 ? (
                     userPayments.map((payments, index) => (
                       <div
+                        className="w-full py-3 px-4 flex flex-col justify-center items-center"
                         key={index}
-                        className="w-full flex justify-center items-center py-3 px-4 border-b border-black/20"
                       >
-                        <ul className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 items-start gap-8">
-                          <li className="flex justify-start items-center">
-                            <div className="flex flex-col justify-center items-start gap-1">
-                              <span className="text-gray-600 text-sm">
-                                ID da transação
-                              </span>
-                              <span className="text-black text-sm break-all">
-                                {payments.transaction_id}
-                              </span>
-                            </div>
-                          </li>
-                          {payments.subscription_id && (
-                            <li className="flex justify-center items-center">
+                        <div className="w-full pb-3 flex justify-center items-center border-b border-black/20">
+                          <ul className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 items-start gap-8">
+                            <li className="flex justify-start items-center">
                               <div className="flex flex-col justify-center items-start gap-1">
                                 <span className="text-gray-600 text-sm">
-                                  ID da Assinatura
+                                  ID da transação
                                 </span>
                                 <span className="text-black text-sm break-all">
-                                  {payments.subscription_id}
+                                  {payments.transaction_id}
                                 </span>
                               </div>
                             </li>
-                          )}
-                          <li className="flex justify-center items-center">
-                            <div className="flex flex-col justify-center items-start gap-1">
-                              <span className="text-gray-600 text-sm">
-                                Tipo
-                              </span>
-                              <span className="text-black text-sm break-all">
-                                {payments.type === "monthly_fee"
-                                  ? "Mensal"
-                                  : "Anual"}
-                              </span>
-                            </div>
-                          </li>
-                          <li className="flex justify-center items-center">
-                            <div className="flex flex-col justify-center items-start gap-1">
-                              <span className="text-gray-600 text-sm">
-                                Método
-                              </span>
-                              <span className="text-black text-sm break-all">
-                                {payments.payment_method === "credit_card"
-                                  ? "Cartão de Crédito"
-                                  : "PIX"}
-                              </span>
-                            </div>
-                          </li>
-                          {payments.status === "paid" ? (
+                            {payments.subscription_id && (
+                              <li className="flex justify-center items-center">
+                                <div className="flex flex-col justify-center items-start gap-1">
+                                  <span className="text-gray-600 text-sm">
+                                    ID da Assinatura
+                                  </span>
+                                  <span className="text-black text-sm break-all">
+                                    {payments.subscription_id}
+                                  </span>
+                                </div>
+                              </li>
+                            )}
                             <li className="flex justify-center items-center">
                               <div className="flex flex-col justify-center items-start gap-1">
                                 <span className="text-gray-600 text-sm">
-                                  Pago em
+                                  Tipo
                                 </span>
                                 <span className="text-black text-sm break-all">
-                                  {formatDate(payments.paid_at)}
+                                  {payments.type === "monthly_fee"
+                                    ? "Mensal"
+                                    : "Anual"}
                                 </span>
                               </div>
                             </li>
-                          ) : (
                             <li className="flex justify-center items-center">
                               <div className="flex flex-col justify-center items-start gap-1">
                                 <span className="text-gray-600 text-sm">
-                                  Status
+                                  Método
                                 </span>
                                 <span className="text-black text-sm break-all">
-                                  {payments.status}
+                                  {payments.payment_method === "credit_card"
+                                    ? "Cartão de Crédito"
+                                    : "PIX"}
                                 </span>
                               </div>
                             </li>
-                          )}
-                          <li className="flex justify-center items-center">
-                            <div className="flex flex-col justify-center items-start gap-1">
-                              <span className="text-gray-600 text-sm">
-                                Valor
-                              </span>
-                              <span className="text-black text-sm break-all">
-                                {formatPrice(
-                                  payments.price == "5819" ? 58.19 : 48.19 * 12
-                                )}
+                            {payments.status === "paid" ? (
+                              <li className="flex justify-center items-center">
+                                <div className="flex flex-col justify-center items-start gap-1">
+                                  <span className="text-gray-600 text-sm">
+                                    Pago em
+                                  </span>
+                                  <span className="text-black text-sm break-all">
+                                    {formatDate(payments.paid_at)}
+                                  </span>
+                                </div>
+                              </li>
+                            ) : (
+                              <li className="flex justify-center items-center">
+                                <div className="flex flex-col justify-center items-start gap-1">
+                                  <span className="text-gray-600 text-sm">
+                                    Status
+                                  </span>
+                                  <span className="text-black text-sm break-all">
+                                    {payments.status}
+                                  </span>
+                                </div>
+                              </li>
+                            )}
+                            <li className="flex justify-center items-center">
+                              <div className="flex flex-col justify-center items-start gap-1">
+                                <span className="text-gray-600 text-sm">
+                                  Valor
+                                </span>
+                                <span className="text-black text-sm break-all">
+                                  {formatPrice(
+                                    payments.price == "5819"
+                                      ? 58.19
+                                      : 48.19 * 12
+                                  )}
+                                </span>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="w-full flex flex-col justify-center items-center py-6">
+                          <div className="flex flex-col justify-center items-center gap-6 py-10">
+                            <div className="flex flex-col justify-center items-center gap-4">
+                              <Crown className="w-10 h-10 text-main-pink"></Crown>
+                              <span className="text-gray-800 font-semibold text-center">
+                                Precisa solicitar um reembolso?
                               </span>
                             </div>
-                          </li>
-                        </ul>
+                            <a
+                              href="https://wa.me/5511999999999"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-4 py-2 text-white bg-main-purple font-bold rounded hover:bg-main-pink transition cursor-pointer"
+                            >
+                              Entrar em contato
+                            </a>
+                          </div>
+                        </div>
                       </div>
                     ))
                   ) : (

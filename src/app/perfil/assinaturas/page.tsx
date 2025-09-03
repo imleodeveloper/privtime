@@ -39,7 +39,9 @@ export default function Assinaturas() {
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [renewalPlan, setRenewalPlan] = useState<boolean>(false);
   const [changeRenewal, setChangeRenewal] = useState<boolean>(false);
+  const [cancelSubscription, setCancelSubscription] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
+    user_id: "",
     full_name: "",
     phone: "",
     email: "",
@@ -171,6 +173,9 @@ export default function Assinaturas() {
         setTypeAlert("success");
         setIsAlert(data.message);
         setShowAlert(true);
+        setChangeRenewal(false);
+        setRenewalPlan(false);
+        setTimeout(() => window.location.reload(), 2500);
       } else if (userPlan.automatic_renewal === false) {
         const response = await fetch(
           "/api/auth/perfil/assinatura/disable-manual-billing",
@@ -207,10 +212,80 @@ export default function Assinaturas() {
         setTypeAlert("success");
         setIsAlert(data.message);
         setShowAlert(true);
+        setChangeRenewal(false);
+        setRenewalPlan(false);
+        setTimeout(() => window.location.reload(), 2500);
       }
     } catch (error) {
       console.error("Erro interno: ", error);
-      return;
+      setTypeAlert("error");
+      setIsAlert("Erro inesperado, tente novamente mais tarde.");
+      setShowAlert(true);
+      setRenewalPlan(false);
+      setCancelSubscription(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      if (
+        userPlan.status !== "canceled" &&
+        userPlan.status !== "expired-canceled"
+      ) {
+        const response = await fetch(
+          `/api/auth/perfil/assinatura/cancel-subscription`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userPlan, userProfile }),
+          }
+        );
+
+        if (!response.ok) {
+          setTypeAlert("error");
+          setShowAlert(true);
+          setIsAlert(
+            "Não foi possível alterar renovação automática, entre em contato com o suporte."
+          );
+        }
+
+        if (response.status === 404) {
+          setTypeAlert("error");
+          setIsAlert(
+            "Não foi possível atualizar plano do usuário recarregue a página."
+          );
+          setShowAlert(true);
+        }
+        if (response.status === 500) {
+          setTypeAlert("error");
+          setIsAlert("Erro interno no servidor, tente novamente mais tarde.");
+          setShowAlert(true);
+        }
+
+        const data = await response.json();
+
+        setTypeAlert("success");
+        setIsAlert(data.message);
+        setShowAlert(true);
+        setRenewalPlan(false);
+        setCancelSubscription(false);
+        setTimeout(() => window.location.reload(), 2500);
+      } else {
+        setTypeAlert("error");
+        setIsAlert(
+          "O seu plano já está cancelado, caso precise de ajuda entre em contato com o suporte."
+        );
+        setShowAlert(true);
+        setRenewalPlan(false);
+        setCancelSubscription(false);
+      }
+    } catch (error) {
+      console.error("Erro interno do servidor:", error);
+      setTypeAlert("error");
+      setIsAlert("Erro inesperado, tente novamente mais tarde.");
+      setShowAlert(true);
+      setRenewalPlan(false);
+      setCancelSubscription(false);
     }
   };
 
@@ -343,6 +418,20 @@ export default function Assinaturas() {
                         <span className="text-red-600">Expirado</span>
                       </>
                     )}
+                    {userPlan.status === "canceled" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Cancelado</span>
+                      </>
+                    )}
+                    {userPlan.status === "expired-canceled" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">
+                          Cancelado <br />& Expirado
+                        </span>
+                      </>
+                    )}
                     {userPlan.status === "failed" && (
                       <>
                         <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
@@ -432,6 +521,20 @@ export default function Assinaturas() {
                       <>
                         <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
                         <span className="text-red-600">Expirado</span>
+                      </>
+                    )}
+                    {userPlan.status === "canceled" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Cancelado</span>
+                      </>
+                    )}
+                    {userPlan.status === "expired-canceled" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">
+                          Cancelado & Expirado
+                        </span>
                       </>
                     )}
                     {userPlan.status === "failed" && (
@@ -577,7 +680,7 @@ export default function Assinaturas() {
               <X className="w-5 h-5"></X>
             </div>
             <div className="w-full flex flex-col justify-start items-start gap-4">
-              <span className="text-2xl font-bold">Detalhes do assinatura</span>
+              <span className="text-2xl font-bold">Detalhes da assinatura</span>
               <div className="flex flex-col justify-start items-start gap-1">
                 <span className="text-lg font-bold">
                   Plano {userPlan.plan_type}
@@ -634,6 +737,19 @@ export default function Assinaturas() {
                   </span>
                 </div>
               </div>
+              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
+                <span className="text-sm">Cancelar assinatura</span>
+                <div className="flex justify-center items-center gap-2">
+                  <span className="text-sm">
+                    <Button
+                      className="text-sm text-white"
+                      onClick={() => setCancelSubscription(!cancelSubscription)}
+                    >
+                      Cancelar
+                    </Button>
+                  </span>
+                </div>
+              </div>
               {changeRenewal && (
                 <div className="fixed top-0 left-0 w-full px-6 md:px-0 h-screen flex justify-center items-center backdrop-blur-xl">
                   <div className="w-sm bg-sub-background rounded-md flex p-4 flex-col justify-start items-center gap-4">
@@ -662,6 +778,42 @@ export default function Assinaturas() {
                         onClick={() => setChangeRenewal(false)}
                       >
                         Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {cancelSubscription && (
+                <div className="fixed top-0 left-0 w-full px-6 md:px-0 h-screen flex justify-center items-center backdrop-blur-xl">
+                  <div className="w-sm bg-sub-background rounded-md flex p-4 flex-col justify-start items-center gap-4">
+                    <div className="w-full flex justify-start items-center py-2 border-b border-black/20">
+                      <span className="text-xl font-semibold text-main-pink">
+                        Cancelar Assinatura
+                      </span>
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start py-2 gap-2">
+                      <div className="w-full text-sm">
+                        <span>
+                          Tem certeza que deseja cancelar sua assinatura?{" "}
+                          <span className="text-red-600 font-semibold">
+                            Ao cancelar, se quiser voltar no futuro, será
+                            necessário contratar um novo plano.
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-end items-center gap-2 pb-2">
+                      <Button
+                        className="text-white text-sm"
+                        onClick={handleCancelSubscription}
+                      >
+                        Cancelar Assinatura
+                      </Button>
+                      <Button
+                        className="bg-sub-background border border-main-pink hover:text-white text-sm"
+                        onClick={() => setCancelSubscription(false)}
+                      >
+                        Fechar
                       </Button>
                     </div>
                   </div>

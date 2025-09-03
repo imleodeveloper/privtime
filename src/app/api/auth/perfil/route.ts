@@ -17,6 +17,7 @@ export interface UserPlan {
 }
 
 export interface UserProfile {
+  user_id: string;
   full_name: string;
   phone: string;
   email: string;
@@ -130,6 +131,7 @@ export async function POST(request: NextRequest) {
     }
 
     const profile: UserProfile = {
+      user_id: userProfile.id,
       full_name: userProfile.full_name,
       phone: userProfile.phone,
       email: userProfile.email,
