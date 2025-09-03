@@ -54,6 +54,7 @@ export default function Profile() {
     plan_id: "",
     plan_slug: "",
     plan_type: "",
+    automatic_renewal: false,
   });
 
   useEffect(() => {
