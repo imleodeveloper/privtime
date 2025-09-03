@@ -46,8 +46,12 @@ export async function POST(request: Request) {
     const differenceDays = today.getTime() - createdAt.getTime();
     const convertDays = differenceDays / (1000 * 60 * 60 * 24);
     if (
-      userPlanExist.slug_plan_at_moment === "trial_plan" &&
-      convertDays >= 7
+      (userPlanExist.slug_plan_at_moment === "trial_plan" &&
+        convertDays >= 7) ||
+      (userPlanExist.slug_plan_at_moment === "annual_plan" &&
+        convertDays >= 365) ||
+      (userPlanExist.slug_plan_at_moment === "monthly_plan" &&
+        convertDays >= 31)
     ) {
       const { error } = await supabaseAdmin
         .from("users_plan")

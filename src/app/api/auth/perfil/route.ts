@@ -13,6 +13,7 @@ export interface UserPlan {
   plan_id: string;
   plan_slug: string;
   plan_type: string;
+  automatic_renewal: boolean;
 }
 
 export interface UserProfile {
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
       plan_id: whatsPlan.id,
       plan_slug: whatsPlan.slug,
       plan_type: whatsPlan.type,
+      automatic_renewal: userPlan.automatic_renewal,
     };
 
     const { data: userProfile, error: profileError } = await supabaseAdmin
@@ -106,7 +108,12 @@ export async function POST(request: NextRequest) {
       const differenceDays = today.getTime() - createdAt.getTime();
       const convertDays = differenceDays / (1000 * 60 * 60 * 24);
 
-      if (userPlan.slug_plan_at_moment === "trial_plan" && convertDays >= 7) {
+      if (
+        (userPlan.slug_plan_at_moment === "trial_plan" && convertDays >= 7) ||
+        (userPlan.slug_plan_at_moment === "annual_plan" &&
+          convertDays >= 365) ||
+        (userPlan.slug_plan_at_moment === "monthly_plan" && convertDays >= 31)
+      ) {
         const { error } = await supabaseAdmin
           .from("users_plan")
           .update({ status: "expired" })

@@ -299,6 +299,7 @@ export async function POST(request: Request) {
             created_at: createdAt,
             status: "active",
             payment_method: "none",
+            automatic_renewal: false,
           },
         ]);
 

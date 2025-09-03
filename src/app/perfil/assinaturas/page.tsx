@@ -6,6 +6,7 @@ import {
   ChevronRight,
   CircleAlert,
   CircleEllipsis,
+  Cog,
   Copy,
   Home,
   MoveDown,
@@ -36,6 +37,8 @@ export default function Assinaturas() {
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
+  const [renewalPlan, setRenewalPlan] = useState<boolean>(false);
+  const [changeRenewal, setChangeRenewal] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     full_name: "",
     phone: "",
@@ -58,6 +61,7 @@ export default function Assinaturas() {
     plan_id: "",
     plan_slug: "",
     plan_type: "",
+    automatic_renewal: false,
   });
 
   useEffect(() => {
@@ -129,6 +133,87 @@ export default function Assinaturas() {
     }
   };
 
+  const handleChangeRenewal = async () => {
+    try {
+      if (userPlan.automatic_renewal === true) {
+        const response = await fetch(
+          "/api/auth/perfil/assinatura/active-manual-billing",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userPlan, userProfile }),
+          }
+        );
+
+        if (!response.ok) {
+          setTypeAlert("error");
+          setShowAlert(true);
+          setIsAlert(
+            "Não foi possível alterar renovação automática, entre em contato com o suporte."
+          );
+        }
+
+        if (response.status === 404) {
+          setTypeAlert("error");
+          setIsAlert(
+            "Não foi possível atualizar plano do usuário recarregue a página."
+          );
+          setShowAlert(true);
+        }
+        if (response.status === 500) {
+          setTypeAlert("error");
+          setIsAlert("Erro interno no servidor, tente novamente mais tarde.");
+          setShowAlert(true);
+        }
+
+        const data = await response.json();
+
+        setTypeAlert("success");
+        setIsAlert(data.message);
+        setShowAlert(true);
+      } else if (userPlan.automatic_renewal === false) {
+        const response = await fetch(
+          "/api/auth/perfil/assinatura/disable-manual-billing",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userPlan, userProfile }),
+          }
+        );
+
+        if (!response.ok) {
+          setTypeAlert("error");
+          setShowAlert(true);
+          setIsAlert(
+            "Não foi possível alterar renovação automática, entre em contato com o suporte."
+          );
+        }
+
+        if (response.status === 404) {
+          setTypeAlert("error");
+          setIsAlert(
+            "Não foi possível atualizar plano do usuário recarregue a página."
+          );
+          setShowAlert(true);
+        }
+        if (response.status === 500) {
+          setTypeAlert("error");
+          setIsAlert("Erro interno no servidor, tente novamente mais tarde.");
+          setShowAlert(true);
+        }
+
+        const data = await response.json();
+
+        setTypeAlert("success");
+        setIsAlert(data.message);
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error("Erro interno: ", error);
+      return;
+    }
+  };
+
   const copyToLink = () => {
     navigator.clipboard.writeText(userPlan.subscription_id).then(() => {
       setCopyLink(!copyLink);
@@ -193,9 +278,11 @@ export default function Assinaturas() {
                 placeholder="Funcionalidade de pesquisar ainda não disponível"
               ></input>
             </div>
+
+            {/* This is for desktop */}
             <div className="hidden md:block w-full mt-8">
               <div className="w-full pl-5 py-4 border-b border-black/20">
-                <ul className="w-full grid grid-cols-[1fr_1fr_1fr_2fr] items-center gap-4">
+                <ul className="w-full grid grid-cols-[1fr_1fr_1fr_1fr_1fr] items-center gap-4">
                   <li className="flex justify-start items-center gap-2 text-sm font-semibold">
                     Assinatura <ChevronDown className="w-4 h-4"></ChevronDown>
                   </li>
@@ -207,11 +294,14 @@ export default function Assinaturas() {
                     Renovação automática{" "}
                     <ChevronDown className="w-4 h-4"></ChevronDown>
                   </li>
+                  <li className="flex justify-center items-center gap-2 text-sm font-semibold">
+                    Status <ChevronDown className="w-4 h-4"></ChevronDown>
+                  </li>
                 </ul>
               </div>
 
               <div className="w-full pl-5 py-4 border-b border-black/20">
-                <ul className="w-full grid grid-cols-[1fr_1fr_1fr_2fr] items-center gap-4">
+                <ul className="w-full grid grid-cols-[1fr_1fr_1fr_1fr_1fr] items-center gap-4">
                   <li className="flex justify-start items-center gap-2 font-semibold">
                     <div className="flex flex-col justify-center items-start">
                       <span className="font-normal text-base">
@@ -240,9 +330,38 @@ export default function Assinaturas() {
                         : "Ligado"}
                     </div>
                   </li>
+                  <li className="flex justify-center items-center text-sm gap-1">
+                    {userPlan.status === "active" && (
+                      <>
+                        <span className="w-3 h-3 bg-green-600 rounded-full border-2 border-green-200 animate-pulse"></span>
+                        <span className="text-green-600">Ativado</span>
+                      </>
+                    )}
+                    {userPlan.status === "expired" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Expirado</span>
+                      </>
+                    )}
+                    {userPlan.status === "failed" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Falha</span>
+                      </>
+                    )}
+                    {userPlan.status === "pending" && (
+                      <>
+                        <span className="w-3 h-3 bg-orange-600 rounded-full border-2 border-orange-200 animate-pulse"></span>
+                        <span className="text-orange-600">Pendente</span>
+                      </>
+                    )}
+                  </li>
                   <li className="flex justify-center items-center gap-4">
-                    <Button className="text-sm font-semibold text-white">
-                      Configurar renovação
+                    <Button
+                      className="text-sm font-semibold text-white flex justify-center items-center gap-1"
+                      onClick={() => setRenewalPlan(!renewalPlan)}
+                    >
+                      <Cog className="w-4 h-4"></Cog>Renovação
                     </Button>
                     <div
                       className="p-1 bg-main-pink/20 hover:bg-main-pink cursor-pointer hover:text-white rounded-md flex justify-center items-center"
@@ -256,6 +375,8 @@ export default function Assinaturas() {
                 </ul>
               </div>
             </div>
+
+            {/* This is for mobile */}
             <div className="md:hidden w-full mt-8 flex justify-center items-center">
               <div className="w-1/2 p-4 border-r border-black/20">
                 <ul className="w-full flex justify-start items-start flex-col lg:items-center gap-8">
@@ -269,6 +390,9 @@ export default function Assinaturas() {
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
                     Renovação automática{" "}
                     <ChevronRight className="w-4 h-4"></ChevronRight>
+                  </li>
+                  <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
+                    Status <ChevronRight className="w-4 h-4"></ChevronRight>
                   </li>
                 </ul>
               </div>
@@ -297,14 +421,43 @@ export default function Assinaturas() {
                         : "Ligado"}
                     </div>
                   </li>
+                  <li className="flex justify-center items-center text-sm gap-1">
+                    {userPlan.status === "active" && (
+                      <>
+                        <span className="w-3 h-3 bg-green-600 rounded-full border-2 border-green-200 animate-pulse"></span>
+                        <span className="text-green-600">Ativado</span>
+                      </>
+                    )}
+                    {userPlan.status === "expired" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Expirado</span>
+                      </>
+                    )}
+                    {userPlan.status === "failed" && (
+                      <>
+                        <span className="w-3 h-3 bg-red-600 rounded-full border-2 border-red-200 animate-pulse"></span>
+                        <span className="text-red-600">Falha</span>
+                      </>
+                    )}
+                    {userPlan.status === "pending" && (
+                      <>
+                        <span className="w-3 h-3 bg-orange-600 rounded-full border-2 border-orange-200 animate-pulse"></span>
+                        <span className="text-orange-600">Pendente</span>
+                      </>
+                    )}
+                  </li>
                 </ul>
               </div>
             </div>
             <div className="md:hidden w-full py-4 flex justify-center items-center">
               <ul className="w-full flex justify-center items-center">
                 <li className="flex justify-center items-center gap-4">
-                  <Button className="text-sm font-semibold text-white">
-                    Configurar renovação
+                  <Button
+                    className="text-sm font-semibold text-white flex justify-center items-center gap-1"
+                    onClick={() => setRenewalPlan(!renewalPlan)}
+                  >
+                    <Cog className="w-4 h-4"></Cog>Renovação
                   </Button>
                   <div
                     className="p-1 bg-main-pink/20 hover:bg-main-pink cursor-pointer hover:text-white rounded-md flex justify-center items-center"
@@ -319,7 +472,7 @@ export default function Assinaturas() {
             </div>
           </div>
           <div
-            className={`h-screen w-[85%] md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
+            className={`h-screen w-full md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
               detailsPlan
                 ? "translate-x-0 pointers-events-auto"
                 : "translate-x-full pointers-events-none"
@@ -362,10 +515,10 @@ export default function Assinaturas() {
                       <span className="text-sm">Falha no pagamento</span>
                     </>
                   )}
-                  {userPlan.status === "inactive" && (
+                  {userPlan.status === "expired" && (
                     <>
-                      <Ban className="w-6 h-6 text-gray-600"></Ban>
-                      <span className="text-sm">Desativado</span>
+                      <Ban className="w-6 h-6 text-red-600"></Ban>
+                      <span className="text-sm">Expirado</span>
                     </>
                   )}
                 </div>
@@ -395,6 +548,125 @@ export default function Assinaturas() {
                   <span className="text-sm">{userPlan.subscription_id}</span>
                 </div>
               </div>
+              <div className="w-full py-3 flex justify-start items-center">
+                <span className="text-sm text-gray-700">
+                  Precisa de alguma ajuda?{" "}
+                  <a
+                    href="https://wa.me/1199999999"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-main-pink hover:text-main-purple"
+                  >
+                    Fale com nossa equipe.
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            className={`h-screen w-[100%] md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
+              renewalPlan
+                ? "translate-x-0 pointers-events-auto"
+                : "translate-x-full pointers-events-none"
+            }`}
+          >
+            <div
+              className="absolute top-3 right-3 bg-main-pink text-white hover:bg-main-purple cursor-pointer p-2 rounded-full shadow-xl"
+              onClick={() => setRenewalPlan(!renewalPlan)}
+            >
+              <X className="w-5 h-5"></X>
+            </div>
+            <div className="w-full flex flex-col justify-start items-start gap-4">
+              <span className="text-2xl font-bold">Detalhes do assinatura</span>
+              <div className="flex flex-col justify-start items-start gap-1">
+                <span className="text-lg font-bold">
+                  Plano {userPlan.plan_type}
+                </span>
+                <span className="text-sm font-normal text-gray-600">
+                  {userProfile.slug_link}
+                </span>
+              </div>
+              <div className="w-full py-3 border-b border-black/20 mt-6 flex justify-between items-center">
+                <span className="text-sm">Renovação automática</span>
+                <div className="flex justify-center items-center gap-2">
+                  {userPlan.automatic_renewal === true && (
+                    <>
+                      <CheckCircle className="w-6 h-6 text-green-600"></CheckCircle>
+                      <span className="text-sm">Ativo</span>
+                    </>
+                  )}
+                  {userPlan.automatic_renewal === false && (
+                    <>
+                      <Ban className="w-6 h-6 text-gray-600"></Ban>
+                      <span className="text-sm">Desativado</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
+                <span className="text-sm">Data de expiração</span>
+                <div className="flex justify-center items-center gap-2">
+                  <span className="text-sm">
+                    {userPlan.plan_slug === "trial_plan"
+                      ? "7 dias após criar conta"
+                      : formatDate(userPlan.expires_at)}
+                  </span>
+                </div>
+              </div>
+              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
+                <span className="text-sm">Preço de renovação</span>
+                <div className="flex justify-center items-center gap-2">
+                  <span className="text-sm">
+                    {formatPrice(userPlan.price_at_purchase)}
+                  </span>
+                </div>
+              </div>
+              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
+                <span className="text-sm">Alterar renovação automática</span>
+                <div className="flex justify-center items-center gap-2">
+                  <span className="text-sm">
+                    <Button
+                      className="text-sm text-white"
+                      onClick={() => setChangeRenewal(!changeRenewal)}
+                    >
+                      Alterar
+                    </Button>
+                  </span>
+                </div>
+              </div>
+              {changeRenewal && (
+                <div className="fixed top-0 left-0 w-full px-6 md:px-0 h-screen flex justify-center items-center backdrop-blur-xl">
+                  <div className="w-sm bg-sub-background rounded-md flex p-4 flex-col justify-start items-center gap-4">
+                    <div className="w-full flex justify-start items-center py-2 border-b border-black/20">
+                      <span className="text-xl font-semibold text-main-pink">
+                        Renovação Automática
+                      </span>
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start py-2 gap-2">
+                      <div className="w-full text-sm">
+                        <span>
+                          Você confirma que deseja alterar a forma de cobrança
+                          da sua assinatura?
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-end items-center gap-2 pb-2">
+                      <Button
+                        className="text-white text-sm"
+                        onClick={handleChangeRenewal}
+                      >
+                        Alterar
+                      </Button>
+                      <Button
+                        className="bg-sub-background border border-main-pink hover:text-white text-sm"
+                        onClick={() => setChangeRenewal(false)}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="w-full py-3 flex justify-start items-center">
                 <span className="text-sm text-gray-700">
                   Precisa de alguma ajuda?{" "}

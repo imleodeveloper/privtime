@@ -182,6 +182,7 @@ export async function POST(request: NextRequest) {
           expires_at: handleExpires,
           status: "active",
           payment_method: data.payment_method,
+          automatic_renewal: true,
         })
         .eq("user_id", userId);
 
