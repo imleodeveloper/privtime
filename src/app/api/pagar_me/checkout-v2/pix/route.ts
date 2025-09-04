@@ -251,3 +251,54 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const { fetchProfile } = await request.json();
+
+    const { data, error } = await supabaseAdmin
+      .from("users_plan")
+      .select("*")
+      .eq("user_id", fetchProfile.id)
+      .single();
+
+    if (error) {
+      console.log("Não foi possível encontrar plano de usuário:", error);
+      return NextResponse.json(
+        { message: "Não foi possível encontrar plano de usuário" },
+        { status: 404 }
+      );
+    }
+
+    if (data.status === "active") {
+      return NextResponse.json(
+        { link_href: "/checkout-v2/success" },
+        { status: 200 }
+      );
+    } else if (data.status === "pending") {
+      return NextResponse.json(
+        { link_href: "/checkout-v2/pending" },
+        { status: 200 }
+      );
+    } else if (data.status === "failed") {
+      return NextResponse.json(
+        { link_href: "/checkout-v2/failure" },
+        { status: 400 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          message:
+            "Não foi possível locaalizar tentativa de pagamento, verifique o extrato de seu banco",
+        },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error("Erro interno: ", error);
+    return NextResponse.json(
+      { message: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
+}

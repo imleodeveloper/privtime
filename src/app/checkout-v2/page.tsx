@@ -596,6 +596,27 @@ export default function CheckoutPage() {
     setTimeout(() => setCopyPix(false), 5000);
   };
 
+  const handleAlreadyPaymentPix = async () => {
+    try {
+      const responsePix = await fetch("/api/pagar_me/checkout-v2/pix", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fetchProfile }),
+      });
+
+      const dataPix = await responsePix.json();
+
+      if (dataPix.link_href) {
+        return (window.location.href = dataPix.link_href);
+      } else {
+        alert(dataPix.message);
+      }
+    } catch (error) {
+      console.error("Erro interno do servidor:", error);
+      setError("Erro interno do servidor");
+    }
+  };
+
   return (
     <div className="w-full">
       <Header />
@@ -1379,9 +1400,7 @@ export default function CheckoutPage() {
                     <div className="flex justify-center items-center">
                       <Button
                         className="text-white"
-                        onClick={() =>
-                          (window.location.href = "/checkout-v2/pending")
-                        }
+                        onClick={handleAlreadyPaymentPix}
                       >
                         Já realizei o pagamento
                       </Button>

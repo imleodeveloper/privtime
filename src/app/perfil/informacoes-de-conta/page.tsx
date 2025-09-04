@@ -146,7 +146,7 @@ export default function InformacoesDeConta() {
         setTypeAlert("success");
         setIsAlert(data.message);
         await supabase.auth.signOut();
-        setTimeout(() => (window.location.href = "/signup"), 5000);
+        setTimeout(() => (window.location.href = "/signup"), 2000);
         return;
       }
     } catch (error) {
