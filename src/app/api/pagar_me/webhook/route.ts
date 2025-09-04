@@ -76,193 +76,202 @@ export async function POST(request: NextRequest) {
     const amount = data ? data.amount : data.minimum_price;
 
     if (eventType === "charge.paid") {
-      const { error: errorUpdatedPlan } = await supabaseAdmin
-        .from("users_plan")
-        .update({
-          plan_id: planIdDbs,
-          slug_plan_at_moment: planLink,
-          price_at_purchase: amount,
-          subscription_id: data.invoice.subscriptionId ?? null,
-          last_transaction_id: data.last_transaction?.id ?? null,
-          created_at: createdAt,
-          expires_at: handleExpires,
-          status: "active",
-          payment_method: data.payment_method,
-          automatic_renewal: true,
-        })
-        .eq("user_id", userId);
-
-      if (errorUpdatedPlan) {
-        console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
-        return NextResponse.json(
-          { message: "Erro ao atualizar plano" },
-          { status: 500 }
-        );
-      }
-
-      const dateNow = new Date();
-      const { error: errorUpdatedProfile } = await supabaseAdmin
-        .from("profiles")
-        .update({ whats_plan: planLink, updated_at: dateNow })
-        .eq("id", userId)
-        .select();
-
-      if (errorUpdatedProfile) {
-        console.log("Não foi possível atualizar perfil: ", errorUpdatedProfile);
-        return NextResponse.json(
-          { message: "Erro ao atualizar perfil" },
-          { status: 404 }
-        );
-      }
-
-      const checkTypePlan = () => {
-        if (planLink) {
-          if (planLink === "test_plan") {
-            return "monthly_fee";
-          } else if (planLink === "monthly_plan") {
-            return "monthly_fee";
-          } else if (planLink === "annual_plan") {
-            return "annual";
-          } else {
-            return null;
-          }
-        } else {
-          return null;
-        }
-      };
-      const typePlan = checkTypePlan();
-
-      const { data: checkTransactionId, error: checkError } =
-        await supabaseAdmin
-          .from("history_payments")
-          .select("*")
-          .eq("transaction_id", data.last_transaction.id)
-          .single();
-
-      if (checkError) {
-        console.error("Erro ao consultar histórico: ", checkError);
-      }
-
-      if (!checkTransactionId) {
-        const { error: historyPaymentError } = await supabaseAdmin
-          .from("history_payments")
-          .insert({
-            slug_link: userLink,
-            user_id: userId,
-            transaction_id: data.last_transaction.id,
+      if (data.payment_method === "credit_card") {
+        const { error: errorUpdatedPlan } = await supabaseAdmin
+          .from("users_plan")
+          .update({
+            plan_id: planIdDbs,
+            slug_plan_at_moment: planLink,
+            price_at_purchase: amount,
             subscription_id: data.invoice.subscriptionId ?? null,
-            price: amount,
-            type: typePlan,
-            currency: data.currency,
+            last_transaction_id: data.last_transaction?.id ?? null,
+            created_at: createdAt,
+            expires_at: handleExpires,
+            status: "active",
             payment_method: data.payment_method,
-            paid_at: data.paid_at,
-            status: data.status,
-          });
+            automatic_renewal: true,
+          })
+          .eq("user_id", userId);
 
-        if (historyPaymentError) {
-          console.log(
-            "Não foi possível salvar o pagamento na tabela: ",
-            historyPaymentError
-          );
+        if (errorUpdatedPlan) {
+          console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
           return NextResponse.json(
-            { message: "Erro ao salvar pagamento no histórico" },
-            { status: 202 }
+            { message: "Erro ao atualizar plano" },
+            { status: 500 }
           );
         }
-      }
-    } else if (eventType === "order.paid") {
-      const { error: errorUpdatedPlan } = await supabaseAdmin
-        .from("users_plan")
-        .update({
-          plan_id: planIdDbs,
-          slug_plan_at_moment: planLink,
-          price_at_purchase: amount,
-          subscription_id: "Payment via Pix",
-          last_transaction_id: data.last_transaction?.id ?? null,
-          created_at: createdAt,
-          expires_at: handleExpires,
-          status: "active",
-          payment_method: data.payment_method,
-          automatic_renewal: false,
-        })
-        .eq("user_id", userId);
 
-      if (errorUpdatedPlan) {
-        console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
-        return NextResponse.json(
-          { message: "Erro ao atualizar plano" },
-          { status: 500 }
-        );
-      }
+        const dateNow = new Date();
+        const { error: errorUpdatedProfile } = await supabaseAdmin
+          .from("profiles")
+          .update({ whats_plan: planLink, updated_at: dateNow })
+          .eq("id", userId)
+          .select();
 
-      const dateNow = new Date();
-      const { error: errorUpdatedProfile } = await supabaseAdmin
-        .from("profiles")
-        .update({ whats_plan: planLink, updated_at: dateNow })
-        .eq("id", userId)
-        .select();
+        if (errorUpdatedProfile) {
+          console.log(
+            "Não foi possível atualizar perfil: ",
+            errorUpdatedProfile
+          );
+          return NextResponse.json(
+            { message: "Erro ao atualizar perfil" },
+            { status: 404 }
+          );
+        }
 
-      if (errorUpdatedProfile) {
-        console.log("Não foi possível atualizar perfil: ", errorUpdatedProfile);
-        return NextResponse.json(
-          { message: "Erro ao atualizar perfil" },
-          { status: 404 }
-        );
-      }
-
-      const checkTypePlan = () => {
-        if (planLink) {
-          if (planLink === "test_plan") {
-            return "monthly_fee";
-          } else if (planLink === "monthly_plan") {
-            return "monthly_fee";
-          } else if (planLink === "annual_plan") {
-            return "annual";
+        const checkTypePlan = () => {
+          if (planLink) {
+            if (planLink === "test_plan") {
+              return "monthly_fee";
+            } else if (planLink === "monthly_plan") {
+              return "monthly_fee";
+            } else if (planLink === "annual_plan") {
+              return "annual";
+            } else {
+              return null;
+            }
           } else {
             return null;
           }
-        } else {
-          return null;
+        };
+        const typePlan = checkTypePlan();
+
+        const { data: checkTransactionId, error: checkError } =
+          await supabaseAdmin
+            .from("history_payments")
+            .select("*")
+            .eq("transaction_id", data.last_transaction.id)
+            .single();
+
+        if (checkError) {
+          console.error("Erro ao consultar histórico: ", checkError);
         }
-      };
-      const typePlan = checkTypePlan();
 
-      const { data: checkTransactionId, error: checkError } =
-        await supabaseAdmin
-          .from("history_payments")
-          .select("*")
-          .eq("transaction_id", data.last_transaction.id)
-          .single();
+        if (!checkTransactionId) {
+          const { error: historyPaymentError } = await supabaseAdmin
+            .from("history_payments")
+            .insert({
+              slug_link: userLink,
+              user_id: userId,
+              transaction_id: data.last_transaction.id,
+              subscription_id: data.invoice.subscriptionId ?? null,
+              price: amount,
+              type: typePlan,
+              currency: data.currency,
+              payment_method: data.payment_method,
+              paid_at: data.paid_at,
+              status: data.status,
+            });
 
-      if (checkError) {
-        console.error("Erro ao consultar histórico: ", checkError);
-      }
-
-      if (!checkTransactionId) {
-        const { error: historyPaymentError } = await supabaseAdmin
-          .from("history_payments")
-          .insert({
-            slug_link: userLink,
-            user_id: userId,
-            transaction_id: data.last_transaction.id,
+          if (historyPaymentError) {
+            console.log(
+              "Não foi possível salvar o pagamento na tabela: ",
+              historyPaymentError
+            );
+            return NextResponse.json(
+              { message: "Erro ao salvar pagamento no histórico" },
+              { status: 202 }
+            );
+          }
+        }
+      } else if (data.payment_method === "pix") {
+        console.log("DATA.CHARGES:", data.charges);
+        const { error: errorUpdatedPlan } = await supabaseAdmin
+          .from("users_plan")
+          .update({
+            plan_id: planIdDbs,
+            slug_plan_at_moment: planLink,
+            price_at_purchase: amount,
             subscription_id: "Payment via Pix",
-            price: amount,
-            type: typePlan,
-            currency: data.currency,
+            last_transaction_id: data.last_transaction.id,
+            created_at: createdAt,
+            expires_at: handleExpires,
+            status: "active",
             payment_method: data.payment_method,
-            paid_at: data.paid_at,
-            status: data.status,
-          });
+            automatic_renewal: false,
+          })
+          .eq("user_id", userId);
 
-        if (historyPaymentError) {
+        if (errorUpdatedPlan) {
+          console.log("Não foi possível atualizar plano: ", errorUpdatedPlan);
+          return NextResponse.json(
+            { message: "Erro ao atualizar plano" },
+            { status: 500 }
+          );
+        }
+
+        const dateNow = new Date();
+        const { error: errorUpdatedProfile } = await supabaseAdmin
+          .from("profiles")
+          .update({ whats_plan: planLink, updated_at: dateNow })
+          .eq("id", userId)
+          .select();
+
+        if (errorUpdatedProfile) {
           console.log(
-            "Não foi possível salvar o pagamento na tabela: ",
-            historyPaymentError
+            "Não foi possível atualizar perfil: ",
+            errorUpdatedProfile
           );
           return NextResponse.json(
-            { message: "Erro ao salvar pagamento no histórico" },
-            { status: 202 }
+            { message: "Erro ao atualizar perfil" },
+            { status: 404 }
           );
+        }
+
+        const checkTypePlan = () => {
+          if (planLink) {
+            if (planLink === "test_plan") {
+              return "monthly_fee";
+            } else if (planLink === "monthly_plan") {
+              return "monthly_fee";
+            } else if (planLink === "annual_plan") {
+              return "annual";
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        };
+        const typePlan = checkTypePlan();
+
+        const { data: checkTransactionId, error: checkError } =
+          await supabaseAdmin
+            .from("history_payments")
+            .select("*")
+            .eq("transaction_id", data.last_transaction.id)
+            .single();
+
+        if (checkError) {
+          console.error("Erro ao consultar histórico: ", checkError);
+        }
+
+        if (!checkTransactionId) {
+          const { error: historyPaymentError } = await supabaseAdmin
+            .from("history_payments")
+            .insert({
+              slug_link: userLink,
+              user_id: userId,
+              transaction_id: data.last_transaction.id,
+              subscription_id: "Payment via Pix",
+              price: amount,
+              type: typePlan,
+              currency: data.currency,
+              payment_method: data.payment_method,
+              paid_at: data.paid_at,
+              status: data.status,
+            });
+
+          if (historyPaymentError) {
+            console.log(
+              "Não foi possível salvar o pagamento na tabela: ",
+              historyPaymentError
+            );
+            return NextResponse.json(
+              { message: "Erro ao salvar pagamento no histórico" },
+              { status: 202 }
+            );
+          }
         }
       }
     }
