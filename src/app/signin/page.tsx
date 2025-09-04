@@ -118,9 +118,12 @@ export default function SignIn() {
                   />
                 </Link>
               </div>
-              <div>
-                <span className="text-gray-800 text-sm font-bold">
-                  Olá! Use suas credenciais para acessar o sistema
+              <div className="flex flex-col justify-start items-start gap-1">
+                <span className="text-main-pink font-bold text-2xl">
+                  Acesse sua conta
+                </span>
+                <span className="text-gray-800 text-sm">
+                  Faça login ou se cadastre para começar
                 </span>
               </div>
               <div className="w-full flex flex-col justify-center items-start gap-2">

@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (checkError) {
-          console.error("Erro ao consultar histórico: ", checkError);
+          console.log("Erro ao consultar histórico: ", checkError);
         }
 
         if (!checkTransactionId) {
@@ -175,7 +175,6 @@ export async function POST(request: NextRequest) {
           }
         }
       } else if (data.payment_method === "pix") {
-        console.log("DATA.CHARGES:", data.charges);
         const { error: errorUpdatedPlan } = await supabaseAdmin
           .from("users_plan")
           .update({

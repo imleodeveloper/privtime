@@ -176,10 +176,9 @@ export default function SignUp() {
     setSuccess("");
 
     if (!validateForm()) {
+      setIsLoading(false);
       return;
     }
-
-    setIsLoading(true);
 
     try {
       const response = await fetch("/api/auth/signup", {
@@ -385,9 +384,6 @@ export default function SignUp() {
                     Já tenho uma conta
                   </Button>
                 </Link>
-                <span className="w-full text-center text-sm text-gray-600">
-                  Teste gratis por 7 dias
-                </span>
               </div>
               <div className="text-center">
                 <span className="text-sm">
