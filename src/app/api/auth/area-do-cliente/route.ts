@@ -56,13 +56,18 @@ export async function POST(request: NextRequest) {
 
   //console.log("UserProfile: ", userProfile);
 
-  if (userPlan.status === "active") {
+  if (userPlan.status === "active" || userPlan.status === "canceled") {
     const createdAt = new Date(userPlan.created_at);
     const today = new Date();
     const differenceDays = today.getTime() - createdAt.getTime();
     const convertDays = differenceDays / (1000 * 60 * 60 * 24);
 
-    if (userPlan.slug_plan_at_moment === "trial_plan" && convertDays >= 7) {
+    if (
+      (userPlan.slug_plan_at_moment === "trial_plan" && convertDays >= 7) ||
+      (userPlan.slug_plan_at_moment === "annual_plan" && convertDays >= 365) ||
+      (userPlan.slug_plan_at_moment === "monthly_plan" && convertDays >= 31) ||
+      (userPlan.slug_plan_at_moment === "test_plan" && convertDays >= 31)
+    ) {
       const { error } = await supabaseAdmin
         .from("users_plan")
         .update({ status: "expired" })

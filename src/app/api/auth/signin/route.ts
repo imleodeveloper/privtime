@@ -41,29 +41,40 @@ export async function POST(request: Request) {
       // Não é um erro usuário pode não ter um plano
     }
 
-    const createdAt = new Date(userPlanExist.created_at);
-    const today = new Date();
-    const differenceDays = today.getTime() - createdAt.getTime();
-    const convertDays = differenceDays / (1000 * 60 * 60 * 24);
     if (
-      (userPlanExist.slug_plan_at_moment === "trial_plan" &&
-        convertDays >= 7) ||
-      (userPlanExist.slug_plan_at_moment === "annual_plan" &&
-        convertDays >= 365) ||
-      (userPlanExist.slug_plan_at_moment === "monthly_plan" &&
-        convertDays >= 31)
+      userPlanExist.status === "active" ||
+      userPlanExist.status === "canceled"
     ) {
-      const { error } = await supabaseAdmin
-        .from("users_plan")
-        .update({ status: "expired" })
-        .eq("user_id", data.user.id);
+      const createdAt = new Date(userPlanExist.created_at);
+      const today = new Date();
+      const differenceDays = today.getTime() - createdAt.getTime();
+      const convertDays = differenceDays / (1000 * 60 * 60 * 24);
+      if (
+        (userPlanExist.slug_plan_at_moment === "trial_plan" &&
+          convertDays >= 7) ||
+        (userPlanExist.slug_plan_at_moment === "annual_plan" &&
+          convertDays >= 365) ||
+        (userPlanExist.slug_plan_at_moment === "monthly_plan" &&
+          convertDays >= 31) ||
+        (userPlanExist.slug_plan_at_moment === "test_plan" && convertDays >= 31)
+      ) {
+        const { error } = await supabaseAdmin
+          .from("users_plan")
+          .update({
+            status:
+              userPlanExist.status === "active"
+                ? "expired"
+                : "expired-canceled",
+          })
+          .eq("user_id", data.user.id);
 
-      if (error) {
-        console.log("Erro ao fazer login, e cancelar plano gratuito", error);
-        return NextResponse.json(
-          { message: "Erro ao fazer login, e cancelar plano gratuito" },
-          { status: 500 }
-        );
+        if (error) {
+          console.log("Erro ao fazer login, e expirar plano", error);
+          return NextResponse.json(
+            { message: "Erro ao fazer login, e expirar plano" },
+            { status: 500 }
+          );
+        }
       }
     }
 

@@ -45,6 +45,12 @@ interface CreateObjectPix {
   ];
   antifraud_enabled: boolean;
   closed: boolean;
+  metadata: {
+    slug_link: string;
+    user_id: string;
+    user_plan: string;
+    plan_id_dbs: string;
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -200,6 +206,12 @@ export async function POST(request: NextRequest) {
       ],
       antifraud_enabled: true,
       closed: true,
+      metadata: {
+        slug_link: fetchProfile.slug_link,
+        user_id: fetchProfile.id,
+        user_plan: selectedPlan.link,
+        plan_id_dbs: idPlan?.id,
+      },
     };
 
     const responseCreatePix = await fetch(
