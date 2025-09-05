@@ -78,6 +78,7 @@ export default function SignUp() {
       }
 
       setSuccess("Senha atualizada com sucesso!");
+      setTimeout(() => router.push("/signin"), 5000);
     } catch (err) {
       console.error("Erro na atualização de senha: ", err);
       setError("Erro ao atualizar senha no servidor.");
