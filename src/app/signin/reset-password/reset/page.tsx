@@ -73,7 +73,7 @@ export default function SignUp() {
 
       if (error) {
         console.error("Erro ao atualizar senha:", error);
-        setError("Erro ao atualizar senha, tente novamente.");
+        setError("Nova senha deve ser diferente da senha antiga.");
         return;
       }
 
