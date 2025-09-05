@@ -36,6 +36,7 @@ export default function InformacoesDeConta() {
   const divRef = useRef<HTMLDivElement>(null);
   const [deleteAccount, setDeleteAccount] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
+  const [changeSlug, setChangeSlug] = useState<boolean>(false);
   const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     user_id: "",
@@ -49,6 +50,7 @@ export default function InformacoesDeConta() {
     link_share_app: "",
     slug_link: "",
     birthdate: "",
+    edit_slug: 0,
   });
   const [userPlan, setUserPlan] = useState<UserPlan>({
     price_at_purchase: 0,
@@ -61,6 +63,9 @@ export default function InformacoesDeConta() {
     plan_slug: "",
     plan_type: "",
     automatic_renewal: false,
+  });
+  const [userChangeSlug, setUserChangeSlug] = useState({
+    newSlug: "",
   });
 
   useEffect(() => {
@@ -107,6 +112,45 @@ export default function InformacoesDeConta() {
     }
   };
 
+  const handleChangeSlug = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/perfil/alterar-slug", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userProfile, userChangeSlug }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setTypeAlert("error");
+        setIsAlert(data.message);
+        setShowAlert(!showAlert);
+        return;
+      }
+
+      if (response.status === 200) {
+        setIsLoading(false);
+        setTypeAlert("success");
+        setIsAlert(data.message);
+        setShowAlert(!showAlert);
+      }
+    } catch (error) {
+      console.error("Erro do servidor:", error);
+      setTypeAlert("error");
+      setIsAlert("Não foi possível alterar slug, erro interno do servidor");
+      setShowAlert(!showAlert);
+      setIsLoading(false);
+      return;
+    } finally {
+      setChangeSlug(false);
+      handleSession();
+    }
+  };
+
   useEffect(() => {
     if (deleteAccount && divRef.current) {
       divRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -117,8 +161,6 @@ export default function InformacoesDeConta() {
     try {
       const { data: user } = await supabase.auth.getUser();
       const userId = user.user?.id;
-
-      console.log(userId);
 
       const responseDelete = await fetch("/api/auth/perfil/delete-account", {
         method: "POST",
@@ -133,6 +175,7 @@ export default function InformacoesDeConta() {
       if (data.error === true) {
         setTypeAlert("error");
         setIsAlert(data.message);
+        setShowAlert(!showAlert);
         setTimeout(
           () => (window.location.href = "/signin?redirect=/perfil"),
           5000
@@ -140,17 +183,19 @@ export default function InformacoesDeConta() {
         return;
       }
 
-      console.log(data.message);
-
       if (data.error === false) {
         setTypeAlert("success");
         setIsAlert(data.message);
+        setShowAlert(!showAlert);
         await supabase.auth.signOut();
         setTimeout(() => (window.location.href = "/signup"), 2000);
         return;
       }
     } catch (error) {
       console.error("Não foi possível deletar conta de usuário: ", error);
+      setTypeAlert("error");
+      setIsAlert("Não foi possível deletar conta, erro interno do servidor.");
+      setShowAlert(!showAlert);
       return;
     }
   };
@@ -190,7 +235,7 @@ export default function InformacoesDeConta() {
         message={isAlert}
       />
       <Header />
-      <main className="w-full h-auto flex justify-center items-start pb-20">
+      <main className="w-full min-h-screen flex justify-center items-start pb-20">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
         <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
           <div
@@ -291,6 +336,26 @@ export default function InformacoesDeConta() {
                 </ul>
               </div>
 
+              <div className="w-full px-5 py-4 border-b border-black/20">
+                <div className="w-full flex justify-between items-center">
+                  <div className="flex flex-col justify-center items-center">
+                    <span className="font-normal text-sm text-gray-500">
+                      Trocar Slug
+                    </span>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <span className="font-normal text-sm">
+                      {userProfile.slug_link}
+                    </span>
+                  </div>
+                  <div
+                    className="group flex justify-center items-center cursor-pointer bg-main-pink/20 p-2 rounded-xl hover:bg-main-pink text-main-pink hover:text-white"
+                    onClick={() => setChangeSlug(!changeSlug)}
+                  >
+                    <Cog className="w-6 h-6 group-hover:animate-spin"></Cog>
+                  </div>
+                </div>
+              </div>
               <div className="w-full px-5 py-4 border-b border-black/20">
                 <div className="w-full flex justify-between items-center">
                   <div className="flex flex-col justify-center items-center">
@@ -411,6 +476,76 @@ export default function InformacoesDeConta() {
             </div>
           )}
         </article>
+        {changeSlug && (
+          <>
+            <div className="w-full h-screen fixed top-0 left-0 z-10 backdrop-blur-md flex justify-center items-center">
+              <form
+                onSubmit={handleChangeSlug}
+                className="w-[90%] lg:w-md flex flex-col justify-center items-center p-4 bg-sub-background rounded-md border border-black/30"
+              >
+                <div className="w-full flex justify-start items-center pb-3 border-b border-black/20">
+                  <span className="text-xl text-main-pink font-bold">
+                    Alterar slug
+                  </span>
+                </div>
+                <div className="flex flex-col justify-start items-start py-3 w-full gap-4">
+                  <div className="flex flex-col justify-start items-start w-full gap-2">
+                    <label className="text-gray-800 font-normal">
+                      Slug atual:
+                    </label>
+                    <Input
+                      className="text-gray-600"
+                      type="text"
+                      value={userProfile.slug_link}
+                      readOnly
+                      disabled
+                    />
+                  </div>
+                  <div className="flex flex-col justify-start items-start w-full gap-2">
+                    <label
+                      className="text-gray-800 font-normal"
+                      htmlFor="newSlug"
+                    >
+                      Informe sua nova slug (max: 50 caracteres):
+                    </label>
+                    <Input
+                      type="text"
+                      maxLength={50}
+                      id="newSlug"
+                      required
+                      onChange={(e) =>
+                        setUserChangeSlug({
+                          ...userChangeSlug,
+                          newSlug: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end items-center py-3 w-full gap-2">
+                  <Button
+                    type="submit"
+                    className="text-white border border-main-purple hover:border-main-pink"
+                  >
+                    {isLoading ? "Confirmando..." : "Confirmar slug"}
+                  </Button>
+                  <Button
+                    className="bg-transparent border border-main-pink hover:text-white"
+                    onClick={() => setChangeSlug(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+                <div className="flex justify-center items-center text-center">
+                  <span className="text-red-600 font-bold text-sm">
+                    Atenção: a slug pode ser alterada apenas duas vezes. Escolha
+                    com cuidado.
+                  </span>
+                </div>
+              </form>
+            </div>
+          </>
+        )}
       </main>
       <Footer />
     </>

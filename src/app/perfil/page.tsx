@@ -44,6 +44,7 @@ export default function Profile() {
     link_share_app: "",
     slug_link: "",
     birthdate: "",
+    edit_slug: 0,
   });
   const [userPlan, setUserPlan] = useState<UserPlan>({
     price_at_purchase: 0,
@@ -156,9 +157,9 @@ export default function Profile() {
         message={isAlert}
       />
       <Header />
-      <main className="w-full h-auto flex justify-center items-start pb-20">
+      <main className="w-full min-h-screen flex justify-center items-start pb-20">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
-        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
+        <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-center items-start gap-8 pt-24 lg:pt-12 px-6">
           <div
             className="lg:hidden absolute top-4 left-4 flex justify-center items-center p-2 cursor-pointer hover:bg-main-pink hover:text-white rounded-full lg:hidden"
             onClick={() => setOpenMenu(!openMenu)}

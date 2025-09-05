@@ -28,6 +28,7 @@ export interface UserProfile {
   link_share_app: string;
   slug_link: string;
   birthdate: string;
+  edit_slug: number;
 }
 
 export async function POST(request: NextRequest) {

@@ -42,6 +42,7 @@ export default function CompartilheSeuApp() {
     link_share_app: "",
     slug_link: "",
     birthdate: "",
+    edit_slug: 0,
   });
   const [userPlan, setUserPlan] = useState<UserPlan>({
     price_at_purchase: 0,
@@ -124,7 +125,7 @@ export default function CompartilheSeuApp() {
   return (
     <>
       <Header />
-      <main className="w-full h-auto flex justify-center items-start pb-20">
+      <main className="w-full min-h-screen flex justify-center items-start pb-20">
         <NavigationProfile open={openMenu} onClose={() => setOpenMenu(false)} />
         <article className="relative w-full lg:w-[80%] h-auto flex flex-col justify-start items-start gap-8 pt-24 lg:pt-12 px-6">
           <div
