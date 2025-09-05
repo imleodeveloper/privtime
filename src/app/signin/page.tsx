@@ -174,10 +174,10 @@ export default function SignIn() {
 
               <div>
                 <Link
-                  href="#"
-                  className="w-full text-sm text-blue-500 underline font-bold hover:text-blue-800"
+                  href="/signin/reset-password"
+                  className="w-full text-blue-500 underline font-bold hover:text-blue-800"
                 >
-                  Esqueci minha senha
+                  Esqueceu a senha?
                 </Link>
               </div>
               <div>
