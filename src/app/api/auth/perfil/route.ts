@@ -148,6 +148,7 @@ export async function POST(request: NextRequest) {
       link_share_app: userProfile.link_share_app,
       slug_link: userProfile.slug_link,
       birthdate: userProfile.birthdate,
+      edit_slug: userProfile.edit_slug,
     };
     return NextResponse.json({ profile, planOfUser }, { status: 200 });
   } catch (error) {
