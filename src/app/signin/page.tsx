@@ -106,14 +106,14 @@ export default function SignIn() {
           <section className="flex justify-center items-center py-24">
             <form
               onSubmit={handleSubmit}
-              className="w-10/12 md:w-2/6 space-y-4 bg-sub-background/40 shadow-xl p-4 rounded-xl"
+              className="w-10/12 lg:w-2/6 space-y-4 bg-sub-background/40 shadow-xl p-4 rounded-xl"
             >
               <div className="relative w-full h-24 flex justify-center items-center">
                 <Link href="/">
                   <Image
-                    src="/privetime-users.png"
+                    src="/privetime-purple-not-bg-minor.webp"
                     alt=""
-                    width={125}
+                    width={200}
                     height={125}
                   />
                 </Link>

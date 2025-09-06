@@ -522,7 +522,7 @@ export default function InformacoesDeConta() {
                     />
                   </div>
                 </div>
-                <div className="flex justify-end items-center py-3 w-full gap-2">
+                <div className="flex justify-center items-center py-3 w-full gap-2">
                   <Button
                     type="submit"
                     className="text-white border border-main-purple hover:border-main-pink"
@@ -536,10 +536,23 @@ export default function InformacoesDeConta() {
                     Cancelar
                   </Button>
                 </div>
-                <div className="flex justify-center items-center text-center">
-                  <span className="text-red-600 font-bold text-sm">
+                <div className="flex flex-col gap-4 justify-center items-center text-center">
+                  <span
+                    className={`text-red-600 font-bold text-sm ${
+                      userProfile.edit_slug >= 2 ? "hidden" : "visible"
+                    }`}
+                  >
                     Atenção: a slug pode ser alterada apenas duas vezes. Escolha
                     com cuidado.
+                  </span>
+                  <span className="text-sm text-gray-700">
+                    {userProfile.edit_slug < 2 ? <>Você alterou: </> : <></>}
+
+                    <span className="font-semibold">
+                      {userProfile.edit_slug == 0 && <>nenhuma vez</>}
+                      {userProfile.edit_slug == 1 && <>01 vez</>}
+                      {userProfile.edit_slug >= 2 && <>Limite excedido</>}
+                    </span>
                   </span>
                 </div>
               </form>

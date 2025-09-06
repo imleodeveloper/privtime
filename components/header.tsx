@@ -78,17 +78,30 @@ export function Header() {
     <header className="w-full bg-gradient-to-r from-sub-background to-main-purple/30 lg:px-8">
       <nav className="w-full flex justify-between items-center container mx-auto">
         <div className="desktop hidden w-full lg:flex justify-between items-center container mx-auto">
-          <Link href="/" className="flex justify-center items-center relative">
+          <Link
+            href="/"
+            className="flex justify-center items-center relative py-4"
+          >
             <Image
-              src="/privetime-users.png"
+              src="/privetime-purple-not-bg-minor.webp"
               alt="Logo PrivTime"
-              width={100}
+              width={180}
               height={50}
             />
           </Link>
           <div className="text-center">
             <ul className="flex justify-center items-center gap-12 text-base font-semibold tracking-wide">
-              <li className="text-main-purple hover:text-black transition duration-300 ">
+              <li
+                className="
+                    relative text-main-purple hover:text-black transition duration-300
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
+                    after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
+                    before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
+                    before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
+                    hover:after:w-1/2 hover:after:opacity-100
+                    hover:before:w-1/2 hover:before:opacity-100
+              "
+              >
                 <Link
                   href="/#inicio"
                   className="flex justify-center items-center gap-2"
@@ -97,7 +110,16 @@ export function Header() {
                   Inicio
                 </Link>
               </li>
-              <li className="text-main-purple hover:text-black transition duration-300">
+              <li
+                className="                    
+                    relative text-main-purple hover:text-black transition duration-300
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
+                    after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
+                    before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
+                    before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
+                    hover:after:w-1/2 hover:after:opacity-100
+                    hover:before:w-1/2 hover:before:opacity-100"
+              >
                 <Link
                   href="/#planos"
                   className="flex justify-center items-center gap-2"
@@ -106,7 +128,17 @@ export function Header() {
                   Planos
                 </Link>
               </li>
-              <li className="text-main-purple hover:text-black transition duration-300">
+              <li
+                className="
+                    relative text-main-purple hover:text-black transition duration-300
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
+                    after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
+                    before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
+                    before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
+                    hover:after:w-1/2 hover:after:opacity-100
+                    hover:before:w-1/2 hover:before:opacity-100
+              "
+              >
                 <Link
                   href="/#sobre"
                   className="flex justify-center items-center gap-2"
@@ -115,7 +147,17 @@ export function Header() {
                   Sobre
                 </Link>
               </li>
-              <li className="text-main-purple hover:text-black transition duration-300">
+              <li
+                className="
+                    relative text-main-purple hover:text-black transition duration-300
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
+                    after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
+                    before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
+                    before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
+                    hover:after:w-1/2 hover:after:opacity-100
+                    hover:before:w-1/2 hover:before:opacity-100
+              "
+              >
                 <Link
                   href="https://www.viamodels.com.br/"
                   target="_blank"
@@ -193,11 +235,14 @@ export function Header() {
           </div>
         </div>
         <div className="mobile visible flex lg:hidden justify-between items-center container mx-auto relative w-full">
-          <Link href="/" className="flex justify-center items-center relative">
+          <Link
+            href="/"
+            className="flex justify-center items-center relative py-4 pl-2"
+          >
             <Image
-              src="/privetime-users.png"
+              src="/privetime-purple-not-bg-minor.webp"
               alt="Logo PriveTime"
-              width={100}
+              width={180}
               height={50}
             />
           </Link>
@@ -228,13 +273,13 @@ export function Header() {
               <div className="w-full flex justify-between items-center">
                 <Link
                   href="/"
-                  className="flex justify-center items-center relative"
+                  className="flex justify-center items-center relative py-8"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   <Image
-                    src="/privetime-users.png"
+                    src="/privetime-purple-not-bg-minor.webp"
                     alt="Logo PriveTime"
-                    width={100}
+                    width={150}
                     height={50}
                   />
                 </Link>

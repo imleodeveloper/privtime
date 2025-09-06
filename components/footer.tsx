@@ -8,8 +8,13 @@ export function Footer() {
       <div className="w-full container border-b border-gray-400 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 lg:gap-0 px-4 lg:px-0 mx-auto pb-8">
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
-            <Image src="/privetime-users.png" alt="" width={80} height={80} />
-            <span className="font-bold text-2xl text-main-pink">PriveTime</span>
+            <Image
+              src="/privetime-purple-not-bg-minor.webp"
+              alt=""
+              width={150}
+              height={80}
+            />
+            {/* <span className="font-bold text-2xl text-main-pink">PriveTime</span> */}
           </div>
           <div className="max-w-sm">
             <span className="text-gray-800">
