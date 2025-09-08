@@ -103,11 +103,11 @@ export function Header() {
               "
               >
                 <Link
-                  href="/#inicio"
+                  href="/perfil"
                   className="flex justify-center items-center gap-2"
                 >
-                  <House className="w-4 h-4"></House>
-                  Inicio
+                  <User className="w-4 h-4"></User>
+                  Perfil
                 </Link>
               </li>
               <li
@@ -121,7 +121,7 @@ export function Header() {
                     hover:before:w-1/2 hover:before:opacity-100"
               >
                 <Link
-                  href="/#planos"
+                  href="/#inicio"
                   className="flex justify-center items-center gap-2"
                 >
                   <BriefcaseBusiness className="w-4 h-4"></BriefcaseBusiness>
@@ -182,46 +182,16 @@ export function Header() {
                   onMouseLeave={() => setSubmenu(!submenu)}
                   onMouseEnter={() => setSubmenu(!submenu)}
                 >
-                  <Button
-                    className={`flex justify-center items-center gap-1 shadow-xl text-white ${
-                      submenu ? "rounded-b-none" : "rounded-sm"
-                    }`}
-                  >
-                    Configurações
-                    <ChevronDown className="w-4 h-4"></ChevronDown>
-                  </Button>
-                  {submenu && (
-                    <div className="absolute  z-[999] top-full pb-2 left-0 w-full h-auto flex justify-center items-start rounded-b-sm shadow-2xl bg-main-purple">
-                      <ul className="text-white w-full text-center">
-                        {userLink.link_app && (
-                          <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
-                            <Link
-                              href={`${userLink.link_app}`}
-                              className="w-full py-2 flex justify-center items-center gap-1"
-                            >
-                              <LayoutGrid className="w-4 h-4"></LayoutGrid>{" "}
-                              Acessar App
-                            </Link>
-                          </li>
-                        )}
-                        <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
-                          <Link
-                            href="/perfil"
-                            className="w-full py-2 flex justify-center items-center gap-1"
-                          >
-                            <User className="w-4 h-4"></User> Perfil
-                          </Link>
-                        </li>
-                        {/* <li className="text-sm font-bold hover:bg-main-pink w-full h-auto flex justify-center items-center transition-all duration-300 rounded-sm">
-                          <Link
-                            href="/area-do-cliente/config-da-conta"
-                            className="w-full py-2 flex justify-center items-center gap-1"
-                          >
-                            <Cog className="w-4 h-4"></Cog> Config. da Conta
-                          </Link>
-                        </li> */}
-                      </ul>
-                    </div>
+                  {userLink.link_app && (
+                    <li className="w-full h-auto flex justify-center items-center ">
+                      <Link
+                        href={`${userLink.link_app}`}
+                        className="text-white px-4 py-2 bg-main-purple font-bold rounded hover:bg-main-pink transition cursor-pointer flex justify-center items-center gap-2"
+                      >
+                        <LayoutGrid className="w-4 h-4"></LayoutGrid> Acessar
+                        App
+                      </Link>
+                    </li>
                   )}
                 </div>
                 <Button

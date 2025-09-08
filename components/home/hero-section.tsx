@@ -26,7 +26,7 @@ export function HeroHome() {
             <Link href="/#planos">
               <Button className="text-white w-full">Ver Planos</Button>
             </Link>
-            <Link href="/signup">
+            <Link href="/signin">
               <Button className="bg-sub-purple w-full hover:text-white">
                 Experimente por 7 dias gratuitos
               </Button>

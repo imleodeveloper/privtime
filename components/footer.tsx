@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
             <Image
-              src="/privetime-purple-not-bg-minor.webp"
+              src="/privetime-main-pink-not-bg-minor.webp"
               alt=""
               width={150}
               height={80}

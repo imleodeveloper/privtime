@@ -14,6 +14,15 @@ function generateSlug(name: string) {
   return `${base}${random}`; // Ex: leonardo-vieira8237
 }
 
+const toISODate = (value: string) => {
+  const parts = value.split("/");
+  if (parts.length === 3) {
+    const [day, month, year] = parts;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  return value;
+};
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { fullName, phone, email, cpf, password, birthDate } = body;
@@ -21,6 +30,7 @@ export async function POST(request: Request) {
   // Verificação mais segura - usa trim
   if (
     !fullName.trim() ||
+    !birthDate.trim() ||
     !phone.trim() ||
     !email.trim() ||
     !cpf.trim() ||
@@ -206,7 +216,7 @@ export async function POST(request: Request) {
             link_app: link_app,
             link_share_app: link_share_app,
             slug_link: slug_link,
-            birthdate: birthDate,
+            birthdate: toISODate(birthDate),
           },
         ]);
 

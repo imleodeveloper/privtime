@@ -204,7 +204,7 @@ export default function CompartilheSeuApp() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-start w-full bg-white border border-black/30 rounded-md">
+          {/* <div className="flex flex-col justify-center items-start w-full bg-white border border-black/30 rounded-md">
             <div className="w-full mt-2">
               <div className="w-full pl-5 py-4 border-b border-black/20">
                 <ul className="w-full flex justify-start items-center gap-4">
@@ -249,7 +249,7 @@ export default function CompartilheSeuApp() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </article>
       </main>
       <Footer />

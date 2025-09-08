@@ -62,6 +62,19 @@ export default function SignUp() {
     return "";
   };
 
+  const formatBirthdate = (value: string) => {
+    let digits = value.replace(/\D/g, ""); // remove tudo que não for número
+    if (digits.length > 8) digits = digits.slice(0, 8);
+
+    if (digits.length >= 2) {
+      return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+    } else if (digits.length >= 1) {
+      return digits;
+    }
+
+    return "";
+  };
+
   const formatIdentity = (value: string, identity: "cpf" | "cnpj") => {
     let digits = value.replace(/\D/g, "");
     if (identity === "cpf") {
@@ -257,12 +270,17 @@ export default function SignUp() {
                 <Input
                   id="birthDate"
                   name="birthDate"
-                  type="date"
-                  placeholder="Selecione sua data de nascimento"
+                  type="text"
+                  placeholder="DD/MM/AAAA"
                   value={formData.birthDate}
                   onChange={(e) =>
-                    handleInputChange("birthDate", e.target.value)
+                    handleInputChange(
+                      "birthDate",
+                      formatBirthdate(e.target.value)
+                    )
                   }
+                  inputMode="numeric"
+                  maxLength={10}
                   required
                   className="text-sm"
                 />

@@ -36,7 +36,6 @@ export default function Assinaturas() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
-  const [detailsPlan, setDetailsPlan] = useState<boolean>(false);
   const [renewalPlan, setRenewalPlan] = useState<boolean>(false);
   const [changeRenewal, setChangeRenewal] = useState<boolean>(false);
   const [cancelSubscription, setCancelSubscription] = useState<boolean>(false);
@@ -396,12 +395,12 @@ export default function Assinaturas() {
                   <li className="flex justify-center items-center gap-2 font-normal">
                     <div
                       className={`${
-                        userPlan.plan_slug === "trial_plan"
+                        userPlan.automatic_renewal === false
                           ? "bg-red-200 text-red-800"
                           : "bg-green-200 text-green-800"
                       } p-2 rounded-xl text-sm font-semibold`}
                     >
-                      {userPlan.plan_slug === "trial_plan"
+                      {userPlan.automatic_renewal === false
                         ? "Desligado"
                         : "Ligado"}
                     </div>
@@ -451,16 +450,8 @@ export default function Assinaturas() {
                       className="text-sm font-semibold text-white flex justify-center items-center gap-1"
                       onClick={() => setRenewalPlan(!renewalPlan)}
                     >
-                      <Cog className="w-4 h-4"></Cog>Renovação
+                      <Cog className="w-4 h-4"></Cog>Configuração
                     </Button>
-                    <div
-                      className="p-1 bg-main-pink/20 hover:bg-main-pink cursor-pointer hover:text-white rounded-md flex justify-center items-center"
-                      onClick={() => setDetailsPlan(!detailsPlan)}
-                    >
-                      <span className="text-center flex justify-center items-center">
-                        <CircleEllipsis className="w-7 h-7"></CircleEllipsis>
-                      </span>
-                    </div>
                   </li>
                 </ul>
               </div>
@@ -505,9 +496,15 @@ export default function Assinaturas() {
                       : formatDate(userPlan.expires_at)}
                   </li>
                   <li className="flex justify-center items-center gap-2 font-normal">
-                    <div className="bg-green-200 p-2 rounded-xl text-sm font-semibold text-green-800">
-                      {userPlan.plan_slug === "trial_plan"
-                        ? "Gratuito"
+                    <div
+                      className={`${
+                        userPlan.automatic_renewal === false
+                          ? "bg-red-200 text-red-800"
+                          : "bg-green-200 text-green-800"
+                      } p-2 rounded-xl text-sm font-semibold`}
+                    >
+                      {userPlan.automatic_renewal === false
+                        ? "Desligado"
                         : "Ligado"}
                     </div>
                   </li>
@@ -561,35 +558,28 @@ export default function Assinaturas() {
                     className="text-sm font-semibold text-white flex justify-center items-center gap-1"
                     onClick={() => setRenewalPlan(!renewalPlan)}
                   >
-                    <Cog className="w-4 h-4"></Cog>Renovação
+                    <Cog className="w-4 h-4"></Cog>Configuração
                   </Button>
-                  <div
-                    className="p-1 bg-main-pink/20 hover:bg-main-pink cursor-pointer hover:text-white rounded-md flex justify-center items-center"
-                    onClick={() => setDetailsPlan(!detailsPlan)}
-                  >
-                    <span className="text-center flex justify-center items-center">
-                      <CircleEllipsis className="w-7 h-7"></CircleEllipsis>
-                    </span>
-                  </div>
                 </li>
               </ul>
             </div>
           </div>
           <div
-            className={`h-screen w-full md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
-              detailsPlan
+            className={`h-screen w-[100%] md:w-[40%] overflow-y-auto bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
+              renewalPlan
                 ? "translate-x-0 pointers-events-auto"
                 : "translate-x-full pointers-events-none"
             }`}
           >
             <div
               className="absolute top-3 right-3 bg-main-pink text-white hover:bg-main-purple cursor-pointer p-2 rounded-full shadow-xl"
-              onClick={() => setDetailsPlan(!detailsPlan)}
+              onClick={() => setRenewalPlan(!renewalPlan)}
             >
               <X className="w-5 h-5"></X>
             </div>
+
             <div className="w-full flex flex-col justify-start items-start gap-4">
-              <span className="text-2xl font-bold">Detalhes do plano</span>
+              <span className="text-2xl font-bold">Detalhes da assinatura</span>
               <div className="flex flex-col justify-start items-start gap-1">
                 <span className="text-lg font-bold">
                   Plano {userPlan.plan_type}
@@ -599,7 +589,14 @@ export default function Assinaturas() {
                 </span>
               </div>
               <div className="w-full py-3 border-b border-black/20 mt-6 flex justify-between items-center">
-                <span className="text-sm">Status</span>
+                <span className="text-sm">ID da assinatura</span>
+                <div className="flex justify-center items-center gap-2">
+                  {/* <Copy className="w-5 h-5 text-main-pink cursor-pointer"></Copy> */}
+                  <span className="text-sm">{userPlan.subscription_id}</span>
+                </div>
+              </div>
+              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
+                <span className="text-sm">Status do plano</span>
                 <div className="flex justify-center items-center gap-2">
                   {userPlan.status === "active" && (
                     <>
@@ -628,69 +625,6 @@ export default function Assinaturas() {
                 </div>
               </div>
               <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
-                <span className="text-sm">Data de expiração</span>
-                <div className="flex justify-center items-center gap-2">
-                  <span className="text-sm">
-                    {userPlan.plan_slug === "trial_plan"
-                      ? "7 dias após criar conta"
-                      : formatDate(userPlan.expires_at)}
-                  </span>
-                </div>
-              </div>
-              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
-                <span className="text-sm">Preço de renovação</span>
-                <div className="flex justify-center items-center gap-2">
-                  <span className="text-sm">
-                    {formatPrice(userPlan.price_at_purchase)}
-                  </span>
-                </div>
-              </div>
-              <div className="w-full py-3 border-b border-black/20 flex justify-between items-center">
-                <span className="text-sm">ID da assinatura</span>
-                <div className="flex justify-center items-center gap-2">
-                  {/* <Copy className="w-5 h-5 text-main-pink cursor-pointer"></Copy> */}
-                  <span className="text-sm">{userPlan.subscription_id}</span>
-                </div>
-              </div>
-              <div className="w-full py-3 flex justify-start items-center">
-                <span className="text-sm text-gray-700">
-                  Precisa de alguma ajuda?{" "}
-                  <a
-                    href="https://wa.me/1199999999"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-main-pink hover:text-main-purple"
-                  >
-                    Fale com nossa equipe.
-                  </a>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div
-            className={`h-screen w-[100%] md:w-[40%] bg-white/40 fixed top-0 right-0 backdrop-blur-lg flex justify-start items-start p-10 md:p-6 transition-all duration-500 ${
-              renewalPlan
-                ? "translate-x-0 pointers-events-auto"
-                : "translate-x-full pointers-events-none"
-            }`}
-          >
-            <div
-              className="absolute top-3 right-3 bg-main-pink text-white hover:bg-main-purple cursor-pointer p-2 rounded-full shadow-xl"
-              onClick={() => setRenewalPlan(!renewalPlan)}
-            >
-              <X className="w-5 h-5"></X>
-            </div>
-            <div className="w-full flex flex-col justify-start items-start gap-4">
-              <span className="text-2xl font-bold">Detalhes da assinatura</span>
-              <div className="flex flex-col justify-start items-start gap-1">
-                <span className="text-lg font-bold">
-                  Plano {userPlan.plan_type}
-                </span>
-                <span className="text-sm font-normal text-gray-600">
-                  {userProfile.slug_link}
-                </span>
-              </div>
-              <div className="w-full py-3 border-b border-black/20 mt-6 flex justify-between items-center">
                 <span className="text-sm">Renovação automática</span>
                 <div className="flex justify-center items-center gap-2">
                   {userPlan.automatic_renewal === true && (

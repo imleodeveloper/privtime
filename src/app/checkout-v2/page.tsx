@@ -163,6 +163,7 @@ export default function CheckoutPage() {
 
   // FORM DE CHECKOUT V2
   const [isLoading, setIsLoading] = useState(false);
+  const [showInstallments, setShowInstallments] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(true);
   const [cep, setCep] = useState<string>("");
   const [state, setState] = useState<string>("");
@@ -414,12 +415,32 @@ export default function CheckoutPage() {
             });
           }
         }
-        setIsLoading(false);
+
+        const responseFetchInfoUser = await fetch(
+          "/api/auth/checkout/fetch-user",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: session.user.id }),
+          }
+        );
+
+        const dataResponseFetchInfoUser = await responseFetchInfoUser.json();
+
+        setDocType("cpf");
+        setDocValue(
+          formatIdentity(dataResponseFetchInfoUser.infoUser.identity, "cpf")
+        );
+        setTelValue(formatTel(dataResponseFetchInfoUser.infoUser.phone));
+        setEmailValue(dataResponseFetchInfoUser.infoUser.email);
+        setFullNameValue(dataResponseFetchInfoUser.infoUser.full_name);
       } catch (error) {
         console.error(
           "Erro ao verificar sessão ou localizar informações do usuário: ",
           error
         );
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -1117,6 +1138,47 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 </div>
+                {/* <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
+                  <span className="w-full text-start text-xl text-black font-bold">
+                    Deseja parcelar a compra?
+                  </span>
+                  <div className="w-full flex justify-start items-center gap-4">
+                    <div
+                      onClick={() => setShowInstallments(!showInstallments)}
+                      className={`group px-4 py-2 bg-main-purple rounded-lg hover:bg-main-pink transition relative ${
+                        showInstallments
+                          ? "bg-transparent border border-main-pink"
+                          : ""
+                      }`}
+                    >
+                      <span
+                        className={`${
+                          showInstallments
+                            ? "text-black group-hover:text-white"
+                            : "text-white"
+                        }`}
+                      >
+                        {showInstallments ? "Fechar parcelas" : "Ver parcelas"}
+                      </span>
+                      {showInstallments && (
+                        <div
+                          className={`absolute top-full left-0 w-full max-w-xs border border-gray-300 rounded-lg shadow bg-white`}
+                        >
+                          <ul>
+                            <li className="p-3 flex justify-between text-sm border-b border-gray-200 pb-1 last:border-none hover:bg-gray-300 cursor-pointer">
+                              <span>1x</span>
+                              <span>R$ 0,00</span>
+                            </li>
+                            <li className="p-3 flex justify-between text-sm border-b border-gray-200 pb-1 last:border-none hover:bg-gray-300 cursor-pointer">
+                              <span>2x</span>
+                              <span>R$ 0,00</span>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div> */}
                 <div className="w-full flex flex-col justify-start items-center gap-4 border-b border-gray-300 pt-4 pb-6">
                   <span className="w-full text-start text-xl text-black font-bold">
                     Dados do cartão de crédito
