@@ -3,6 +3,7 @@ import {
   AppWindow,
   Cog,
   Component,
+  ContactRound,
   Copy,
   Group,
   History,
@@ -188,10 +189,10 @@ export default function Profile() {
                 </div>
                 <div className="flex flex-col justify-start items-start">
                   <Link
-                    href={userProfile.link_app}
+                    href="/perfil/agendamentos"
                     className="flex justify-center items-center gap-2 font-bold text-main-purple hover:text-main-purple/60"
                   >
-                    Acesse seu App{" "}
+                    Acessar agendamentos{" "}
                     <ScreenShare className="w-5 h-5"></ScreenShare>
                   </Link>
                   <span className="text-sm text-gray-600">
@@ -226,14 +227,13 @@ export default function Profile() {
                   <Copy className="w-5 h-5"></Copy>Compartilhe seu App
                 </Button>
                 <button className="bg-main-purple font-bold rounded hover:bg-main-pink transition cursor-pointer text-white">
-                  <a
-                    href={userProfile.link_app}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/perfil/agendamentos"
                     className="text-sm flex justify-center items-center gap-2 px-4 py-2"
                   >
-                    <ShieldUser className="w-5 h-5"></ShieldUser>Acessar Admin
-                  </a>
+                    <ContactRound className="w-5 h-5"></ContactRound>
+                    Agendamentos
+                  </Link>
                 </button>
               </div>
             </div>
