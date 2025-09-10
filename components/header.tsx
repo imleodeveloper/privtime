@@ -268,16 +268,18 @@ export function Header() {
               </div>
               <div className="text-center">
                 <ul className="flex flex-col justify-start items-start gap-12 text-base font-semibold tracking-wide">
-                  <li className="text-main-purple hover:text-black transition duration-300 ">
-                    <Link
-                      href="/#inicio"
-                      className="flex justify-center items-center gap-2"
-                      onClick={() => setMenuOpen(!menuOpen)}
-                    >
-                      <User className="w-4 h-4"></User>
-                      Perfil
-                    </Link>
-                  </li>
+                  {user && (
+                    <li className="text-main-purple hover:text-black transition duration-300 ">
+                      <Link
+                        href="/perfil"
+                        className="flex justify-center items-center gap-2"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                      >
+                        <User className="w-4 h-4"></User>
+                        Perfil
+                      </Link>
+                    </li>
+                  )}
                   <li className="text-main-purple hover:text-black transition duration-300">
                     <Link
                       href="/#planos"
