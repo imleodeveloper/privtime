@@ -53,7 +53,7 @@ export function Footer() {
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link
-                href="https://wa.me/5511963646461"
+                href="https://wa.me/5511984349772"
                 target="_blank"
                 rel="noopener noreferrer"
               >

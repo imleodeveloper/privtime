@@ -676,12 +676,12 @@ export default function Assinaturas() {
                 <span className="text-sm">Cancelar assinatura</span>
                 <div className="flex justify-center items-center gap-2">
                   <span className="text-sm">
-                    <Button
-                      className="text-sm text-white"
+                    <button
+                      className="px-4 py-2 text-white bg-red-600 font-bold rounded hover:bg-red-800 transition cursor-pointer"
                       onClick={() => setCancelSubscription(!cancelSubscription)}
                     >
                       Cancelar
-                    </Button>
+                    </button>
                   </span>
                 </div>
               </div>
@@ -706,7 +706,7 @@ export default function Assinaturas() {
                         className="text-white text-sm"
                         onClick={handleChangeRenewal}
                       >
-                        Alterar
+                        Confirmar
                       </Button>
                       <Button
                         className="bg-sub-background border border-main-pink hover:text-white text-sm"
@@ -758,7 +758,7 @@ export default function Assinaturas() {
                 <span className="text-sm text-gray-700">
                   Precisa de alguma ajuda?{" "}
                   <a
-                    href="https://wa.me/1199999999"
+                    href="https://wa.me/5511984349772"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-main-pink hover:text-main-purple"

@@ -265,7 +265,7 @@ export default function HistoricoDePagamentos() {
                               </span>
                             </div>
                             <a
-                              href="https://wa.me/5511999999999"
+                              href="https://wa.me/5511984349772"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-4 py-2 text-white bg-main-purple font-bold rounded hover:bg-main-pink transition cursor-pointer"

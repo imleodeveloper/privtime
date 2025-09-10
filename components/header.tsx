@@ -91,25 +91,27 @@ export function Header() {
           </Link>
           <div className="text-center">
             <ul className="flex justify-center items-center gap-12 text-base font-semibold tracking-wide">
-              <li
-                className="
-                    relative text-main-purple hover:text-black transition duration-300
-                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
-                    after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
-                    before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
-                    before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
-                    hover:after:w-1/2 hover:after:opacity-100
-                    hover:before:w-1/2 hover:before:opacity-100
-              "
-              >
-                <Link
-                  href="/perfil"
-                  className="flex justify-center items-center gap-2"
+              {user && (
+                <li
+                  className="
+                relative text-main-purple hover:text-black transition duration-300
+                after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px]
+                after:bg-main-purple after:w-0 after:opacity-0 after:transition-all after:duration-300
+                before:content-[''] before:absolute before:bottom-0 before:right-0 before:h-[2px]
+                before:bg-main-purple before:w-0 before:opacity-0 before:transition-all before:duration-300
+                hover:after:w-1/2 hover:after:opacity-100
+                hover:before:w-1/2 hover:before:opacity-100
+                "
                 >
-                  <User className="w-4 h-4"></User>
-                  Perfil
-                </Link>
-              </li>
+                  <Link
+                    href="/perfil"
+                    className="flex justify-center items-center gap-2"
+                  >
+                    <User className="w-4 h-4"></User>
+                    Perfil
+                  </Link>
+                </li>
+              )}
               <li
                 className="                    
                     relative text-main-purple hover:text-black transition duration-300
@@ -121,7 +123,7 @@ export function Header() {
                     hover:before:w-1/2 hover:before:opacity-100"
               >
                 <Link
-                  href="/#inicio"
+                  href="/#planos"
                   className="flex justify-center items-center gap-2"
                 >
                   <BriefcaseBusiness className="w-4 h-4"></BriefcaseBusiness>

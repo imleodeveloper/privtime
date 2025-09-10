@@ -1,8 +1,14 @@
 "use client";
 import {
   BanknoteArrowDown,
+  BriefcaseBusiness,
+  Calendar,
+  CalendarClock,
+  ChartColumn,
   CreditCard,
   House,
+  IdCardLanyard,
+  Info,
   PanelLeftClose,
   UserRound,
   UsersRound,
@@ -21,7 +27,7 @@ export function NavigationProfile({
 
   return (
     <nav
-      className={`fixed top-0 left-0 z-10 lg:relative h-full w-1/2 lg:w-[20%] bg-sub-background/40 pt-12 lg:pt-2 backdrop-blur-md grid grid-cols-1 gap-1 border-r border-b border-main-pink/40 shadow-sm rounded-br-lg transition-all duration-500 ${
+      className={`fixed overflow-y-auto top-0 left-0 z-10 lg:relative h-full w-1/2 lg:w-[20%] bg-sub-background/40 py-12 lg:pt-2 backdrop-blur-md grid grid-cols-1 gap-1 border-r border-b border-main-pink/40 shadow-sm rounded-br-lg transition-all duration-500 ${
         open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}
     >
@@ -46,6 +52,97 @@ export function NavigationProfile({
             <House className="w-5 h-5"></House> Início
           </Link>
         </li>
+
+        <span className="w-full text-start text-main-pink font-bold pl-3 pb-1 mt-4 border-b border-black/20">
+          App
+        </span>
+        <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/agendamentos"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/agendamentos"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <Calendar className="w-5 h-5"></Calendar> Agendamentos
+          </Link>
+        </li>
+        <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/sua-agenda"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/sua-agenda"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <CalendarClock className="w-5 h-5"></CalendarClock> Sua Agenda
+          </Link>
+        </li>
+        <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/relatorios"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/relatorios"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <ChartColumn className="w-5 h-5"></ChartColumn> Relatórios
+          </Link>
+        </li>
+        <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/profissionais"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/profissionais"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <IdCardLanyard className="w-5 h-5"></IdCardLanyard> Profissionais
+          </Link>
+        </li>
+        <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/servicos"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/servicos"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <BriefcaseBusiness className="w-5 h-5"></BriefcaseBusiness> Serviços
+          </Link>
+        </li>
+        {/* <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/ajuda"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/ajuda"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <Info className="w-5 h-5"></Info> Ajuda
+          </Link>
+        </li> */}
+        <span className="w-full text-start text-main-pink font-bold pl-3 pb-1 mt-4 border-b border-black/20">
+          Área do Cliente
+        </span>
         <li
           className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
             pathname === "/perfil/assinaturas"

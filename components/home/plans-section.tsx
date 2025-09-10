@@ -111,9 +111,14 @@ export function PlansHome() {
           <span className="text-md text-gray-700">
             Precisa de um plano personalizado para sua rede de agendamentos?
           </span>
-          <Button className="bg-white border border-gray-300 shadow-xl hover:text-white">
+          <a
+            href="https://wa.me/5511984349772"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 font-bold rounded hover:bg-main-pink transition cursor-pointer bg-white border border-gray-300 shadow-xl hover:text-white"
+          >
             Falar com Especialista
-          </Button>
+          </a>
         </div>
       </section>
     </article>
