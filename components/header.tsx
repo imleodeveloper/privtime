@@ -206,6 +206,8 @@ export function Header() {
             )}
           </div>
         </div>
+
+        {/* MOBILE */}
         <div className="mobile visible flex lg:hidden justify-between items-center container mx-auto relative w-full">
           <Link
             href="/"
@@ -272,8 +274,8 @@ export function Header() {
                       className="flex justify-center items-center gap-2"
                       onClick={() => setMenuOpen(!menuOpen)}
                     >
-                      <House className="w-4 h-4"></House>
-                      Inicio
+                      <User className="w-4 h-4"></User>
+                      Perfil
                     </Link>
                   </li>
                   <li className="text-main-purple hover:text-black transition duration-300">
@@ -317,7 +319,7 @@ export function Header() {
                   </Link>
                 ) : (
                   <div className="flex justify-center items-center gap-4">
-                    <div
+                    {/* <div
                       className="justify-center items-center flex relative"
                       onMouseLeave={() => setSubmenu(!submenu)}
                       onMouseEnter={() => setSubmenu(!submenu)}
@@ -359,10 +361,10 @@ export function Header() {
                                 <Cog className="w-4 h-4"></Cog> Config. da Conta
                               </Link>
                             </li> */}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+                    {/* </ul> */}
+                    {/* </div> */}
+                    {/* )} */}
+                    {/* </div> */}
                     <Button
                       className="shadow-xl bg-sub-purple text-black hover:text-white"
                       onClick={handleLogout}
