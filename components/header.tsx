@@ -179,7 +179,7 @@ export function Header() {
               </Link>
             ) : (
               <div className="flex justify-center items-center gap-4">
-                <div
+                {/* <div
                   className="justify-center items-center flex relative"
                   onMouseLeave={() => setSubmenu(!submenu)}
                   onMouseEnter={() => setSubmenu(!submenu)}
@@ -195,7 +195,7 @@ export function Header() {
                       </Link>
                     </li>
                   )}
-                </div>
+                </div> */}
                 <Button
                   className="shadow-xl bg-sub-purple text-black hover:text-white"
                   onClick={handleLogout}
