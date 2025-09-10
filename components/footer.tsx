@@ -9,12 +9,12 @@ export function Footer() {
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
             <Image
-              src="/privetime-main-pink-not-bg-minor.webp"
+              src="/new-logo-purple.webp"
               alt="Logo rosa PriveTime - Aplicativo de Agendamentos"
               width={150}
               height={80}
             />
-            {/* <span className="font-bold text-2xl text-main-pink">PriveTime</span> */}
+            {/* <span className="font-bold text-2xl text-main-purple">PriveTime</span> */}
           </div>
           <div className="max-w-sm">
             <span className="text-gray-800">
@@ -30,7 +30,7 @@ export function Footer() {
           </div> */}
         </div>
         <div className="flex flex-col justify-start items-start gap-4">
-          <h2 className="font-bold text-xl text-main-pink">Links Rápidos</h2>
+          <h2 className="font-bold text-xl text-main-purple">Links Rápidos</h2>
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link href="/">Início</Link>
@@ -49,7 +49,7 @@ export function Footer() {
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start gap-4">
-          <h2 className="font-bold text-xl text-main-pink">Suporte</h2>
+          <h2 className="font-bold text-xl text-main-purple">Suporte</h2>
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link
@@ -72,7 +72,7 @@ export function Footer() {
           </ul>
         </div>
         <div className="flex flex-col justify-start items-start gap-4">
-          <h2 className="font-bold text-xl text-main-pink">Links Úteis</h2>
+          <h2 className="font-bold text-xl text-main-purple">Links Úteis</h2>
           <ul className="flex flex-col justify-start items-start gap-2">
             <li className="cursor-pointer text-gray-700 hover:text-main-purple">
               <Link href="/politica-de-privacidade">
