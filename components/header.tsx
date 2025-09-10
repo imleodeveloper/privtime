@@ -84,7 +84,7 @@ export function Header() {
           >
             <Image
               src="/privetime-purple-not-bg-minor.webp"
-              alt="Logo PrivTime"
+              alt="Logo PriveTime - Aplicativo de Agendamentos"
               width={180}
               height={50}
             />
@@ -215,7 +215,7 @@ export function Header() {
           >
             <Image
               src="/privetime-purple-not-bg-minor.webp"
-              alt="Logo PriveTime"
+              alt="Logo PriveTime - Aplicativo de Agendamentos"
               width={180}
               height={50}
             />
@@ -252,7 +252,7 @@ export function Header() {
                 >
                   <Image
                     src="/privetime-purple-not-bg-minor.webp"
-                    alt="Logo PriveTime"
+                    alt="Logo PriveTime - Aplicativo de Agendamentos"
                     width={150}
                     height={50}
                   />

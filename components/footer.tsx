@@ -10,7 +10,7 @@ export function Footer() {
           <div className="flex justify-start items-center gap-4">
             <Image
               src="/privetime-main-pink-not-bg-minor.webp"
-              alt=""
+              alt="Logo rosa PriveTime - Aplicativo de Agendamentos"
               width={150}
               height={80}
             />
@@ -22,12 +22,12 @@ export function Footer() {
               VierCa Tech com tecnologia de ponta.
             </span>
           </div>
-          <div className="flex justify-start items-center gap-2">
+          {/* <div className="flex justify-start items-center gap-2">
             <Facebook className="w-5 h-5 text-gray-800"></Facebook>
             <Instagram className="w-5 h-5 text-gray-800"></Instagram>
             <Twitter className="w-5 h-5 text-gray-800"></Twitter>
             <Youtube className="w-5 h-5 text-gray-800"></Youtube>
-          </div>
+          </div> */}
         </div>
         <div className="flex flex-col justify-start items-start gap-4">
           <h2 className="font-bold text-xl text-main-pink">Links Rápidos</h2>
