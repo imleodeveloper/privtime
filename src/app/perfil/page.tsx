@@ -29,7 +29,7 @@ import { Banner } from "../../../components/banner-alert";
 import { useSearchParams } from "next/navigation";
 
 export default function Profile() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
   const [isAlert, setIsAlert] = useState<string>("");
@@ -63,24 +63,24 @@ export default function Profile() {
     automatic_renewal: false,
   });
 
-  useEffect(() => {
-    handleStatusPlan();
-  }, [searchParams]);
+  // useEffect(() => {
+  //   handleStatusPlan();
+  // }, [searchParams]);
 
-  const handleStatusPlan = async () => {
-    const getStatusPlan = searchParams.get("status_plan");
-    if (getStatusPlan === "plan_disabled") {
-      alert(
-        "Seu plano se encontra desabilitado, devido a isso não será possível gerenciar seu app."
-      );
-      setTypeAlert("error");
-      setIsAlert(
-        "Não foi possível encontrar usuário. Redirecionando para o login."
-      );
-    }
+  // const handleStatusPlan = async () => {
+  //   const getStatusPlan = searchParams.get("status_plan");
+  //   if (getStatusPlan === "plan_disabled") {
+  //     alert(
+  //       "Seu plano se encontra desabilitado, devido a isso não será possível gerenciar seu app."
+  //     );
+  //     setTypeAlert("error");
+  //     setIsAlert(
+  //       "Não foi possível encontrar usuário. Redirecionando para o login."
+  //     );
+  //   }
 
-    return setShowAlert(!showAlert);
-  };
+  //   return setShowAlert(!showAlert);
+  // };
 
   useEffect(() => {
     handleSession();
