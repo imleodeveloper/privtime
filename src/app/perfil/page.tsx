@@ -64,11 +64,9 @@ export default function Profile() {
   });
 
   useEffect(() => {
-    handleStatusPlan();
-  }, [searchParams, getStatusPlan]);
+    const statusPlan = searchParams.get("status_plan");
 
-  const handleStatusPlan = async () => {
-    if (getStatusPlan === "plan_disabled") {
+    if (statusPlan === "plan_disabled") {
       alert(
         "Seu plano se encontra desabilitado, devido a isso não será possível gerenciar seu app."
       );
@@ -76,10 +74,9 @@ export default function Profile() {
       setIsAlert(
         "Não foi possível encontrar usuário. Redirecionando para o login."
       );
+      setShowAlert(true);
     }
-
-    return setShowAlert(!showAlert);
-  };
+  }, []);
 
   useEffect(() => {
     handleSession();
