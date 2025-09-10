@@ -128,6 +128,54 @@ export default function AppointmentsPage() {
     }
   };
 
+  useEffect(() => {
+    if (!userProfile.user_id || !userProfile.slug_link) return;
+
+    fetchAdmin();
+    fetchAppointments();
+    checkStatusApp();
+  }, [userProfile.user_id, userProfile.slug_link]);
+
+  const checkStatusApp = async () => {
+    setIsLoading(false);
+    if (!userProfile.user_id || !userProfile.slug_link) return;
+    try {
+      const response = await fetch("/api/auth/perfil/app/status/check-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userProfile.user_id,
+          slugUser: userProfile.slug_link,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setIsLoading(false);
+        setTypeAlert("error");
+        setIsAlert(data.message);
+        setShowAlert(!showAlert);
+        window.location.href = "/perfil?status_plan=plan_disabled";
+        return;
+      }
+
+      setIsLoading(false);
+      setTypeAlert("success");
+      setIsAlert(data.message);
+      setShowAlert(!showAlert);
+    } catch (error) {
+      console.error("Não foi possível verificar status do plano:", error);
+      setIsLoading(false);
+      setTypeAlert("error");
+      setIsAlert(
+        "Não foi possível encontrar plano ativo, erro do servidor. Redirecionando para ínicio do perfil."
+      );
+      setShowAlert(!showAlert);
+      setTimeout(() => (window.location.href = "/perfil"), 5000);
+      return;
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "scheduled":
@@ -190,10 +238,6 @@ export default function AppointmentsPage() {
       return;
     }
   };
-  useEffect(() => {
-    fetchAdmin();
-    fetchAppointments();
-  }, [userProfile]);
 
   // Busca os appointments
   const fetchAppointments = async () => {
