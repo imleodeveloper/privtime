@@ -470,7 +470,7 @@ export default function ServicesPage() {
             <SidebarOpen className="w-7 h-7"></SidebarOpen>
           </div>
           <Card className="bg-white w-full border-main-pink/40">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col gap-6 md:gap-0 md:flex-row items-center justify-between">
               <CardTitle className="text-gray-900">
                 Serviços ({services.length})
                 {currentAdmin?.role === "admin" && (

@@ -348,7 +348,7 @@ export default function AppointmentsPage() {
             <SidebarOpen className="w-7 h-7"></SidebarOpen>
           </div>
           <Card className="bg-white w-full border-main-pink/40">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col-reverse gap-6 md:gap-0 md:flex-row items-center justify-between">
               <CardTitle className="text-gray-900">
                 Agendamentos ({appointments.length})
                 {currentAdmin?.role === "admin" &&
