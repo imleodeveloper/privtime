@@ -24,9 +24,21 @@ import { Button } from "../../../../components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
-import { formatDate, formatPrice } from "../../../../lib/plans";
+import { formatDate } from "../../../../lib/plans";
 import { useSearchParams } from "next/navigation";
 import { Banner } from "../../../../components/banner-alert";
+
+const formatPrice = (price: number) => {
+  if (price == 5819) {
+    price = 58.19;
+  } else if (price == 57828) {
+    price = 578.28;
+  }
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(price);
+};
 
 export default function Assinaturas() {
   const [params, setParams] = useState<string>("");
@@ -663,12 +675,20 @@ export default function Assinaturas() {
                 <span className="text-sm">Alterar renovação automática</span>
                 <div className="flex justify-center items-center gap-2">
                   <span className="text-sm">
-                    <Button
-                      className="text-sm text-white"
+                    <button
+                      className={`px-4 py-2 text-white font-bold rounded transition cursor-pointer ${
+                        userPlan.automatic_renewal === false
+                          ? "bg-green-600 hover:bg-green-800"
+                          : "bg-red-600 hover:bg-red-800"
+                      }`}
                       onClick={() => setChangeRenewal(!changeRenewal)}
                     >
-                      Alterar
-                    </Button>
+                      {userPlan.automatic_renewal === false ? (
+                        <>Ativar</>
+                      ) : (
+                        <>Desativar</>
+                      )}
+                    </button>
                   </span>
                 </div>
               </div>
