@@ -9,6 +9,7 @@ export interface Professional {
   phone: string;
   specialties: string[];
   active: boolean;
+  photo_professional: string;
 }
 
 export async function POST(request: NextRequest) {

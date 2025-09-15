@@ -1,11 +1,13 @@
 "use client";
 import {
+  CheckCheck,
   Edit,
   Mail,
   Phone,
   Plus,
   SidebarOpen,
   Trash2,
+  Upload,
   Users,
 } from "lucide-react";
 import {
@@ -48,6 +50,7 @@ interface Professional {
       name: string;
     };
   }[];
+  photo_professional: string;
 }
 
 interface Service {
@@ -97,8 +100,8 @@ export default function ProfessionalsPage() {
     name: "",
     email: "",
     phone: "",
-    specialties: "",
     serviceIds: [] as string[],
+    photo_professional: "",
   });
 
   useEffect(() => {
@@ -244,6 +247,35 @@ export default function ProfessionalsPage() {
     }
   };
 
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const { data, error } = await supabase.storage
+      .from("photos_professionals")
+      .upload(
+        `photos/${userProfile.slug_link}/${Date.now()}-${file.name}`,
+        file
+      );
+
+    if (error) {
+      console.error("Erro no upload:", error);
+      setTypeAlert("error");
+      setIsAlert("Erro ao enviar imagem.");
+      setShowAlert(!showAlert);
+      return;
+    }
+
+    const publicUrl = supabase.storage
+      .from("photos_professionals")
+      .getPublicUrl(data.path).data.publicUrl;
+
+    setProfessionalForm((prev) => ({
+      ...prev,
+      photo_professional: publicUrl,
+    }));
+  };
+
   const handleCreateProfessional = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -257,11 +289,12 @@ export default function ProfessionalsPage() {
           name: professionalForm.name,
           email: professionalForm.email || null,
           phone: professionalForm.phone || null,
-          specialties: professionalForm.specialties
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s),
           serviceIds: professionalForm.serviceIds,
+          photo_professional: professionalForm.photo_professional,
+          // specialties: professionalForm.specialties
+          //   .split(",")
+          //   .map((s) => s.trim())
+          //   .filter((s) => s),
         }),
       });
 
@@ -304,11 +337,12 @@ export default function ProfessionalsPage() {
           name: professionalForm.name,
           email: professionalForm.email || null,
           phone: professionalForm.phone || null,
-          specialties: professionalForm.specialties
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s),
+          // specialties: professionalForm.specialties
+          //   .split(",")
+          //   .map((s) => s.trim())
+          //   .filter((s) => s),
           serviceIds: professionalForm.serviceIds,
+          photo_professional: professionalForm.photo_professional,
         }),
       });
 
@@ -362,8 +396,9 @@ export default function ProfessionalsPage() {
       name: "",
       email: "",
       phone: "",
-      specialties: "",
+      // specialties: "",
       serviceIds: [],
+      photo_professional: "",
     });
   };
 
@@ -392,9 +427,10 @@ export default function ProfessionalsPage() {
       name: professional.name,
       email: professional.email || "",
       phone: professional.phone || "",
-      specialties: professional.specialties?.join(", ") || "",
+      // specialties: professional.specialties?.join(", ") || "",
       serviceIds:
         professional.professional_services?.map((ps) => ps.service.id) || [],
+      photo_professional: professional.photo_professional,
     });
     setIsEditProfessionalOpen(true);
   };
@@ -516,20 +552,49 @@ export default function ProfessionalsPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="professionalSpecialties">
-                          Especialidades
+                        <label
+                          htmlFor="upload-photo"
+                          className="flex flex-col justify-center items-start gap-1 cursor-pointer"
+                        >
+                          <span>Upload da foto</span>
+                          <div className="w-full group bg-white px-2 py-1 flex justify-start items-center gap-2 rounded-lg hover:border-purple-500 hover:ring-1 hover:ring-purple-500">
+                            {professionalForm.photo_professional.length > 0 ? (
+                              <CheckCheck
+                                className={`w-5.5 h-5.5 ${
+                                  professionalForm.photo_professional.length > 0
+                                    ? "text-green-600 group-hover:text-green-800"
+                                    : ""
+                                }`}
+                              ></CheckCheck>
+                            ) : (
+                              <>
+                                <Upload className="w-5.5 h-5.5 group-hover:text-purple-500"></Upload>
+                              </>
+                            )}
+                            <span
+                              className={`text-base ${
+                                professionalForm.photo_professional.length > 0
+                                  ? "text-green-600 group-hover:text-green-800"
+                                  : "group-hover:text-purple-500"
+                              }`}
+                            >
+                              {professionalForm.photo_professional.length > 0
+                                ? "Foto Anexada "
+                                : "Selecionar uma foto "}
+                              <span className="text-sm text-gray-800 font-bold">
+                                Máx: 5MB
+                              </span>
+                            </span>
+                          </div>
+
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            id="upload-photo"
+                            className="hidden"
+                            onChange={handlePhotoChange}
+                          />
                         </label>
-                        <Input
-                          id="professionalSpecialties"
-                          value={professionalForm.specialties}
-                          onChange={(e) =>
-                            setProfessionalForm((prev) => ({
-                              ...prev,
-                              specialties: e.target.value,
-                            }))
-                          }
-                          placeholder="Presenciais, etc. (separar por vírgula)"
-                        />
                       </div>
                     </div>
                     <div>
@@ -611,9 +676,9 @@ export default function ProfessionalsPage() {
                       <th className="text-left py-3 px-4 text-gray-900">
                         Telefone
                       </th>
-                      <th className="text-left py-3 px-4 text-gray-900">
+                      {/* <th className="text-left py-3 px-4 text-gray-900">
                         Especialidades
-                      </th>
+                      </th> */}
                       <th className="text-left py-3 px-4 text-gray-900">
                         Serviços
                       </th>
@@ -647,7 +712,7 @@ export default function ProfessionalsPage() {
                             {professional.phone || "-"}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-gray-700">
+                        {/* <td className="py-3 px-4 text-gray-700">
                           {professional.specialties?.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
                               {professional.specialties.map(
@@ -665,7 +730,7 @@ export default function ProfessionalsPage() {
                           ) : (
                             "-"
                           )}
-                        </td>
+                        </td> */}
                         <td className="py-3 px-4 text-gray-700">
                           {professional.professional_services?.length || 0}{" "}
                           serviços
@@ -762,20 +827,30 @@ export default function ProfessionalsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="editProfessionalSpecialties">
-                        Especialidades
+                      <label
+                        htmlFor="upload-photo"
+                        className="flex flex-col justify-center items-start gap-1 cursor-pointer"
+                      >
+                        <span>Upload da foto</span>
+                        <div className="w-full group bg-white px-2 py-1 flex justify-start items-center gap-2 rounded-lg hover:border-purple-500 hover:ring-1 hover:ring-purple-500">
+                          <Upload className="w-5.5 h-5.5 group-hover:text-purple-500"></Upload>
+                          <span className="text-base group-hover:text-purple-500">
+                            {professionalForm.photo_professional.length > 0
+                              ? "Foto Anexada "
+                              : "Selecionar uma foto "}
+                            <span className="text-sm text-gray-800 font-bold">
+                              Máx: 5MB
+                            </span>
+                          </span>
+                        </div>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          id="upload-photo"
+                          className="hidden"
+                          onChange={handlePhotoChange}
+                        />
                       </label>
-                      <Input
-                        id="editProfessionalSpecialties"
-                        value={professionalForm.specialties}
-                        onChange={(e) =>
-                          setProfessionalForm((prev) => ({
-                            ...prev,
-                            specialties: e.target.value,
-                          }))
-                        }
-                        placeholder="Cortes, Coloração, etc. (separar por vírgula)"
-                      />
                     </div>
                   </div>
                   <div>

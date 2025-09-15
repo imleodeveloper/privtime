@@ -30,7 +30,15 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { slug_link, name, email, phone, specialties, serviceIds } = body;
+    const {
+      slug_link,
+      name,
+      email,
+      phone,
+      specialties,
+      serviceIds,
+      photo_professional,
+    } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -68,6 +76,7 @@ export async function POST(req: Request) {
           phone: phone || null,
           specialties: specialties || [],
           active: true,
+          photo_professional,
         })
         .select()
         .single();
@@ -201,6 +210,33 @@ export async function DELETE(req: Request) {
         { error: "Não é possível excluir profissional com agendamentos" },
         { status: 400 }
       );
+    }
+
+    const { data: professionalData, error: fetchProfError } =
+      await supabaseAdmin
+        .from("professionals")
+        .select("photo_professional")
+        .eq("id", professionalId)
+        .single();
+
+    if (fetchProfError) throw fetchProfError;
+
+    const photoPath = professionalData?.photo_professional;
+
+    const bucketName = "photos_professionals";
+    const encodedPath = photoPath.split(`${bucketName}/`)[1];
+
+    //Deletar do Storage se existir;
+
+    if (encodedPath) {
+      const path = decodeURIComponent(encodedPath);
+      const { error: storageError } = await supabaseAdmin.storage
+        .from("photos_professionals")
+        .remove([path]);
+
+      if (storageError) {
+        console.error("Erro ao deletar foto de profissional:", storageError);
+      }
     }
 
     const { error } = await supabaseAdmin

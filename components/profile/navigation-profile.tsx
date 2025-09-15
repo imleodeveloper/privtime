@@ -10,6 +10,7 @@ import {
   IdCardLanyard,
   Info,
   PanelLeftClose,
+  Store,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -72,6 +73,20 @@ export function NavigationProfile({
         </li>
         <li
           className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
+            pathname === "/perfil/meu-negocio"
+              ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
+              : "font-normal  hover:bg-main-purple/10 rounded-lg"
+          }`}
+        >
+          <Link
+            href="/perfil/meu-negocio"
+            className="w-full p-3 flex justify-start items-center gap-2"
+          >
+            <Store className="w-5 h-5"></Store> Meu Negócio
+          </Link>
+        </li>
+        {/* <li
+          className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
             pathname === "/perfil/sua-agenda"
               ? "font-bold text-main-pink bg-main-purple/20 rounded-lg"
               : "font-normal  hover:bg-main-purple/10 rounded-lg"
@@ -83,7 +98,7 @@ export function NavigationProfile({
           >
             <CalendarClock className="w-5 h-5"></CalendarClock> Sua Agenda
           </Link>
-        </li>
+        </li> */}
         <li
           className={`cursor-pointer flex justify-start items-center w-full gap-2 text-sm ${
             pathname === "/perfil/relatorios"

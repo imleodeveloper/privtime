@@ -609,25 +609,78 @@ export default function ServicesPage() {
                             </SelectTrigger>
                             <SelectContent className="bg-sub-background">
                               <SelectItem
-                                value="in-person"
+                                value="Presencial"
                                 className="hover:bg-gray-300 cursor-pointer"
                               >
                                 Presencial
                               </SelectItem>
                               <SelectItem
-                                value="call"
+                                value="Video"
                                 className="hover:bg-gray-300 cursor-pointer"
                               >
-                                Ligação
-                              </SelectItem>
-                              <SelectItem
-                                value="msg"
-                                className="hover:bg-gray-300 cursor-pointer"
-                              >
-                                Mensagem
+                                Video-Chamada
                               </SelectItem>
                             </SelectContent>
                           </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <label>Serviços Adicionais</label>
+                        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded p-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 1
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 2
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 3
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 4
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 5
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id={`professional-`} />
+                            <label
+                              htmlFor={`professional-`}
+                              className="text-sm"
+                            >
+                              Serviço 6
+                            </label>
+                          </div>
                         </div>
                       </div>
                       <div>
@@ -861,22 +914,16 @@ export default function ServicesPage() {
                         </SelectTrigger>
                         <SelectContent className="bg-sub-background">
                           <SelectItem
-                            value="in-person"
+                            value="Presencial"
                             className="hover:bg-gray-300 cursor-pointer"
                           >
                             Presencial
                           </SelectItem>
                           <SelectItem
-                            value="msg"
+                            value="Video"
                             className="hover:bg-gray-300 cursor-pointer"
                           >
-                            Mensagem
-                          </SelectItem>
-                          <SelectItem
-                            value="call"
-                            className="hover:bg-gray-300 cursor-pointer"
-                          >
-                            Ligação
+                            Video-Chamada
                           </SelectItem>
                         </SelectContent>
                       </Select>
