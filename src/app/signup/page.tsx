@@ -234,7 +234,7 @@ export default function SignUp() {
               <div className="relative w-full h-24 flex justify-center items-center">
                 <Link href="/">
                   <Image
-                    src="/privetime-purple-not-bg-minor.webp"
+                    src="/new-logo-purple.webp"
                     alt=""
                     width={200}
                     height={125}

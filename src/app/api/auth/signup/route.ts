@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
   function isAdult(birthday: string): boolean {
     const today = new Date();
-    const birth = new Date(birthday);
+    const birth = new Date(toISODate(birthday));
 
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
