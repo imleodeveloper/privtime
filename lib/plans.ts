@@ -18,6 +18,7 @@ export const formatPrice = (price: number) => {
 export const formatDate = (date: string) => {
   const stringDate = new Date(date);
   return stringDate.toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
