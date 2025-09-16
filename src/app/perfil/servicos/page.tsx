@@ -561,7 +561,8 @@ export default function ServicesPage() {
                           <label htmlFor="serviceDuration">
                             Duração (minutos) *
                           </label>
-                          <Input
+                          <div className="flex justify-center items-center gap-2">
+                            {/* <Input
                             id="serviceDuration"
                             type="number"
                             value={serviceForm.duration_minutes}
@@ -571,9 +572,49 @@ export default function ServicesPage() {
                                 duration_minutes: e.target.value,
                               }))
                             }
-                            placeholder="30"
+                            placeholder="30 ou 60+"
                             required
-                          />
+                            /> */}
+                            <Checkbox
+                              id="duration30"
+                              checked={serviceForm.duration_minutes === "30"}
+                              onCheckedChange={(checked) =>
+                                setServiceForm((prev) => ({
+                                  ...prev,
+                                  duration_minutes: checked ? "30" : "",
+                                }))
+                              }
+                            />
+                            <label htmlFor="duration30" className="text-sm">
+                              30 min
+                            </label>
+                            <Checkbox
+                              id="duration60"
+                              checked={serviceForm.duration_minutes === "60"}
+                              onCheckedChange={(checked) =>
+                                setServiceForm((prev) => ({
+                                  ...prev,
+                                  duration_minutes: checked ? "60" : "",
+                                }))
+                              }
+                            />
+                            <label htmlFor="duration60" className="text-sm">
+                              60 min
+                            </label>
+                            <Checkbox
+                              id="duration90"
+                              checked={serviceForm.duration_minutes === "90"}
+                              onCheckedChange={(checked) =>
+                                setServiceForm((prev) => ({
+                                  ...prev,
+                                  duration_minutes: checked ? "90" : "",
+                                }))
+                              }
+                            />
+                            <label htmlFor="duration60" className="text-sm">
+                              90 min
+                            </label>
+                          </div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">

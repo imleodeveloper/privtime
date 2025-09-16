@@ -227,6 +227,12 @@ export default function ServicesPage() {
     fetchAdmin();
   }, [userProfile]);
 
+  useEffect(() => {
+    if (currentAdmin && selectedMonth) {
+      fetchMonthlyReport(currentAdmin, selectedMonth);
+    }
+  }, [selectedMonth, currentAdmin]);
+
   const fetchAdmin = async () => {
     setIsLoading(true);
     try {
@@ -331,7 +337,10 @@ export default function ServicesPage() {
 
       const { data: monthlyAppointments, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.log(error);
+        throw error;
+      }
 
       const cancelamentos =
         monthlyAppointments.filter((apt) => apt.status === "cancelled")
