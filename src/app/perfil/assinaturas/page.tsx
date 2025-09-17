@@ -357,32 +357,34 @@ export default function Assinaturas() {
             </span>
           </div>
           <div className="flex flex-col justify-center items-start w-full bg-white border border-black/30 rounded-md">
-            <div className="w-full p-4 relative">
+            {/* <div className="w-full p-4 relative">
               <input
                 type="text"
                 disabled
                 className="w-full border border-black/40 py-2 px-4 rounded-md"
                 placeholder="Funcionalidade de pesquisar ainda não disponível"
               ></input>
-            </div>
+            </div> */}
 
             {/* This is for desktop */}
             <div className="hidden md:block w-full mt-8">
               <div className="w-full pl-5 py-4 border-b border-black/20">
                 <ul className="w-full grid grid-cols-[1fr_1fr_1fr_1fr_1fr] items-center gap-4">
                   <li className="flex justify-start items-center gap-2 text-sm font-semibold">
-                    Assinatura <ChevronDown className="w-4 h-4"></ChevronDown>
+                    Assinatura
+                    {/* <ChevronDown className="w-4 h-4"></ChevronDown> */}
                   </li>
                   <li className="flex justify-center items-center gap-2 text-sm font-semibold">
                     Data de expiração{" "}
-                    <ChevronDown className="w-4 h-4"></ChevronDown>
+                    {/* <ChevronDown className="w-4 h-4"></ChevronDown> */}
                   </li>
                   <li className="flex justify-center items-center gap-2 text-sm font-semibold">
                     Renovação automática{" "}
-                    <ChevronDown className="w-4 h-4"></ChevronDown>
+                    {/* <ChevronDown className="w-4 h-4"></ChevronDown> */}
                   </li>
                   <li className="flex justify-center items-center gap-2 text-sm font-semibold">
-                    Status <ChevronDown className="w-4 h-4"></ChevronDown>
+                    Status
+                    {/* <ChevronDown className="w-4 h-4"></ChevronDown> */}
                   </li>
                 </ul>
               </div>
@@ -474,18 +476,20 @@ export default function Assinaturas() {
               <div className="w-1/2 p-4 border-r border-black/20">
                 <ul className="w-full flex justify-start items-start flex-col lg:items-center gap-8">
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
-                    Assinatura <ChevronRight className="w-4 h-4"></ChevronRight>
+                    Assinatura
+                    {/* <ChevronRight className="w-4 h-4"></ChevronRight> */}
                   </li>
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
                     Data de expiração{" "}
-                    <ChevronRight className="w-4 h-4"></ChevronRight>
+                    {/* <ChevronRight className="w-4 h-4"></ChevronRight> */}
                   </li>
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
                     Renovação automática{" "}
-                    <ChevronRight className="w-4 h-4"></ChevronRight>
+                    {/* <ChevronRight className="w-4 h-4"></ChevronRight> */}
                   </li>
                   <li className="w-full flex justify-between items-center gap-2 text-sm font-semibold">
-                    Status <ChevronRight className="w-4 h-4"></ChevronRight>
+                    Status
+                    {/* <ChevronRight className="w-4 h-4"></ChevronRight> */}
                   </li>
                 </ul>
               </div>

@@ -445,80 +445,97 @@ export default function AppointmentsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {appointments.map((appointment) => (
-                      <tr
-                        key={appointment.id}
-                        className="border-b border-gray-100"
-                      >
-                        <td className="py-3 px-4 text-gray-700">
-                          {formatDate(appointment.appointment_date)}
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {appointment.appointment_time}
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {appointment.client_name}
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {appointment.client_phone}
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {appointment.service?.name}
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {appointment.professional?.name}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium 
+                    {[...appointments]
+                      .sort((a, b) => {
+                        // compara primeiro a data
+                        const dateA = new Date(a.appointment_date).getTime();
+                        const dateB = new Date(b.appointment_date).getTime();
+
+                        if (dateA !== dateB) return dateA - dateB;
+
+                        // Se a data for igual compara o horário
+                        const [hourA, minuteA] = a.appointment_time
+                          .split(":")
+                          .map(Number);
+                        const [hourB, minuteB] = b.appointment_time
+                          .split(":")
+                          .map(Number);
+                        return hourA * 60 + minuteA - (hourB * 60 - minuteB);
+                      })
+                      .map((appointment) => (
+                        <tr
+                          key={appointment.id}
+                          className="border-b border-gray-100"
+                        >
+                          <td className="py-3 px-4 text-gray-700">
+                            {formatDate(appointment.appointment_date)}
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {appointment.appointment_time}
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {appointment.client_name}
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {appointment.client_phone}
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {appointment.service?.name}
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {appointment.professional?.name}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium 
                             	${getStatusColor(appointment.status)}
 															`}
-                          >
-                            {getStatusText(appointment.status)}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex space-x-2">
-                            {appointment.status === "scheduled" && (
-                              <>
+                            >
+                              {getStatusText(appointment.status)}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex space-x-2">
+                              {appointment.status === "scheduled" && (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      updateAppointmentStatus(
+                                        appointment.id,
+                                        "completed"
+                                      )
+                                    }
+                                    className="px-4 py-2 text-green-600 bg-transparent border border-gray-200 hover:border-green-600 font-bold rounded hover:bg-gray-100 transition cursor-pointer"
+                                  >
+                                    Concluir
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      updateAppointmentStatus(
+                                        appointment.id,
+                                        "cancelled"
+                                      )
+                                    }
+                                    className="px-4 py-2 bg-transparent border border-gray-200 hover:border-red-600 font-bold rounded hover:bg-gray-100 transition cursor-pointer text-red-600 hover:text-red-700"
+                                  >
+                                    Cancelar
+                                  </button>
+                                </>
+                              )}
+                              {currentAdmin?.role === "super_admin" && (
                                 <button
                                   onClick={() =>
-                                    updateAppointmentStatus(
-                                      appointment.id,
-                                      "completed"
-                                    )
+                                    deleteAppointment(appointment.id)
                                   }
-                                  className="px-4 py-2 text-green-600 bg-transparent border border-gray-200 hover:border-green-600 font-bold rounded hover:bg-gray-100 transition cursor-pointer"
+                                  className="px-4 py-2 bg-red-600 border border-gray-800 hover:border-red-900 font-bold rounded hover:bg-red-800 transition cursor-pointer text-white"
                                 >
-                                  Concluir
+                                  <Trash2 className="h-4 w-4" />
                                 </button>
-                                <button
-                                  onClick={() =>
-                                    updateAppointmentStatus(
-                                      appointment.id,
-                                      "cancelled"
-                                    )
-                                  }
-                                  className="px-4 py-2 bg-transparent border border-gray-200 hover:border-red-600 font-bold rounded hover:bg-gray-100 transition cursor-pointer text-red-600 hover:text-red-700"
-                                >
-                                  Cancelar
-                                </button>
-                              </>
-                            )}
-                            {currentAdmin?.role === "super_admin" && (
-                              <button
-                                onClick={() =>
-                                  deleteAppointment(appointment.id)
-                                }
-                                className="px-4 py-2 bg-red-600 border border-gray-800 hover:border-red-900 font-bold rounded hover:bg-red-800 transition cursor-pointer text-white"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

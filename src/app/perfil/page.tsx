@@ -225,7 +225,7 @@ export default function Profile() {
                   </span>
                 </div>
               </div>
-              <div className="flex justify-start items-center gap-4 p-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 justify-start items-center gap-4 p-4">
                 <Button
                   className={`text-white text-sm flex justify-center items-center gap-2 relative ${
                     copyLink ? "overflow-none" : "overflow-hidden"
