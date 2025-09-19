@@ -24,8 +24,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
+import { useRouter } from "next/navigation";
 
 export default function CompartilheSeuApp() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
@@ -67,6 +69,13 @@ export default function CompartilheSeuApp() {
       const { data: sessionUser } = await supabase.auth.getSession();
       const sessionToken = sessionUser.session?.access_token;
 
+      // Se não tiver sessão, já redireciona sem nem chamar a API
+      if (!sessionToken) {
+        setIsLoading(false);
+        router.replace("/signin?redirect=/perfil");
+        return;
+      }
+
       const response = await fetch("/api/auth/perfil", {
         method: "POST",
         headers: {
@@ -78,12 +87,8 @@ export default function CompartilheSeuApp() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log(response.status);
-        console.log(response.statusText);
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          200
-        );
+        setIsLoading(false);
+        setTimeout(() => router.replace("/signin?redirect=/perfil"), 1000);
         return;
       }
 
@@ -92,10 +97,8 @@ export default function CompartilheSeuApp() {
       setIsLoading(false);
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
-      alert(
-        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
-      );
       setIsLoading(false);
+      setTimeout(() => router.replace("/signin?redirect=/perfil"), 3000);
       return;
     }
   };

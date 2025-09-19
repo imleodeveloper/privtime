@@ -26,8 +26,10 @@ import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
 import { Banner } from "../../../../components/banner-alert";
+import { useRouter } from "next/navigation";
 
 export default function InformacoesDeConta() {
+  const router = useRouter();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
   const [isAlert, setIsAlert] = useState<string>("");
@@ -78,6 +80,13 @@ export default function InformacoesDeConta() {
       const { data: sessionUser } = await supabase.auth.getSession();
       const sessionToken = sessionUser.session?.access_token;
 
+      // Se não tiver sessão, já redireciona sem nem chamar a API
+      if (!sessionToken) {
+        setIsLoading(false);
+        router.replace("/signin?redirect=/perfil");
+        return;
+      }
+
       const response = await fetch("/api/auth/perfil", {
         method: "POST",
         headers: {
@@ -89,12 +98,13 @@ export default function InformacoesDeConta() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log(response.status);
-        console.log(response.statusText);
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          1000
+        setIsLoading(false);
+        setTypeAlert("error");
+        setShowAlert(true);
+        setIsAlert(
+          "Não foi possível encontrar usuário. Redirecionando para o login."
         );
+        setTimeout(() => router.replace("/signin?redirect=/perfil"), 1000);
         return;
       }
 
@@ -103,11 +113,8 @@ export default function InformacoesDeConta() {
       setIsLoading(false);
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
-      setTimeout(
-        () => (window.location.href = "/signin?redirect=/perfil"),
-        200
-      );
       setIsLoading(false);
+      setTimeout(() => router.replace("/signin?redirect=/perfil"), 3000);
       return;
     }
   };

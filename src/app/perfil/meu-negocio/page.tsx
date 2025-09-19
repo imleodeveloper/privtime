@@ -44,6 +44,7 @@ import { supabase } from "../../../../lib/supabase";
 import { UserProfile } from "@/app/api/auth/perfil/route";
 import { Banner } from "../../../../components/banner-alert";
 import { Checkbox } from "../../../../components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 export type TimeRange = {
   start: string;
@@ -68,6 +69,7 @@ export type BusinessProfile = {
 };
 
 export default function MyBusiness() {
+  const router = useRouter();
   const [openMenu, setOpenMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -111,6 +113,13 @@ export default function MyBusiness() {
       const { data: sessionUser } = await supabase.auth.getSession();
       const sessionToken = sessionUser.session?.access_token;
 
+      // Se não tiver sessão, já redireciona sem nem chamar a API
+      if (!sessionToken) {
+        setIsLoading(false);
+        router.replace("/signin?redirect=/perfil");
+        return;
+      }
+
       const response = await fetch("/api/auth/perfil", {
         method: "POST",
         headers: {
@@ -122,38 +131,25 @@ export default function MyBusiness() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log(response.status);
-        console.log(response.statusText);
         setIsLoading(false);
         setTypeAlert("error");
-        setShowAlert(!showAlert);
+        setShowAlert(true);
         setIsAlert(
           "Não foi possível encontrar usuário. Redirecionando para o login."
         );
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          1000
-        );
+        setTimeout(() => router.replace("/signin?redirect=/perfil"), 1000);
         return;
       }
 
       setUserProfile(data.profile);
       setIsLoading(false);
       setTypeAlert("success");
+      setShowAlert(true);
       setIsAlert("Usuário encontrado com sucesso. Dados carregados.");
-      setShowAlert(!showAlert);
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       setIsLoading(false);
-      setTypeAlert("error");
-      setIsAlert(
-        "Não foi possível encontrar sessão ativa. Redirecionando para o login."
-      );
-      setShowAlert(!showAlert);
-      setTimeout(
-        () => (window.location.href = "/signin?redirect=/perfil"),
-        1000
-      );
+      setTimeout(() => router.replace("/signin?redirect=/perfil"), 3000);
       return;
     }
   };

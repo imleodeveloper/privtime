@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate } from "../../../../lib/plans";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Banner } from "../../../../components/banner-alert";
 
 const formatPrice = (price: number) => {
@@ -41,6 +41,7 @@ const formatPrice = (price: number) => {
 };
 
 export default function Assinaturas() {
+  const router = useRouter();
   const [params, setParams] = useState<string>("");
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [typeAlert, setTypeAlert] = useState<"error" | "success">("error");
@@ -114,6 +115,13 @@ export default function Assinaturas() {
       const { data: sessionUser } = await supabase.auth.getSession();
       const sessionToken = sessionUser.session?.access_token;
 
+      // Se não tiver sessão, já redireciona sem nem chamar a API
+      if (!sessionToken) {
+        setIsLoading(false);
+        router.replace("/signin?redirect=/perfil");
+        return;
+      }
+
       const response = await fetch("/api/auth/perfil", {
         method: "POST",
         headers: {
@@ -125,24 +133,26 @@ export default function Assinaturas() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.log(response.status);
-        console.log(response.statusText);
-        setTimeout(
-          () => (window.location.href = "/signin?redirect=/perfil"),
-          200
+        setIsLoading(false);
+        setTypeAlert("error");
+        setShowAlert(true);
+        setIsAlert(
+          "Não foi possível encontrar usuário. Redirecionando para o login."
         );
+        setTimeout(() => router.replace("/signin?redirect=/perfil"), 1000);
         return;
       }
 
       setUserPlan(data.planOfUser);
       setUserProfile(data.profile);
       setIsLoading(false);
+      setTypeAlert("success");
+      setShowAlert(true);
+      setIsAlert("Usuário encontrado com sucesso. Dados carregados.");
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
-      alert(
-        "Erro no servidor ao procurar sessão do usuário, redirecionando para a tela de login do usuário"
-      );
       setIsLoading(false);
+      setTimeout(() => router.replace("/signin?redirect=/perfil"), 3000);
       return;
     }
   };
