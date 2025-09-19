@@ -213,7 +213,6 @@ export async function POST(request: Request) {
             phone: phone,
             email: email,
             identity: cpf,
-            link_app: link_app,
             link_share_app: link_share_app,
             slug_link: slug_link,
             birthdate: toISODate(birthDate),
