@@ -29,6 +29,7 @@ export interface UserProfile {
   slug_link: string;
   birthdate: string;
   edit_slug: number;
+  cep: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -149,6 +150,7 @@ export async function POST(request: NextRequest) {
       slug_link: userProfile.slug_link,
       birthdate: userProfile.birthdate,
       edit_slug: userProfile.edit_slug,
+      cep: userProfile.cep,
     };
     return NextResponse.json({ profile, planOfUser }, { status: 200 });
   } catch (error) {

@@ -193,9 +193,6 @@ export default function CheckoutPage() {
       setError("O CEP tem que conter 8 digitos, tente novamente.");
       return;
     }
-    if (cepValue.length === 8) {
-      setError("");
-    }
     try {
       setIsLoading(true);
       const response = await fetch(

@@ -59,6 +59,7 @@ export default function YourSchedule() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 

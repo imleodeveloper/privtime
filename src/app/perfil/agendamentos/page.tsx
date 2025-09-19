@@ -71,6 +71,7 @@ export default function AppointmentsPage() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 

@@ -51,6 +51,7 @@ export default function Profile() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [userPlan, setUserPlan] = useState<UserPlan>({
     price_at_purchase: 0,

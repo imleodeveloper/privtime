@@ -89,6 +89,7 @@ export default function MyBusiness() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   //Fetch dates and times
   const [businessProfile, setBusinessProfile] = useState<BusinessProfile>({

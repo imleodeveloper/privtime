@@ -63,6 +63,7 @@ export default function InformacoesDeConta() {
   const [isAlert, setIsAlert] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [fetchedCep, setFetchedCep] = useState<string | null>("");
   const divRef = useRef<HTMLDivElement>(null);
   const [deleteAccount, setDeleteAccount] = useState<boolean>(false);
   const [copyLink, setCopyLink] = useState<boolean>(false);
@@ -85,6 +86,7 @@ export default function InformacoesDeConta() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [userPlan, setUserPlan] = useState<UserPlan>({
     price_at_purchase: 0,
@@ -197,12 +199,10 @@ export default function InformacoesDeConta() {
         return;
       }
 
-      if (response.status === 200) {
-        setIsLoading(false);
-        setTypeAlert("success");
-        setIsAlert(data.message);
-        setShowAlert(!showAlert);
-      }
+      setIsLoading(false);
+      setTypeAlert("success");
+      setIsAlert(data.message);
+      setShowAlert(!showAlert);
     } catch (error) {
       console.error("Erro do servidor:", error);
       setTypeAlert("error");
@@ -242,9 +242,107 @@ export default function InformacoesDeConta() {
     } catch (error) {
       console.error("Erro do servidor:", error);
       setTypeAlert("error");
-      setIsAlert("Não foi possível alterar slug, erro interno do servidor");
+      setIsAlert("Não foi possível alterar nome, erro interno do servidor");
       setShowAlert(!showAlert);
       setIsLoading(false);
+      return;
+    }
+  };
+
+  const handleChangeTel = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/perfil/alterar-tel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userProfile, userChangeTel }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setTypeAlert("error");
+        setIsAlert(data.message);
+        setShowAlert(true);
+        setIsLoading(false);
+        return;
+      }
+
+      setTypeAlert("success");
+      setIsAlert(data.message);
+      setShowAlert(true);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Erro do servidor:", error);
+      setTypeAlert("error");
+      setIsAlert("Não foi possível alterar telefone, erro interno do servidor");
+      setShowAlert(!showAlert);
+      setIsLoading(false);
+      return;
+    }
+  };
+
+  const handleChangeAddress = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/perfil/alterar-cep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userProfile, userChangeAddress }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setTypeAlert("error");
+        setIsAlert(data.message);
+        setShowAlert(true);
+        setIsLoading(false);
+        return;
+      }
+
+      setTypeAlert("success");
+      setIsAlert(data.message);
+      setShowAlert(true);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Erro ao atualizar endereço: ", error);
+      setTypeAlert("error");
+      setIsAlert("Não foi possível alterar endereço, erro interno do servidor");
+      setShowAlert(!showAlert);
+      setIsLoading(false);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    if (!userProfile.cep) return;
+
+    handleFetchCEP();
+  }, [userProfile.cep]);
+
+  const handleFetchCEP = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${userProfile.cep}/json/`
+      );
+      const data = await response.json();
+      if (data.erro) {
+        console.log("CEP não encontrado.");
+        setIsLoading(false);
+        return;
+      }
+
+      const addressData = `${data.logradouro}, ${data.bairro} - ${data.localidade} / ${data.uf} (${data.cep})`;
+
+      setFetchedCep(addressData);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Erro ao procurar CEP:", error);
       return;
     }
   };
@@ -323,7 +421,6 @@ export default function InformacoesDeConta() {
     );
   }
 
-  console.log(userProfile);
   return (
     <>
       <Banner
@@ -426,7 +523,11 @@ export default function InformacoesDeConta() {
                     </span>
                   </div>
                   <div className="flex justify-center items-center">
-                    <span className="font-normal text-sm">--</span>
+                    {userProfile.cep ? (
+                      <span className="font-normal text-sm">{fetchedCep}</span>
+                    ) : (
+                      <span className="font-normal text-sm">--</span>
+                    )}
                   </div>
                   <div
                     onClick={() => setChangeAddress(!changeAddress)}
@@ -742,7 +843,10 @@ export default function InformacoesDeConta() {
         {changeTel && (
           <>
             <div className="w-full h-screen fixed top-0 left-0 z-10 backdrop-blur-md flex justify-center items-center">
-              <form className="w-[90%] lg:w-md flex flex-col justify-center items-center p-4 bg-sub-background rounded-md border border-black/30">
+              <form
+                onSubmit={handleChangeTel}
+                className="w-[90%] lg:w-md flex flex-col justify-center items-center p-4 bg-sub-background rounded-md border border-black/30"
+              >
                 <div className="w-full flex justify-start items-center pb-3 border-b border-black/20">
                   <span className="text-xl text-main-pink font-bold">
                     Alterar telefone
@@ -804,7 +908,10 @@ export default function InformacoesDeConta() {
         {changeAddress && (
           <>
             <div className="w-full h-screen fixed top-0 left-0 z-10 backdrop-blur-md flex justify-center items-center">
-              <form className="w-[90%] lg:w-md flex flex-col justify-center items-center p-4 bg-sub-background rounded-md border border-black/30">
+              <form
+                onSubmit={handleChangeAddress}
+                className="w-[90%] lg:w-md flex flex-col justify-center items-center p-4 bg-sub-background rounded-md border border-black/30"
+              >
                 <div className="w-full flex justify-start items-center pb-3 border-b border-black/20">
                   <span className="text-xl text-main-pink font-bold">
                     Alterar CEP
@@ -828,11 +935,11 @@ export default function InformacoesDeConta() {
                       className="text-gray-800 font-normal"
                       htmlFor="newSlug"
                     >
-                      Informe o CEP (max: 09 caracteres):
+                      Informe o CEP (max: 08 caracteres):
                     </label>
                     <Input
                       type="text"
-                      maxLength={9}
+                      maxLength={8}
                       id="newSlug"
                       required
                       value={userChangeAddress.newAddress}

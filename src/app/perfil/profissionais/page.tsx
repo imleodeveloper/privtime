@@ -92,6 +92,7 @@ export default function ProfessionalsPage() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [isCreateProfessionalOpen, setIsCreateProfessionalOpen] =

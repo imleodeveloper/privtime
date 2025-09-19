@@ -101,6 +101,7 @@ export default function ServicesPage() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
 
   const [currentAdmin, setCurrentAdmin] = useState<Admin | null>(null);

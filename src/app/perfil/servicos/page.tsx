@@ -102,6 +102,7 @@ export default function ServicesPage() {
     slug_link: "",
     birthdate: "",
     edit_slug: 0,
+    cep: "",
   });
   const [isCreateServiceOpen, setIsCreateServiceOpen] = useState(false);
   const [isEditServiceOpen, setIsEditServiceOpen] = useState(false);
