@@ -45,7 +45,7 @@ export default function HistoricoDePagamentos() {
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {
         setIsLoading(false);
-        router.replace("/signin?redirect=/perfil");
+        router.push("/signin?redirect=/perfil");
         return;
       }
 
@@ -61,7 +61,7 @@ export default function HistoricoDePagamentos() {
 
       if (!response.ok) {
         setIsLoading(false);
-        setTimeout(() => router.replace("/signin?redirect=/perfil"), 1000);
+        setTimeout(() => router.push("/signin?redirect=/perfil"), 1000);
         return;
       }
 
@@ -69,7 +69,7 @@ export default function HistoricoDePagamentos() {
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       setIsLoading(false);
-      setTimeout(() => router.replace("/signin?redirect=/perfil"), 3000);
+      setTimeout(() => router.push("/signin?redirect=/perfil"), 3000);
       return;
     }
   };
