@@ -27,6 +27,7 @@ import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate } from "../../../../lib/plans";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Banner } from "../../../../components/banner-alert";
+import { Session } from "@supabase/supabase-js";
 
 const formatPrice = (price: number) => {
   if (price == 5819) {
@@ -78,42 +79,26 @@ export default function Assinaturas() {
     plan_type: "",
     automatic_renewal: false,
   });
-
   useEffect(() => {
-    handleSession();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session) {
+          router.replace("/signin?redirect=/perfil");
+        } else {
+          handleSession(session);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const msgParams = searchParams.get("msg") ?? "";
-    setParams(msgParams);
-  }, []);
-
-  useEffect(() => {
-    if (params === "existing_plan") {
-      setTypeAlert("error");
-      setShowAlert(true);
-      setIsAlert(
-        "Você já possui um plano ativo vinculado ao seu perfil. Para realizar uma renovação ou reativação, acesse a página Assinaturas no seu perfil."
-      );
-    }
-  }, [params]);
-
-  useEffect(() => {
-    handleHideAlert();
-  }, [showAlert]);
-
-  const handleHideAlert = () => {
-    if (showAlert) {
-      setTimeout(() => setShowAlert(false), 5000);
-    }
-  };
-
-  const handleSession = async () => {
+  const handleSession = async (session: Session) => {
     setIsLoading(true);
     try {
-      const { data: sessionUser } = await supabase.auth.getSession();
-      const sessionToken = sessionUser.session?.access_token;
+      const sessionToken = session.access_token;
 
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {
@@ -154,6 +139,32 @@ export default function Assinaturas() {
       setIsLoading(false);
       setTimeout(() => router.push("/signin"), 3000);
       return;
+    }
+  };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const msgParams = searchParams.get("msg") ?? "";
+    setParams(msgParams);
+  }, []);
+
+  useEffect(() => {
+    if (params === "existing_plan") {
+      setTypeAlert("error");
+      setShowAlert(true);
+      setIsAlert(
+        "Você já possui um plano ativo vinculado ao seu perfil. Para realizar uma renovação ou reativação, acesse a página Assinaturas no seu perfil."
+      );
+    }
+  }, [params]);
+
+  useEffect(() => {
+    handleHideAlert();
+  }, [showAlert]);
+
+  const handleHideAlert = () => {
+    if (showAlert) {
+      setTimeout(() => setShowAlert(false), 5000);
     }
   };
 

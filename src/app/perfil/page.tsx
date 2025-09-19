@@ -27,6 +27,7 @@ import { formatDate } from "../../../lib/plans";
 import Link from "next/link";
 import { Banner } from "../../../components/banner-alert";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Session } from "@supabase/supabase-js";
 
 export default function Profile() {
   // const searchParams = useSearchParams();
@@ -64,34 +65,26 @@ export default function Profile() {
     automatic_renewal: false,
   });
 
-  // useEffect(() => {
-  //   handleStatusPlan();
-  // }, [searchParams]);
-
-  // const handleStatusPlan = async () => {
-  //   const getStatusPlan = searchParams.get("status_plan");
-  //   if (getStatusPlan === "plan_disabled") {
-  //     alert(
-  //       "Seu plano se encontra desabilitado, devido a isso não será possível gerenciar seu app."
-  //     );
-  //     setTypeAlert("error");
-  //     setIsAlert(
-  //       "Não foi possível encontrar usuário. Redirecionando para o login."
-  //     );
-  //   }
-
-  //   return setShowAlert(!showAlert);
-  // };
-
   useEffect(() => {
-    handleSession();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session) {
+          router.replace("/signin?redirect=/perfil");
+        } else {
+          handleSession(session);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleSession = async () => {
+  const handleSession = async (session: Session) => {
     setIsLoading(true);
     try {
-      const { data: sessionUser } = await supabase.auth.getSession();
-      const sessionToken = sessionUser.session?.access_token;
+      const sessionToken = session.access_token;
 
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {

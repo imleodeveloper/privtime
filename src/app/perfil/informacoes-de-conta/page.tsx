@@ -27,6 +27,7 @@ import { UserPlan, UserProfile } from "@/app/api/auth/perfil/route";
 import { formatDate, formatPrice } from "../../../../lib/plans";
 import { Banner } from "../../../../components/banner-alert";
 import { useRouter } from "next/navigation";
+import { Session } from "@supabase/supabase-js";
 
 export default function InformacoesDeConta() {
   const router = useRouter();
@@ -71,14 +72,25 @@ export default function InformacoesDeConta() {
   });
 
   useEffect(() => {
-    handleSession();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session) {
+          router.replace("/signin?redirect=/perfil");
+        } else {
+          handleSession(session);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleSession = async () => {
+  const handleSession = async (session: Session) => {
     setIsLoading(true);
     try {
-      const { data: sessionUser } = await supabase.auth.getSession();
-      const sessionToken = sessionUser.session?.access_token;
+      const sessionToken = session.access_token;
 
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {
@@ -111,6 +123,9 @@ export default function InformacoesDeConta() {
       setUserPlan(data.planOfUser);
       setUserProfile(data.profile);
       setIsLoading(false);
+      setTypeAlert("success");
+      setShowAlert(true);
+      setIsAlert("Usuário encontrado com sucesso. Dados carregados.");
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       setIsLoading(false);
@@ -154,7 +169,6 @@ export default function InformacoesDeConta() {
       return;
     } finally {
       setChangeSlug(false);
-      handleSession();
     }
   };
 

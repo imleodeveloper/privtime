@@ -63,7 +63,7 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className={`${inter.variable} antialiased relative`}>
         {children}
-        <BannerAge />
+        {/* <BannerAge /> */}
         <WhatsAppButton />
       </body>
     </html>

@@ -30,6 +30,7 @@ import { supabase } from "../../../../lib/supabase";
 import { UserProfile } from "@/app/api/auth/perfil/route";
 import { Banner } from "../../../../components/banner-alert";
 import { useRouter } from "next/navigation";
+import { Session } from "@supabase/supabase-js";
 
 type WeekAvailability = {
   [key: number]: string[];
@@ -83,14 +84,25 @@ export default function YourSchedule() {
   };
 
   useEffect(() => {
-    handleSession();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session) {
+          router.replace("/signin?redirect=/perfil");
+        } else {
+          handleSession(session);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleSession = async () => {
+  const handleSession = async (session: Session) => {
     setIsLoading(true);
     try {
-      const { data: sessionUser } = await supabase.auth.getSession();
-      const sessionToken = sessionUser.session?.access_token;
+      const sessionToken = session.access_token;
 
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {
