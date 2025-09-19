@@ -23,6 +23,19 @@ const toISODate = (value: string) => {
   return value;
 };
 
+const isFullName = (name: string) => {
+  // Remove espaços extras
+  const trimmed = name.trim();
+
+  // Deve ter pelo menos duas palavras
+  const splitName = trimmed.split(/\s+/);
+  if (splitName.length < 2) return false;
+
+  // Cada palavra só letras (acentos ok)
+  const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+$/;
+  return splitName.every((word) => regex.test(word));
+};
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { fullName, phone, email, cpf, password, birthDate } = body;
@@ -70,6 +83,13 @@ export async function POST(request: Request) {
     }
 
     return age >= 18;
+  }
+
+  if (!isFullName(fullName)) {
+    return NextResponse.json(
+      { message: "Informe um nome válido, somente letras, acentos e espaços." },
+      { status: 400 }
+    );
   }
 
   if (!isAdult(birthDate)) {
