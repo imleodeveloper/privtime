@@ -39,22 +39,22 @@ export default function SignIn() {
     if (error) setError("");
   }
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const {
+  //       data: { session },
+  //     } = await supabase.auth.getSession();
 
-      if (session) {
-        if (redirectTo) {
-          router.push(redirectTo);
-        } else {
-          router.push("/perfil");
-        }
-      }
-    };
-    checkAuth();
-  }, [router, redirectTo]);
+  //     if (session) {
+  //       if (redirectTo) {
+  //         router.push(redirectTo);
+  //       } else {
+  //         router.push("/perfil");
+  //       }
+  //     }
+  //   };
+  //   checkAuth();
+  // }, [router, redirectTo]);
 
   const validateForm = () => {
     return 4;
