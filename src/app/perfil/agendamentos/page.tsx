@@ -86,7 +86,7 @@ export default function AppointmentsPage() {
       // Se não tiver sessão, já redireciona sem nem chamar a API
       if (!sessionToken) {
         setIsLoading(false);
-        router.push("/signin?redirect=/perfil");
+        router.push("/signin");
         return;
       }
 
@@ -107,7 +107,7 @@ export default function AppointmentsPage() {
         setIsAlert(
           "Não foi possível encontrar usuário. Redirecionando para o login."
         );
-        setTimeout(() => router.push("/signin?redirect=/perfil"), 1000);
+        setTimeout(() => router.push("/signin"), 1000);
         return;
       }
 
@@ -119,7 +119,7 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error("Não foi possível encontrar sessão ativa", error);
       setIsLoading(false);
-      setTimeout(() => router.push("/signin?redirect=/perfil"), 3000);
+      setTimeout(() => router.push("/signin"), 3000);
       return;
     }
   };
