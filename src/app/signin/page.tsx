@@ -17,7 +17,7 @@ interface FormData {
 export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/perfil";
+  const redirectTo = searchParams.get("redirect");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -46,7 +46,11 @@ export default function SignIn() {
       } = await supabase.auth.getSession();
 
       if (session) {
-        router.push(redirectTo);
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else {
+          router.push("/perfil");
+        }
       }
     };
     checkAuth();
@@ -89,7 +93,11 @@ export default function SignIn() {
       });
 
       setTimeout(() => {
-        router.push(redirectTo);
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else {
+          router.push("/perfil");
+        }
       }, 1500);
     } catch (err) {
       console.error("Erro no login: ", err);
