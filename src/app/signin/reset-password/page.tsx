@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
               <div className="relative w-full h-24 flex justify-center items-center">
                 <Link href="/">
                   <Image
-                    src="/new-logo-purple.webp"
+                    src="/main-logo-privetime.webp"
                     alt=""
                     width={200}
                     height={125}

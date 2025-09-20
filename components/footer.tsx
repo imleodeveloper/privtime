@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col justify-start items-start gap-4">
           <div className="flex justify-start items-center gap-4">
             <Image
-              src="/new-logo-purple.webp"
+              src="/main-logo-privetime.webp"
               alt="Logo rosa PriveTime - Aplicativo de Agendamentos"
               width={150}
               height={80}

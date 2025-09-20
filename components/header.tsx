@@ -83,7 +83,7 @@ export function Header() {
             className="flex justify-center items-center relative py-4"
           >
             <Image
-              src="/new-logo-purple.webp"
+              src="/main-logo-privetime.webp"
               alt="Logo PriveTime - Aplicativo de Agendamentos"
               width={180}
               height={50}
@@ -214,7 +214,7 @@ export function Header() {
             className="flex justify-center items-center relative py-4 pl-2"
           >
             <Image
-              src="/new-logo-purple.webp"
+              src="/main-logo-privetime.webp"
               alt="Logo PriveTime - Aplicativo de Agendamentos"
               width={180}
               height={50}
@@ -251,7 +251,7 @@ export function Header() {
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   <Image
-                    src="/new-logo-purple.webp"
+                    src="/main-logo-privetime.webp"
                     alt="Logo PriveTime - Aplicativo de Agendamentos"
                     width={150}
                     height={50}
